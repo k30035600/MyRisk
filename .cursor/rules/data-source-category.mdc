@@ -35,7 +35,7 @@ alwaysApply: true
 
 ## category_table.json 생성·읽기 순서
 
-- **앱 로드 시점**: data/에 category_table.json이 없으면 **빈 파일 생성**(Railway 등 배포 환경 대응).
+- **앱 로드 시점**: **.source/category_table.xlsx가 있으면** 해당 xlsx를 읽어 **data/category_table.json 생성·갱신**. xlsx가 없고 json도 없으면 빈 json 파일 생성(Railway 등).
 - 그 외: bank_before, card_before 등 before 확보 후 각 모듈에서 category_table 생성·갱신 시도.
 
 ## 카테고리 파일 (상세)

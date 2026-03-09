@@ -204,12 +204,26 @@ try:
         os.makedirs(dir_path, exist_ok=True)
 except OSError:
     pass
-# Railway 등: data/ 가 Git 제외라 배포 시 비어 있음. category_table.json 없으면 빈 파일 생성
+# 앱 로드 시: .source/category_table.xlsx가 있으면 data/category_table.json 생성·갱신. 없으면 json만 없을 때 빈 파일 생성
 try:
-    if CATEGORY_TABLE_PATH and not os.path.exists(CATEGORY_TABLE_PATH):
+    from lib.path_config import get_category_table_xlsx_path
+    _xlsx_path = get_category_table_xlsx_path()
+    if _xlsx_path and os.path.isfile(_xlsx_path):
+        import pandas as pd
+        from lib.category_table_io import (
+            safe_write_category_table,
+            normalize_category_df,
+            CATEGORY_TABLE_EXTENDED_COLUMNS,
+        )
+        _df = pd.read_excel(_xlsx_path, engine='openpyxl')
+        _df = normalize_category_df(_df, extended=True)
+        if CATEGORY_TABLE_PATH:
+            os.makedirs(os.path.dirname(CATEGORY_TABLE_PATH) or '.', exist_ok=True)
+            safe_write_category_table(CATEGORY_TABLE_PATH, _df, extended=True)
+    elif CATEGORY_TABLE_PATH and not os.path.exists(CATEGORY_TABLE_PATH):
         from lib.category_table_io import create_empty_category_table
         create_empty_category_table(CATEGORY_TABLE_PATH)
-except (ImportError, OSError):
+except (ImportError, OSError, Exception):
     pass
 
 
