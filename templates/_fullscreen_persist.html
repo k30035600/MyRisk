@@ -1,0 +1,30 @@
+{# 초기화 페이지의 전체화면 체크박스 상태(localStorage)에 따라 전체화면 자동 적용 #}
+<script>
+(function() {
+    if (window.self !== window.top) return;
+    var KEY = 'myrisk_fullscreen';
+    var isFs = function() { return !!(document.fullscreenElement || document.webkitFullscreenElement); };
+    function enterFs() {
+        if (isFs()) return;
+        var doc = document.documentElement;
+        var p = null;
+        if (doc.requestFullscreen) p = doc.requestFullscreen();
+        else if (doc.webkitRequestFullscreen) { doc.webkitRequestFullscreen(); return; }
+        if (p && p.catch) p.catch(function() {});
+    }
+    try {
+        if (localStorage.getItem(KEY) === '1') {
+            document.addEventListener('click', function _h() {
+                document.removeEventListener('click', _h, true);
+                enterFs();
+            }, { capture: true, once: true });
+        }
+    } catch(e) {}
+    var _navigating = false;
+    window.addEventListener('beforeunload', function() { _navigating = true; });
+    document.addEventListener('fullscreenchange', function() {
+        if (_navigating) return;
+        try { localStorage.setItem(KEY, isFs() ? '1' : '0'); } catch(e) {}
+    });
+})();
+</script>

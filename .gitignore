@@ -1,0 +1,93 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+env/
+
+# 가상환경 (프로젝트 내 Scripts/share/Lib)
+Scripts/
+share/
+Lib/
+# 프로젝트 lib 패키지 포함 (가상환경 Lib/와 구분; Windows에서 Lib/가 lib/까지 무시하므로 예외)
+!/lib/
+# lib 아래 site-packages 등 제외 (프로젝트 소스만 푸시)
+lib/site-packages/
+lib/*.dist-info/
+
+# 커밋 메시지용 임시 파일 (UTF-8)
+msg.txt
+msg2.txt
+msg3.txt
+msg4.txt
+msg5.txt
+msg_commit.txt
+msg_src.txt
+msg_ignore.txt
+msg_final.txt
+msg_proceed.txt
+msg_init.txt
+msg_fix.txt
+msg_readme.txt
+msg_ssh.txt
+msg_actions.txt
+msg_dispatch.txt
+msg_actions_fix.txt
+msg_push.txt
+commit_msg.txt
+commit_msg_*.txt
+commit_message_utf8.txt
+
+# 환경/비밀
+.env
+.env.*
+DEPLOYMENT_URL.txt
+*.key
+!*.key.example
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 빌드/캐시
+*.egg-info/
+.eggs/
+dist/
+build/
+*.egg
+
+# 쓰기 시 생성되는 임시 파일 (저장 완료 전 중단 시 남을 수 있음)
+.data_*.json
+.cat_tbl_*.json
+.cat_tbl_*.xlsx
+
+# 테스트/커버리지
+.pytest_cache/
+.coverage
+htmlcov/
+
+# 로그·임시 (루트 temp/ 공동 사용)
+*.log
+logs/
+run_full_flow.log
+temp/
+
+# Docker (선택)
+# docker-compose.override.yml
+.vercel
+
+# 데이터·저장소 정책: .source 는 모두 올림, data 는 제외
+data/
+
+# .source: Git/GitHub에 포함 (추적·푸시함)
+# .source/Bank/
+# .source/Card/

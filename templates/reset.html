@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>초기화 페이지 - MyRisk</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { overflow-x: hidden; }
+        body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 6px; overflow-y: auto; overflow-x: hidden; }
+        .page-wrap { display: flex; width: 100%; min-height: 100vh; }
+        .left-panel { width: 50%; min-width: 0; padding: 12px; background: rgba(255,255,255,0.95); border-radius: 8px; margin: 0 6px 0 0; box-shadow: 0 4px 16px rgba(0,0,0,0.08); font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; text-align: left; display: flex; flex-direction: column; }
+        .left-panel-actions { margin-top: auto; padding-top: 12px; text-align: left; }
+        .left-panel-actions .btn { display: block; width: 100%; min-height: 2.5em; padding: 20px 16px; line-height: 1.2; text-align: left; box-sizing: border-box; }
+        .left-panel .panel-header { font-size: 1em; font-weight: bold; color: #333; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid #e0e0e0; }
+        .left-panel .form-line { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+        .left-panel .form-line label { font-size: 0.85em; color: #333; font-weight: bold; white-space: nowrap; }
+        .left-panel .form-line .form-inline { display: flex; align-items: center; gap: 6px; }
+        .left-panel .form-line.form-line-simya { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+        .left-panel .form-line .form-inline.simya { justify-content: center; text-align: center; }
+        .left-panel input[type="text"] { padding: 6px 8px; font-size: 0.9em; border: 1px solid #ddd; border-radius: 4px; width: 120px; }
+        .left-panel .form-inline input { width: 90px; }
+        .left-panel .form-line-applicant { display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; text-align: left; align-items: flex-start; }
+        .left-panel .form-line-applicant .form-row { display: flex; align-items: center; justify-content: flex-start; gap: 10px; text-align: left; width: 100%; }
+        .left-panel .form-line-applicant .form-row label { font-size: 0.85em; color: #333; font-weight: bold; white-space: nowrap; min-width: 4.5em; text-align: left; }
+        .left-panel .applicant-input { width: 100%; max-width: 480px; min-width: 320px; height: 36px; padding: 8px 12px; font-size: 0.95em; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; text-align: left; }
+        .right-panel { width: 50%; min-width: 0; display: flex; flex-direction: column; align-items: flex-end; }
+        .container { background: white; border-radius: 8px; box-shadow: 0 6px 24px rgba(0,0,0,0.12); padding: 6px; width: 100%; max-width: 100%; overflow-x: auto; font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; display: flex; flex-direction: column; flex: 1; min-height: 0; }
+        .right-panel-actions { margin-top: auto; padding-top: 8px; text-align: right; }
+        .right-panel-actions .btn { display: block; width: 100%; min-height: 2.5em; padding: 20px 16px; line-height: 1.2; text-align: right; box-sizing: border-box; }
+        h1 { font-size: 0.95em; color: #333; margin-bottom: 2px; line-height: 1.2; }
+        .reset-table { width: 100%; max-width: 100%; border-collapse: collapse; font-size: 0.9em; line-height: 1; table-layout: fixed; font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; }
+        .reset-table col { width: 12.5%; }
+        .reset-table col.col-first { width: 6.25%; }
+        .reset-table col.col-select-col { width: 6.25%; }
+        .reset-table tr { line-height: 1; }
+        .reset-table th, .reset-table td { border: 1px solid #ddd; padding: 4px 6px; text-align: center; vertical-align: middle; overflow: hidden; text-overflow: ellipsis; line-height: 1.4; }
+        .reset-table th { background: #f5f5f5; font-weight: bold; color: #333; }
+        .reset-table .col-task { text-align: left; }
+        .reset-table .col-select input[type="checkbox"] { margin: 0; transform: scale(0.8); vertical-align: middle; }
+        .reset-table input[type="radio"] { margin: 0; vertical-align: middle; }
+        .reset-table input[type="radio"]:disabled { opacity: 0.5; cursor: not-allowed; }
+        .reset-table input[type="checkbox"]:disabled { opacity: 0.5; cursor: not-allowed; }
+        .reset-table button { margin: 0; padding: 4px 6px; line-height: 1.3; vertical-align: middle; }
+        .reset-table .col-size { font-variant-numeric: tabular-nums; text-align: right; }
+        .reset-table thead th.col-size { text-align: center; }
+        .reset-table .title-cell { background: #f0f0f0; font-weight: bold; }
+        .reset-table .vertical-text { writing-mode: vertical-lr; text-orientation: mixed; white-space: nowrap; display: inline-block; padding: 0; font-size: 1.25em; font-weight: bold; }
+        .btn-execute { padding: 8px 16px; font-size: 0.9em; cursor: pointer; background: #667eea; color: white; border: none; border-radius: 6px; font-family: inherit; width: 100%; line-height: 1.2; min-height: 34px; box-sizing: border-box; }
+        .reset-table input, .reset-table button { margin: 0; vertical-align: middle; line-height: 1.2; min-height: 0; }
+        .btn-execute:hover { background: #5568d3; }
+        .reset-actions { margin-top: 4px; display: flex; gap: 6px; flex-wrap: wrap; justify-content: space-between; align-items: center; }
+        .reset-actions .btn-end { margin-left: auto; }
+        .reset-actions .btn { padding: 10px 20px; font-size: 1em; cursor: pointer; border: none; border-radius: 8px; font-family: inherit; text-decoration: none; display: inline-block; }
+        .btn-primary { background: #667eea; color: white; }
+        .btn-primary:hover { background: #5568d3; }
+        .btn-secondary { background: #e0e0e0; color: #333; }
+        .btn-secondary:hover { background: #d0d0d0; }
+        .btn-home { background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%); color: #fff; }
+        .btn-home:hover { filter: brightness(1.1); }
+        .btn-shutdown { background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%); color: #fff; }
+        .btn-shutdown:hover { filter: brightness(1.1); }
+        @media (max-width: 1024px) {
+            .page-wrap { flex-direction: column; }
+            .left-panel, .right-panel { width: 100%; margin: 0 0 8px 0; }
+        }
+        @media (max-width: 768px) {
+            body { padding: 4px; }
+            .left-panel, .right-panel { padding: 8px; }
+            .applicant-input { min-width: 0; max-width: 100%; }
+            .reset-table { font-size: 0.75em; }
+            .reset-table th, .reset-table td { padding: 3px 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 0; }
+            .reset-actions { flex-direction: column; align-items: stretch; }
+            .reset-actions .btn-end { margin-left: 0; }
+        }
+        @media (max-width: 480px) {
+            .form-line { flex-direction: column; align-items: flex-start; }
+            .form-line .form-inline { width: 100%; }
+            .left-panel input[type="text"] { width: 100%; max-width: 100%; }
+            .reset-table col { width: auto; }
+            .reset-table { font-size: 0.65em; }
+            .reset-table th, .reset-table td { padding: 2px 3px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrap">
+        <div class="left-panel">
+            <h2 class="panel-header">{{ reset_left_header|default('환경변수 관리') }}</h2>
+            <div class="form-line form-line-applicant">
+                <div class="form-row">
+                    <label for="input-user-name">신청인</label>
+                    <input type="text" id="input-user-name" placeholder="성명 입력" class="applicant-input" />
+                </div>
+                <div class="form-row">
+                    <label for="input-contact">연락처</label>
+                    <input type="text" id="input-contact" placeholder="연락처 입력" class="applicant-input" />
+                </div>
+                <div class="form-row">
+                    <label for="input-email">이메일</label>
+                    <input type="email" id="input-email" placeholder="이메일 입력" class="applicant-input" />
+                </div>
+            </div>
+            <div class="form-line" style="margin-top: 16px; margin-bottom: 14px;">
+                <label for="chk-fullscreen" style="cursor: pointer;">전체화면</label>
+                <input type="checkbox" id="chk-fullscreen" style="transform: scale(1.2); cursor: pointer;" title="전체화면 모드 (모든 페이지에 적용)">
+            </div>
+            <div class="form-line form-line-simya">
+                <label>심야구분</label>
+                <div class="form-inline simya">
+                    <input type="text" id="input-simya-start" placeholder="00:00:00" title="시작 hh:mm:ss" />
+                    <span>~</span>
+                    <input type="text" id="input-simya-end" placeholder="00:00:00" title="종료 hh:mm:ss" />
+                </div>
+            </div>
+            <div class="left-panel-actions">
+                <a href="/" class="btn btn-home">홈페이지</a>
+            </div>
+        </div>
+        <div class="right-panel">
+            <div class="container">
+        <table class="reset-table">
+            <colgroup><col class="col-first"><col><col><col><col><col><col class="col-select-col"><col></colgroup>
+            <thead>
+                <tr>
+                    <th colspan="2" class="title-cell">작업구분</th>
+                    <th class="col-sub">구분</th>
+                    <th>작업</th>
+                    <th class="col-size">cache</th>
+                    <th class="col-size">json</th>
+                    <th class="col-select">선택</th>
+                    <th class="col-execute">실행</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 공통사항: 신청인·연락처·이메일이 저장된 신청인과 모두 동일인일 때만 테이블 활성화 -->
+                <tr>
+                    <td rowspan="8" class="title-cell" style="vertical-align: middle;"><span class="vertical-text">초기화 작업</span></td>
+                    <td rowspan="2" style="background:#f9f9f9; font-weight: bold;">공통사항</td>
+                    <td rowspan="2" style="background:#f9f9f9;">카테고리</td>
+                    <td class="col-task">백업(j2x)</td>
+                    <td class="col-size" id="size-json-xlsx-cache">0.0 kb</td>
+                    <td class="col-size" id="size-json-xlsx-json">0.0 kb</td>
+                    <td class="col-select"><input type="radio" name="common_action" value="backup" id="radio_backup" title="data/*.json → xlsx → zip 다운로드" disabled></td>
+                    <td rowspan="2" class="col-execute"><button type="button" id="btn-common-execute" class="btn-execute" disabled>실행</button></td>
+                </tr>
+                <tr>
+                    <td class="col-task">복원(x2j)</td>
+                    <td class="col-size" id="size-xlsx-json-cache">0.0 kb</td>
+                    <td class="col-size" id="size-xlsx-json-json">0.0 kb</td>
+                    <td class="col-select"><input type="radio" name="common_action" value="restore" id="radio_restore" title="zip 업로드 → .source/ 복원" checked disabled></td>
+                    <input type="file" id="restore-file-input" accept=".zip" style="display:none;">
+                </tr>
+                <!-- 은행거래 -->
+                <tr>
+                    <td rowspan="2" style="background:#f9f9f9; font-weight: bold;">은행거래</td>
+                    <td>전처리전</td>
+                    <td class="col-task">bank_before</td>
+                    <td class="col-size" id="size-bank-before-cache">0.0 kb</td>
+                    <td class="col-size" id="size-bank-before-json">0.0 kb</td>
+                    <td class="col-select"><input type="checkbox" id="bank_before"></td>
+                    <td rowspan="6" class="col-execute"><button type="button" id="btn-execute" class="btn-execute" disabled>선택</button></td>
+                </tr>
+                <tr>
+                    <td>전처리후</td>
+                    <td class="col-task">bank_after</td>
+                    <td class="col-size" id="size-bank-after-cache">0.0 kb</td>
+                    <td class="col-size" id="size-bank-after-json">0.0 kb</td>
+                    <td class="col-select"><input type="checkbox" id="bank_after"></td>
+                </tr>
+                <!-- 신용카드 -->
+                <tr>
+                    <td rowspan="2" style="background:#f9f9f9; font-weight: bold;">신용카드</td>
+                    <td>전처리전</td>
+                    <td class="col-task">card_before</td>
+                    <td class="col-size" id="size-card-before-cache">0.0 kb</td>
+                    <td class="col-size" id="size-card-before-json">0.0 kb</td>
+                    <td class="col-select"><input type="checkbox" id="card_before"></td>
+                </tr>
+                <tr>
+                    <td>전처리후</td>
+                    <td class="col-task">card_after</td>
+                    <td class="col-size" id="size-card-after-cache">0.0 kb</td>
+                    <td class="col-size" id="size-card-after-json">0.0 kb</td>
+                    <td class="col-select"><input type="checkbox" id="card_after"></td>
+                </tr>
+                <!-- 금융정보 -->
+                <tr>
+                    <td style="background:#f9f9f9; font-weight: bold;">금융정보</td>
+                    <td>전처리후</td>
+                    <td class="col-task">cash_after</td>
+                    <td class="col-size" id="size-cash-after-cache">0.0 kb</td>
+                    <td class="col-size" id="size-cash-after-json">0.0 kb</td>
+                    <td class="col-select"><input type="checkbox" id="cash_after"></td>
+                </tr>
+                <!-- 전체 초기화: 작업구분에 표시, 작업 공란, cache/json에 합계 -->
+                <tr>
+                    <td style="background:#f0f0f0; font-weight: bold;">전체 초기화</td>
+                    <td></td>
+                    <td class="col-task"></td>
+                    <td class="col-size" id="size-total-cache">0 B</td>
+                    <td class="col-size" id="size-total-json">0 B</td>
+                    <td class="col-select"><input type="checkbox" id="chk_all" title="선택 시 모두 체크"></td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="right-panel-actions">
+            <a href="/shutdown" class="btn btn-shutdown">작업종료</a>
+        </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            var inputUserName = document.getElementById('input-user-name');
+            var inputSimyaStart = document.getElementById('input-simya-start');
+            var inputSimyaEnd = document.getElementById('input-simya-end');
+            /** 신청인(성명)·연락처·이메일이 category_table 분류 "신청인"과 모두 일치할 때만 테이블 활성화. */
+            var categoryTableUserKeyword = '';
+            var categoryTableUserContact = '';
+            var categoryTableUserEmail = '';
+            var fileSizes = { bank_before: null, bank_after: null, card_before: null, card_after: null, cash_after: null };
+            var radioBackup = document.getElementById('radio_backup');
+            var radioRestore = document.getElementById('radio_restore');
+            var restoreFileInput = document.getElementById('restore-file-input');
+            var bankBefore = document.getElementById('bank_before');
+            var bankAfter = document.getElementById('bank_after');
+            var cardBefore = document.getElementById('card_before');
+            var cardAfter = document.getElementById('card_after');
+            var cashAfter = document.getElementById('cash_after');
+            var chkAll = document.getElementById('chk_all');
+            function setCommonRadiosEnabled(enabled) {
+                if (radioBackup) radioBackup.disabled = !enabled;
+                if (radioRestore) radioRestore.disabled = !enabled;
+                var btnCommon = document.getElementById('btn-common-execute');
+                if (btnCommon) btnCommon.disabled = !enabled;
+            }
+            var inputEmail = document.getElementById('input-email');
+            var inputContact = document.getElementById('input-contact');
+            /** 저장된 신청인(성명)과 일치 여부. */
+            function isApplicantNameMatch() {
+                var nameVal = inputUserName ? inputUserName.value.trim() : '';
+                return categoryTableUserKeyword !== '' && nameVal === categoryTableUserKeyword;
+            }
+            /** 저장된 연락처와 일치 여부. (저장값이 없으면 일치로 간주) */
+            function isContactMatch() {
+                var contactVal = inputContact ? inputContact.value.trim() : '';
+                if (categoryTableUserContact === '') return true;
+                return contactVal === categoryTableUserContact;
+            }
+            /** 저장된 이메일과 일치 여부. */
+            function isEmailMatch() {
+                var emailVal = inputEmail ? inputEmail.value.trim() : '';
+                return categoryTableUserEmail !== '' && emailVal === categoryTableUserEmail;
+            }
+            /** 신청인·연락처·이메일 모두 동일인일 때만 true. */
+            function isAllApplicantMatch() {
+                return isApplicantNameMatch() && isContactMatch() && isEmailMatch();
+            }
+            /** 모두 동일인 → 테이블(라디오·체크박스·실행/선택) 활성화. 아니면 비활성화. */
+            function updateRadioState() {
+                var nameVal = inputUserName ? inputUserName.value.trim() : '';
+                var contactVal = inputContact ? inputContact.value.trim() : '';
+                var emailVal = inputEmail ? inputEmail.value.trim() : '';
+                var nameMatch = isApplicantNameMatch();
+                var contactMatch = isContactMatch();
+                var emailMatch = isEmailMatch();
+                var allMatch = nameMatch && contactMatch && emailMatch;
+                console.log('[초기화] 신청인 입력', { '신청인': nameVal, '연락처': contactVal, '이메일': emailVal, '신청인일치': nameMatch, '연락처일치': contactMatch, '이메일일치': emailMatch, '동일인': allMatch });
+                setCommonRadiosEnabled(!!allMatch);
+                var list = [bankBefore, bankAfter, cardBefore, cardAfter, cashAfter];
+                var sizes = [fileSizes.bank_before, fileSizes.bank_after, fileSizes.card_before, fileSizes.card_after, fileSizes.cash_after];
+                for (var i = 0; i < list.length; i++) {
+                    if (list[i]) list[i].disabled = !allMatch;
+                }
+                if (chkAll) chkAll.disabled = !allMatch;
+                var btnSel = document.getElementById('btn-execute');
+                if (btnSel) {
+                    if (!allMatch) btnSel.disabled = true;
+                    else updateSelectButtonState();
+                }
+            }
+            /** 초기화작업 테이블: 라디오·체크박스 비활성화 및 해제 */
+            function disableAndUncheckResetTable() {
+                if (radioBackup) { radioBackup.disabled = true; radioBackup.checked = false; }
+                if (radioRestore) { radioRestore.disabled = true; radioRestore.checked = true; }
+                var btnCommon = document.getElementById('btn-common-execute');
+                if (btnCommon) btnCommon.disabled = true;
+                [bankBefore, bankAfter, cardBefore, cardAfter, cashAfter].forEach(function(el) {
+                    if (el) { el.disabled = true; el.checked = false; }
+                });
+                if (chkAll) { chkAll.disabled = true; chkAll.checked = false; }
+                var btnSel = document.getElementById('btn-execute');
+                if (btnSel) btnSel.disabled = true;
+            }
+            /** 입력란은 항상 공란. 서버 세션 verified 상태로만 테이블 활성/비활성 판단. */
+            function loadFormData() {
+                if (inputUserName) inputUserName.value = '';
+                if (inputContact) inputContact.value = '';
+                if (inputEmail) inputEmail.value = '';
+                fetch('/api/reset-form-data').then(function(r) { return r.json(); }).then(function(d) {
+                    categoryTableUserKeyword = '';
+                    categoryTableUserContact = '';
+                    categoryTableUserEmail = '';
+                    if (inputSimyaStart) inputSimyaStart.value = d && d.심야시작 ? String(d.심야시작).trim() : '';
+                    if (inputSimyaEnd) inputSimyaEnd.value = d && d.심야종료 ? String(d.심야종료).trim() : '';
+                    if (d && d.verified) {
+                        categoryTableUserKeyword = _APPLICANT_SESSION.name || '(verified)';
+                        categoryTableUserContact = _APPLICANT_SESSION.contact || '';
+                        categoryTableUserEmail = _APPLICANT_SESSION.email || '';
+                    }
+                    disableAndUncheckResetTable();
+                    updateRadioState();
+                }).catch(function() { disableAndUncheckResetTable(); updateRadioState(); });
+            }
+            var _APPLICANT_SESSION = { name: '', email: '', contact: '' };
+            if (inputUserName) {
+                inputUserName.addEventListener('input', updateRadioState);
+                inputUserName.addEventListener('change', updateRadioState);
+            }
+            if (inputContact) {
+                inputContact.addEventListener('input', updateRadioState);
+                inputContact.addEventListener('change', updateRadioState);
+            }
+            if (inputEmail) {
+                inputEmail.addEventListener('input', updateRadioState);
+                inputEmail.addEventListener('change', updateRadioState);
+            }
+            function saveFormSilent() {
+                var 사용자명 = inputUserName ? inputUserName.value.trim() : '';
+                var 연락처 = inputContact ? inputContact.value.trim() : '';
+                var 이메일 = inputEmail ? inputEmail.value.trim() : '';
+                var 심야시작 = inputSimyaStart ? inputSimyaStart.value.trim() : '';
+                var 심야종료 = inputSimyaEnd ? inputSimyaEnd.value.trim() : '';
+                fetch('/api/reset-form-save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 사용자명: 사용자명, 연락처: 연락처, 이메일: 이메일, 심야시작: 심야시작, 심야종료: 심야종료 })
+                }).then(function(r) { return r.json(); }).then(function(data) {
+                    if (data && data.success) {
+                        _APPLICANT_SESSION.name = 사용자명;
+                        _APPLICANT_SESSION.email = 이메일;
+                        _APPLICANT_SESSION.contact = 연락처;
+                        categoryTableUserKeyword = 사용자명;
+                        categoryTableUserEmail = 이메일;
+                        categoryTableUserContact = 연락처;
+                        updateRadioState();
+                    }
+                }).catch(function() {});
+            }
+            function onApplicantBlur() {
+                var name = inputUserName ? inputUserName.value.trim() : '';
+                if (!name) { saveFormSilent(); return; }
+                fetch('/api/reset-form-lookup?name=' + encodeURIComponent(name))
+                    .then(function(r) { return r.json(); })
+                    .then(function(d) {
+                        if (d && (d.연락처 != null || d.이메일 != null)) {
+                            if (inputContact && !inputContact.value.trim()) inputContact.value = (d.연락처 != null) ? String(d.연락처).trim() : '';
+                            if (inputEmail && !inputEmail.value.trim()) inputEmail.value = (d.이메일 != null) ? String(d.이메일).trim() : '';
+                            updateRadioState();
+                        }
+                        saveFormSilent();
+                    })
+                    .catch(function() { saveFormSilent(); });
+            }
+            if (inputUserName) inputUserName.addEventListener('blur', onApplicantBlur);
+            if (inputContact) inputContact.addEventListener('blur', saveFormSilent);
+            if (inputEmail) inputEmail.addEventListener('blur', saveFormSilent);
+            if (inputSimyaStart) inputSimyaStart.addEventListener('blur', saveFormSilent);
+            if (inputSimyaEnd) inputSimyaEnd.addEventListener('blur', saveFormSilent);
+            loadFormData();
+
+            function onBeforeChange(beforeEl, afterEl) {
+                if (beforeEl && afterEl && beforeEl.checked) afterEl.checked = true;
+            }
+            function onAfterChange(afterEl, beforeEl) {
+                if (afterEl && beforeEl && afterEl.checked) beforeEl.checked = false;
+            }
+            if (bankBefore) bankBefore.addEventListener('change', function() { onBeforeChange(bankBefore, bankAfter); });
+            if (bankAfter) bankAfter.addEventListener('change', function() { onAfterChange(bankAfter, bankBefore); });
+            if (cardBefore) cardBefore.addEventListener('change', function() { onBeforeChange(cardBefore, cardAfter); });
+            if (cardAfter) cardAfter.addEventListener('change', function() { onAfterChange(cardAfter, cardBefore); });
+
+            function syncChkAll() {
+                if (!chkAll) return;
+                var all = [bankBefore, bankAfter, cardBefore, cardAfter, cashAfter].filter(function(el) { return el && !el.disabled; });
+                chkAll.checked = all.length > 0 && all.every(function(el) { return el.checked; });
+            }
+            if (chkAll) {
+                chkAll.addEventListener('change', function() {
+                    var list = [bankBefore, bankAfter, cardBefore, cardAfter, cashAfter];
+                    list.forEach(function(el) {
+                        if (el && !el.disabled) el.checked = !!chkAll.checked;
+                    });
+                });
+            }
+            function updateSelectButtonState() {
+                var btn = document.getElementById('btn-execute');
+                if (!btn) return;
+                var list = [bankBefore, bankAfter, cardBefore, cardAfter, cashAfter];
+                var anyChecked = list.some(function(el) { return el && !el.disabled && el.checked; });
+                btn.disabled = !anyChecked;
+            }
+            [bankBefore, bankAfter, cardBefore, cardAfter, cashAfter].forEach(function(el) {
+                if (el) el.addEventListener('change', function() { syncChkAll(); updateSelectButtonState(); });
+            });
+            if (chkAll) chkAll.addEventListener('change', function() { updateSelectButtonState(); });
+
+            var btnCommonExecute = document.getElementById('btn-common-execute');
+
+            function doBackup() {
+                var pw = prompt('백업을 실행합니다.\ndata/ 의 JSON → xlsx → zip 다운로드\n\n패스워드를 입력하세요:');
+                if (pw === null) return;
+                if (pw !== 'backup') { alert('패스워드가 올바르지 않습니다.'); return; }
+                btnCommonExecute.disabled = true;
+                fetch('/api/backup', { method: 'POST' })
+                    .then(function(r) {
+                        if (!r.ok) return r.json().then(function(d) { throw new Error(d.error || '백업 실패'); });
+                        var cd = r.headers.get('content-disposition') || '';
+                        var m = cd.match(/filename[^;=\n]*=["']?([^"';\n]+)/);
+                        var fname = m ? m[1] : 'MyRisk_backup.zip';
+                        return r.blob().then(function(blob) { return { blob: blob, fname: fname }; });
+                    })
+                    .then(function(o) {
+                        var a = document.createElement('a');
+                        a.href = URL.createObjectURL(o.blob);
+                        a.download = o.fname;
+                        document.body.appendChild(a);
+                        a.click();
+                        setTimeout(function() { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+                        alert('백업 zip 다운로드를 시작했습니다.');
+                    })
+                    .catch(function(e) { alert('백업 오류: ' + (e.message || '')); })
+                    .finally(function() { btnCommonExecute.disabled = false; });
+            }
+
+            function doRestore() {
+                var pw = prompt('복원을 실행합니다.\nzip 파일의 xlsx를 .source/ 에 추출합니다.\n(JSON 변환은 수행하지 않습니다)\n\n패스워드를 입력하세요:');
+                if (pw === null) return;
+                if (pw !== 'restore') { alert('패스워드가 올바르지 않습니다.'); return; }
+                restoreFileInput.value = '';
+                restoreFileInput.click();
+            }
+
+            if (restoreFileInput) {
+                restoreFileInput.addEventListener('change', function() {
+                    var file = restoreFileInput.files && restoreFileInput.files[0];
+                    if (!file) return;
+                    btnCommonExecute.disabled = true;
+                    var fd = new FormData();
+                    fd.append('file', file);
+                    fetch('/api/restore', { method: 'POST', body: fd })
+                        .then(function(r) { return r.json(); })
+                        .then(function(data) {
+                            if (data && data.success) {
+                                var msg = '복원 완료.\n추출된 파일: ' + (data.files || []).join(', ');
+                                alert(msg);
+                                location.reload();
+                            } else {
+                                alert(data && data.error ? data.error : '복원 실패');
+                            }
+                        })
+                        .catch(function(e) { alert('복원 오류: ' + (e.message || '')); })
+                        .finally(function() { btnCommonExecute.disabled = false; restoreFileInput.value = ''; });
+                });
+            }
+
+            if (btnCommonExecute) {
+                btnCommonExecute.addEventListener('click', function() {
+                    if (!isAllApplicantMatch()) {
+                        alert('신청인·연락처·이메일이 저장된 신청인과 모두 일치해야 초기화 작업을 사용할 수 있습니다.');
+                        return;
+                    }
+                    var radio = document.querySelector('input[name="common_action"]:checked');
+                    var action = radio ? radio.value : 'restore';
+                    if (action === 'backup') doBackup();
+                    else if (action === 'restore') doRestore();
+                });
+            }
+
+            var btnExecute = document.getElementById('btn-execute');
+            if (btnExecute) {
+                btnExecute.disabled = true;
+                btnExecute.addEventListener('click', function() {
+                    if (!isAllApplicantMatch()) {
+                        alert('신청인·연락처·이메일이 저장된 신청인과 모두 일치해야 초기화 작업을 사용할 수 있습니다.');
+                        return;
+                    }
+                    var bankB = bankBefore && bankBefore.checked;
+                    var bankA = bankAfter && bankAfter.checked;
+                    var cardB = cardBefore && cardBefore.checked;
+                    var cardA = cardAfter && cardAfter.checked;
+                    var cashA = document.getElementById('cash_after') && document.getElementById('cash_after').checked;
+
+                    var total = (bankB || bankA ? 1 : 0) + (cardB || cardA ? 1 : 0) + (cashA ? 1 : 0);
+                    if (total === 0) return;
+                    if (!confirm('선택한 항목을 초기화(삭제)하시겠습니까?')) return;
+                    var done = 0;
+                    function maybeReload() { done++; if (done >= total) location.reload(); }
+                    if (bankB || bankA) {
+                        fetch('/bank/api/clear-cache', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ before: bankB, after: bankA }) }).then(maybeReload).catch(maybeReload);
+                    }
+                    if (cardB || cardA) {
+                        fetch('/card/api/clear-cache', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ before: cardB, after: cardA }) }).then(maybeReload).catch(maybeReload);
+                    }
+                    if (cashA) {
+                        fetch('/cash/api/clear-cache', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ after: true }) }).then(maybeReload).catch(maybeReload);
+                    }
+                });
+            }
+
+            function human(b) {
+                if (b == null || b === undefined) return '0 B';
+                if (b < 1024) return b + ' B';
+                if (b < 1024 * 1024) return (b / 1024).toFixed(1) + ' KB';
+                return (b / (1024 * 1024)).toFixed(2) + ' MB';
+            }
+            function setSize(el, bytes) { if (el) el.textContent = human(bytes); }
+
+            function setSizeAndDisableIfZero(elSize, bytes, selectEl) {
+                setSize(elSize, bytes);
+                if (selectEl && (bytes == null || bytes === 0)) selectEl.disabled = true;
+            }
+            Promise.all([
+                fetch('/api/reset-file-sizes').then(function(r) { return r.json(); }),
+                fetch('/bank/api/cache-info').then(function(r) { return r.json(); }).catch(function() { return {}; }),
+                fetch('/card/api/cache-info').then(function(r) { return r.json(); }).catch(function() { return {}; }),
+                fetch('/cash/api/cache-info').then(function(r) { return r.json(); }).catch(function() { return {}; })
+            ]).then(function(results) {
+                var fs = results[0];
+                var bankCache = results[1];
+                var cardCache = results[2];
+                var cashCache = results[3];
+                if (fs) {
+                    fileSizes.bank_before = fs.bank_before;
+                    fileSizes.bank_after = fs.bank_after;
+                    fileSizes.card_before = fs.card_before;
+                    fileSizes.card_after = fs.card_after;
+                    fileSizes.cash_after = fs.cash_after;
+                    setSizeAndDisableIfZero(document.getElementById('size-json-xlsx-cache'), fs.category_table_json, null);
+                    setSizeAndDisableIfZero(document.getElementById('size-json-xlsx-json'), fs.category_table_xlsx, radioBackup);
+                    setSizeAndDisableIfZero(document.getElementById('size-xlsx-json-cache'), fs.category_table_json, null);
+                    setSizeAndDisableIfZero(document.getElementById('size-xlsx-json-json'), fs.category_table_json, radioRestore);
+                    if (radioBackup && !radioBackup.disabled) {
+                        radioBackup.checked = true;
+                    }
+                    setSize(document.getElementById('size-bank-before-json'), fs.bank_before);
+                    setSize(document.getElementById('size-bank-after-json'), fs.bank_after);
+                    setSize(document.getElementById('size-card-before-json'), fs.card_before);
+                    setSize(document.getElementById('size-card-after-json'), fs.card_after);
+                    setSize(document.getElementById('size-cash-after-json'), fs.cash_after);
+                    setSize(document.getElementById('size-bank-before-cache'), bankCache && typeof bankCache.total_bytes === 'number' ? bankCache.total_bytes : 0);
+                    setSize(document.getElementById('size-bank-after-cache'), bankCache && typeof bankCache.total_bytes === 'number' ? bankCache.total_bytes : 0);
+                    setSize(document.getElementById('size-card-before-cache'), cardCache && typeof cardCache.total_bytes === 'number' ? cardCache.total_bytes : 0);
+                    setSize(document.getElementById('size-card-after-cache'), cardCache && typeof cardCache.total_bytes === 'number' ? cardCache.total_bytes : 0);
+                    setSize(document.getElementById('size-cash-after-cache'), cashCache && typeof cashCache.total_bytes === 'number' ? cashCache.total_bytes : 0);
+                    var totalCache = (bankCache && typeof bankCache.total_bytes === 'number' ? bankCache.total_bytes : 0) + (cardCache && typeof cardCache.total_bytes === 'number' ? cardCache.total_bytes : 0) + (cashCache && typeof cashCache.total_bytes === 'number' ? cashCache.total_bytes : 0);
+                    var totalJson = (fs.bank_before != null ? fs.bank_before : 0) + (fs.bank_after != null ? fs.bank_after : 0) + (fs.card_before != null ? fs.card_before : 0) + (fs.card_after != null ? fs.card_after : 0) + (fs.cash_after != null ? fs.cash_after : 0);
+                    setSize(document.getElementById('size-total-cache'), totalCache);
+                    setSize(document.getElementById('size-total-json'), totalJson);
+                    updateRadioState();
+                }
+            }).catch(function() {});
+        })();
+
+        // 전체화면 체크박스 관리 (localStorage 기반)
+        (function() {
+            var FS_KEY = 'myrisk_fullscreen';
+            var chk = document.getElementById('chk-fullscreen');
+            if (!chk) return;
+            var isFs = function() { return !!(document.fullscreenElement || document.webkitFullscreenElement); };
+
+            var stored = false;
+            try { stored = localStorage.getItem(FS_KEY) === '1'; } catch(e) {}
+            chk.checked = stored;
+
+            function enterFs() {
+                if (isFs()) return;
+                var doc = document.documentElement;
+                var p = null;
+                if (doc.requestFullscreen) p = doc.requestFullscreen();
+                else if (doc.webkitRequestFullscreen) { doc.webkitRequestFullscreen(); return; }
+                if (p && p.catch) p.catch(function() {});
+            }
+            function exitFs() {
+                if (!isFs()) return;
+                var p = null;
+                if (document.exitFullscreen) p = document.exitFullscreen();
+                else if (document.webkitExitFullscreen) { document.webkitExitFullscreen(); return; }
+                if (p && p.catch) p.catch(function() {});
+            }
+
+            if (stored) {
+                document.addEventListener('click', function _h() {
+                    document.removeEventListener('click', _h, true);
+                    enterFs();
+                }, { capture: true, once: true });
+            }
+
+            chk.addEventListener('change', function() {
+                try { localStorage.setItem(FS_KEY, chk.checked ? '1' : '0'); } catch(e) {}
+                if (chk.checked) enterFs(); else exitFs();
+            });
+
+            var _navigating = false;
+            window.addEventListener('beforeunload', function() { _navigating = true; });
+
+            document.addEventListener('fullscreenchange', function() {
+                if (_navigating) return;
+                var fs = isFs();
+                chk.checked = fs;
+                try { localStorage.setItem(FS_KEY, fs ? '1' : '0'); } catch(e) {}
+            });
+        })();
+    </script>
+</body>
+</html>

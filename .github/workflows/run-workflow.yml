@@ -1,0 +1,33 @@
+# GitHub Actions: Run workflow (수동 실행)
+# 저장소 Actions 탭 → "Run workflow" 선택 후 실행하면 GitHub 서버에서 코드 구동
+
+name: Run workflow
+
+on:
+  workflow_dispatch:   # 수동 실행: Actions 탭 → Run workflow
+  push:
+    branches: [main]   # main 푸시 시 1회 실행 → workflow_dispatch 활성화
+
+# Startup failure 방지: 권한 명시
+permissions:
+  contents: read
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run (Python version check)
+        run: |
+          python --version
+          python -c "import flask; print('Flask OK')"

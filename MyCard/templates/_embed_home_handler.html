@@ -1,0 +1,4 @@
+{# iframe 안에서 열렸을 때 "홈" 클릭 시 부모에게 iframe 닫기 요청 (별도 서비스 선택 버튼 불필요) #}
+<script>
+(function(){ if (window.self === window.top) return; document.addEventListener('DOMContentLoaded', function() { document.querySelectorAll('.nav-item[data-nav-role="home"]').forEach(function(a){ a.addEventListener('click', function(e){ e.preventDefault(); window.parent.postMessage('myrisk-close-embed', '*'); }); }); }); })();
+</script>

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>금융정보 종합분석 보고서</title>
+    <style>
+        @media print {
+            @page { size: A4; margin: 15mm 10mm 10mm 10mm; }
+            body { margin: 0; padding: 0; }
+            .no-print { display: none !important; }
+            .page-break { page-break-after: always; }
+            thead { display: table-header-group; }
+            tfoot { display: table-footer-group; }
+            .somyeong-one-page { min-height: 100%; }
+            .somyeong-body { min-height: 240mm !important; }
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { overflow-x: hidden; }
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            font-size: 10pt;
+            line-height: 1.4;
+            padding: 8px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            text-align: justify;
+        }
+        /* 모든 출력(화면·프린터) 공통: 로고 워터마크. 기본은 금융정보 종합분석 보고서. */
+        .report-wrap { position: relative; min-height: 100vh; }
+        .report-wrap::after {
+            content: '';
+            position: fixed;
+            top: 56px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('/img/023_logo.png') center center / contain no-repeat;
+            opacity: 0.05;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .report-wrap > * { position: relative; z-index: 1; }
+        @media print {
+            .report-wrap::after {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                height: auto;
+                background: url('/img/023_logo.png') center center / contain no-repeat;
+                opacity: 0.05;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+        .applicant-values { font-size: 9pt; color: #333; text-align: right; line-height: 1.35; }
+        .section-opinion .opinion-title-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 6px; }
+        .section-opinion .opinion-title-row .applicant-values { flex-shrink: 0; }
+        @media screen and (max-width: 768px) {
+            body { padding: 6px; }
+            .header { flex-wrap: wrap; gap: 6px; }
+            .header .date, .header .bank-info { font-size: 8pt; }
+            .header h1 { font-size: 12pt; }
+            .summary-item { min-width: 80px; }
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 2px solid #333;
+            margin-bottom: 12px;
+        }
+        .header .header-title-wrap { flex: 1; }
+        .header h1 { font-size: 16pt; margin: 0; text-align: center; }
+        .header .date { font-size: 9pt; color: #666; }
+        .header-right { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; font-size: 9pt; color: #333; text-align: right; }
+        .header .bank-info { margin-bottom: 2px; }
+        .header .applicant-one-line { font-size: 9pt; color: #333; }
+
+        .section { margin-bottom: 14px; }
+        .section-title {
+            font-size: 11pt;
+            font-weight: bold;
+            background: transparent;
+            padding: 4px 8px;
+            margin-bottom: 4px;
+            border-left: 4px solid #1976d2;
+        }
+
+        .summary-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: stretch;
+            gap: 8px;
+            margin-bottom: 10px;
+            font-size: 9pt;
+        }
+        .summary-item {
+            flex: 1;
+            min-width: 120px;
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.5);
+        }
+        .summary-item.withdraw { background: rgba(255, 245, 245, 0.5); border-color: #e0c0c0; }
+        .summary-item .label { display: block; font-size: 8pt; color: #666; margin-bottom: 2px; text-align: left; }
+        .summary-item .value { font-weight: bold; text-align: right !important; display: block; }
+        .summary-item .value.col-withdraw { color: #c00; }
+
+        table { width: 100%; border-collapse: collapse; font-size: 9pt; margin-bottom: 8px; }
+        table th, table td { padding: 4px 6px; border: 1px solid #ddd; }
+        table th { background: rgba(245, 245, 245, 0.6); font-weight: bold; }
+        table tr:nth-child(even) { background: rgba(249, 249, 249, 0.5); }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .col-deposit { color: #0000FF; }
+        .col-withdraw { color: #FF0000; }
+
+        /* 위험도 원그래프: 우측 정렬, 범례는 원그래프 높이에 맞춰 균등 배치 */
+        .risk-pie-section { display: flex; align-items: stretch; gap: 12px; margin: 10px 0; flex-wrap: nowrap; justify-content: flex-end; }
+        .risk-pie-svg-wrap { flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+        .risk-pie-svg-wrap svg { width: 180px; height: 180px; }
+        .risk-pie-legend { flex: 0 1 auto; min-width: 0; display: flex; flex-direction: column; justify-content: space-evenly; font-size: 9pt; min-height: 180px; }
+        .risk-pie-legend li { display: grid; grid-template-columns: 1fr 50px 90px; align-items: center; gap: 2px 10px; }
+        .risk-pie-legend li span:nth-child(1) { grid-column: 1; grid-row: 1; }
+        .risk-pie-legend li span:nth-child(2) { grid-column: 1; grid-row: 1; margin-left: 14px; }
+        .risk-pie-legend li span:nth-child(3) { grid-column: 2; grid-row: 1; text-align: right; }
+        .risk-pie-legend li span:nth-child(4) { grid-column: 3; grid-row: 1; text-align: right; }
+        @media print {
+            .risk-pie-section { page-break-inside: avoid; }
+            .risk-pie-svg-wrap svg { width: 140px; height: 140px; }
+            .risk-pie-legend { min-height: 140px; }
+        }
+
+        /* 금융정보 검토 종합의견: 구분선·제목 제거, 간격 축소, 배경 투명해 배경 이미지 비침 */
+        .opinion-box {
+            padding: 8px 12px;
+            margin-top: 4px;
+            background: rgba(250, 250, 250, 0.5);
+        }
+        @media print {
+            .opinion-box { border: none; }
+            .opinion-box .opinion-print-hide { display: none !important; }
+        }
+        .opinion-box h2 { margin: 0 0 10px 0; padding-bottom: 6px; border-bottom: 2px solid #333; font-size: 12pt; }
+        .opinion-box h3 { margin: 12px 0 4px 0; font-size: 11pt; color: #1565c0; }
+        .opinion-box p, .opinion-box li { line-height: 1.6; color: #333; margin-bottom: 6px; font-size: 10pt; text-align: justify; }
+        .opinion-box ul { margin-left: 18px; margin-bottom: 8px; }
+
+        .section-opinion { margin-top: 6px; margin-bottom: 10px; }
+        .opinion-print-title { font-size: 16pt; font-weight: 800; color: #000; margin-bottom: 10px; letter-spacing: -0.5px; }
+        /* 2페이지: 위험도 종합의견 상단 공식 행 — 공식 우측정렬, 진한 빨간색, 공식 뒤 여백 최소화 */
+        .risk-opinion-formula-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+        .risk-formula-image-wrap { background: rgba(255, 255, 255, 0.6); color: #8B0000 !important; padding: 12px 0 12px 20px; width: fit-content; max-width: 100%; margin-left: auto; margin-right: 0; text-align: right; }
+        .risk-formula-image-wrap .risk-formula { color: #8B0000 !important; }
+        /* 2페이지: 섹션 헤더 행 (목차 역할) */
+        .opinion-print-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            font-size: 9pt;
+            color: #444;
+            margin-bottom: 10px;
+            padding: 6px 0;
+            border-bottom: 2px solid #333;
+            line-height: 1.5;
+        }
+        .opinion-print-header span { white-space: nowrap; }
+        .opinion-print-header span + span { margin-left: 0.75em; }
+        @media print {
+            .opinion-section { margin-bottom: 1em; }
+            .opinion-section h3 { display: inline; font-weight: bold; margin: 0; font-size: 10.5pt; }
+            .opinion-section h3 + p { display: inline; margin: 0 0 0 6px; }
+            .opinion-section p + p { display: block; margin-top: 6px; margin-bottom: 6px; }
+        }
+        /* 금융정보 위험도 종합의견(2페이지) 인쇄용 — R값 우측정렬, 진한 빨간색 */
+        .risk-report-r-value { text-align: right; color: #8B0000 !important; font-weight: bold; }
+        .risk-formula-block { margin: 8px 0; padding: 6px 0; }
+        .risk-formula { font-size: 13pt; font-weight: bold; }
+        .risk-formula sub, .risk-formula sup { font-size: 8pt; }
+        .risk-var-table th, .risk-grade-table th { background: rgba(240, 240, 240, 0.6) !important; }
+        .risk-process-title { font-size: 10.5pt; font-weight: bold; margin: 10px 0 4px 0; padding-bottom: 4px; }
+        .risk-step { line-height: 1.5; margin-bottom: 6px; color: #333; text-align: justify; }
+    </style>
+</head>
+<body>
+    <script>
+        window.addEventListener('load', function() { setTimeout(function() { window.print(); }, 400); });
+    </script>
+    <div class="report-wrap">
+    <div class="header">
+        <div class="date">출력일: {{ report_date }}</div>
+        <div class="header-title-wrap">
+            <h1>금융정보 종합분석 보고서</h1>
+        </div>
+        <div class="header-right">
+            <div class="bank-info">금융사: {{ bank_filter }}</div>
+            {% if applicant_name or contact or email %}<div class="applicant-one-line">{{ applicant_name|default('') }}{% if contact %}{% if applicant_name %} / {% endif %}{{ contact }}{% endif %}{% if email %}{% if applicant_name or contact %} / {% endif %}{{ email }}{% endif %}</div>{% endif %}
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="summary-row">
+            <div class="summary-item">
+                <span class="label">은행거래</span>
+                <span class="value">{{ bank_count|default(0)|int }}건</span>
+            </div>
+            <div class="summary-item withdraw">
+                <span class="label">은행출금</span>
+                <span class="value col-withdraw">{{ "{:,}".format((bank_withdraw|default(0))|int) }}원</span>
+            </div>
+            <div class="summary-item">
+                <span class="label">신용카드</span>
+                <span class="value">{{ card_count|default(0)|int }}건</span>
+            </div>
+            <div class="summary-item withdraw">
+                <span class="label">신용출금</span>
+                <span class="value col-withdraw">{{ "{:,}".format((card_withdraw|default(0))|int) }}원</span>
+            </div>
+            <div class="summary-item withdraw">
+                <span class="label">출금합계</span>
+                <span class="value col-withdraw">{{ "{:,}".format((total_withdraw|default(0))|int) }}원</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="section section-opinion">
+        <div class="opinion-title-row">
+            <div class="opinion-print-title">금융정보 검토 종합의견</div>
+        </div>
+        <div class="opinion-print-header">
+            <span>1. 검토 범위</span>
+            <span>2. 은행거래 분석 결과</span>
+            <span>3. 신용카드 분석 결과</span>
+            <span>4. 병합 금융정보 검토 결과</span>
+            <span>5. 종합 의견</span>
+        </div>
+        <div class="opinion-box">
+            {% include '_opinion_content.html' %}
+        </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <div class="header">
+        <div class="date">출력일: {{ report_date }}</div>
+        <div class="header-title-wrap">
+            <h1>금융정보 종합분석 보고서</h1>
+        </div>
+        <div class="header-right">
+            <div class="bank-info">금융사: {{ bank_filter }}</div>
+            {% if applicant_name or contact or email %}<div class="applicant-one-line">{{ applicant_name|default('') }}{% if contact %}{% if applicant_name %} / {% endif %}{{ contact }}{% endif %}{% if email %}{% if applicant_name or contact %} / {% endif %}{{ email }}{% endif %}</div>{% endif %}
+        </div>
+    </div>
+
+    <div class="section section-opinion">
+        <div class="opinion-box">
+            {% include '_risk_opinion_content.html' %}
+        </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <div class="header">
+        <div class="date">출력일: {{ report_date }}</div>
+        <div class="header-title-wrap">
+            <h1>금융정보 종합분석 보고서</h1>
+        </div>
+        <div class="header-right">
+            <div class="bank-info">금융사: {{ bank_filter }}</div>
+            {% if applicant_name or contact or email %}<div class="applicant-one-line">{{ applicant_name|default('') }}{% if contact %}{% if applicant_name %} / {% endif %}{{ contact }}{% endif %}{% if email %}{% if applicant_name or contact %} / {% endif %}{{ email }}{% endif %}</div>{% endif %}
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">금융정보 위험도</div>
+        <table style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th style="width: 30%; text-align:center;">위험도분류</th>
+                        <th style="width: 12%; text-align:center;">위험도</th>
+                        <th style="width: 12%; text-align:center;">건수</th>
+                        <th style="width: 22%; text-align:center;">입금액</th>
+                        <th style="width: 24%; text-align:center;">출금액</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in risk_classification_rows %}
+                    <tr>
+                        <td style="overflow: hidden; text-overflow: ellipsis; max-width: 120px;" title="{{ r.classification }}">{{ r.classification }}</td>
+                        <td class="text-center">{% if r.risk is not none %}{{ "%.1f"|format(r.risk|float) }}{% endif %}</td>
+                        <td class="text-right">{{ r.count|default(0)|int }}</td>
+                        <td class="text-right col-deposit">{{ "{:,}".format((r.deposit|default(0))|int) }}</td>
+                        <td class="text-right col-withdraw">{{ "{:,}".format((r.withdraw|default(0))|int) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr style="font-weight: bold; background: rgba(240, 240, 240, 0.6);">
+                        <td>합계</td>
+                        <td></td>
+                        <td class="text-right">{{ total_count|default(0)|int }}</td>
+                        <td class="text-right col-deposit">{{ "{:,}".format((total_deposit|default(0))|int) }}</td>
+                        <td class="text-right col-withdraw">{{ "{:,}".format((total_withdraw|default(0))|int) }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+    </div>
+
+    <div class="section">
+        <div class="section-title">금융정보 위험도 세부내역</div>
+        <table style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th style="width: 14%; text-align:center;">금융사</th>
+                        <th style="width: 12%; text-align:center;">거래일</th>
+                        <th style="width: 26%; text-align:center;">기타거래</th>
+                        <th style="width: 18%; text-align:center;">위험도</th>
+                        <th style="width: 18%; text-align:center;">출금액</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in risk_detail_rows %}
+                    <tr>
+                        <td style="overflow: hidden; text-overflow: ellipsis; max-width: 80px;" title="{{ row.금융사 }}">{{ row.금융사 }}</td>
+                        <td class="text-center">{% set d = row.거래일|string %}{% if d|length >= 8 %}{{ d[-8:-6] }}/{{ d[-6:-4] }}/{{ d[-4:] }}{% else %}{{ d }}{% endif %}</td>
+                        <td style="overflow: hidden; text-overflow: ellipsis; max-width: 140px; white-space: nowrap;" title="{{ row.기타거래 }}">{{ row.기타거래 }}</td>
+                        <td class="text-center">{{ row.위험도분류_display|default('') }}</td>
+                        <td class="text-right col-withdraw">{{ "{:,}".format((row.출금액|default(0))|int) }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% if risk_detail_total_count|default(0) > risk_detail_rows|length %}
+                    <tr style="background: rgba(245, 245, 245, 0.5);">
+                        <td colspan="5" class="text-center">기타 {{ (risk_detail_total_count|default(0)) - (risk_detail_rows|length) }}행</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+                <tfoot>
+                    <tr style="font-weight: bold; background: rgba(240, 240, 240, 0.6);">
+                        <td>합계</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td class="text-right col-withdraw">{{ "{:,}".format((risk_detail_withdraw_sum|default(0))|int) }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+    </div>
+
+    <div class="section">
+        <div class="section-title">금융정보 위험도 원그래프 (출금액 비중)</div>
+        {% if risk_pie_slices %}
+        <div class="risk-pie-section">
+            <div class="risk-pie-svg-wrap">
+                <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    {% for slice in risk_pie_slices %}
+                    <path fill="{{ slice.color }}" d="{{ slice.path_d }}"/>
+                    {% endfor %}
+                    <circle cx="100" cy="100" r="45" fill="#fff"/>
+                </svg>
+            </div>
+            <ul class="risk-pie-legend" style="list-style:none;margin:0;padding:0;">
+                {% for slice in risk_pie_slices %}
+                <li><span style="width:8px;height:8px;border-radius:50%;background:{{ slice.color }};flex-shrink:0;"></span><span>{{ slice.label }}</span><span>{{ slice.pct }}%</span><span class="col-withdraw">{{ "{:,}".format((slice.value|default(0))|int) }}</span></li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% else %}
+        <p style="color:#666;">출금액 데이터 없음</p>
+        {% endif %}
+    </div>
+    </div><!-- .report-wrap -->
+
+    <div class="page-break"></div>
+    <div class="report-wrap somyeong-one-page" style="page-break-inside: avoid; display: flex; flex-direction: column; min-height: 0;">
+        <div class="header" style="padding: 4px 0; margin-bottom: 12px;">
+            <div class="date"></div>
+            <h1 style="font-size: 14pt;">소명서 (샘플 양식)</h1>
+            <div class="header-right"></div>
+        </div>
+        <div class="section somyeong-body" style="margin-top: 0; font-size: 9pt; display: flex; flex-direction: column; flex: 1; min-height: 60vh;">
+            <table class="somyeong-meta" style="width: 100%; border-collapse: collapse; border: none; font-size: 9pt; margin-bottom: 20px; table-layout: fixed;">
+                <tr>
+                    <td style="padding: 10px 6px 10px 0; width: 25%; border: none; border-bottom: 1px solid #333; vertical-align: top;">성명</td><td style="padding: 10px 6px; width: 25%; border: none; border-bottom: 1px solid #ccc; min-height: 28px;"></td>
+                    <td style="padding: 10px 6px 10px 0; width: 25%; border: none; border-bottom: 1px solid #333; vertical-align: top;">연락처</td><td style="padding: 10px 6px; width: 25%; border: none; border-bottom: 1px solid #ccc; min-height: 28px;"></td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px 6px 10px 0; border: none; border-bottom: 1px solid #333; vertical-align: top;">작성일</td><td style="padding: 10px 6px; border: none; border-bottom: 1px solid #ccc; min-height: 28px;"></td>
+                    <td style="padding: 10px 6px 10px 0; border: none; border-bottom: 1px solid #333; vertical-align: top;">출력일</td><td style="padding: 10px 6px; border: none; border-bottom: 1px solid #ccc; min-height: 28px;"></td>
+                </tr>
+            </table>
+            <p class="somyeong-heading" style="font-weight: bold; margin-bottom: 6px; font-size: 12px;">1. 소명 대상</p>
+            <p style="margin-left: 12px; margin-bottom: 24px;">(금융정보 종합분석 보고서 상 위험도 분류·거래 항목 중 소명이 필요한 대상만 간략히 기재)</p>
+            <p class="somyeong-heading" style="font-weight: bold; margin-bottom: 6px; font-size: 12px;">2. 소명 내용</p>
+            <p class="somyeong-content-box" style="margin-left: 12px; margin-bottom: 24px; flex: 1; min-height: 140px; border: 1px solid #ddd; padding: 12px;">거래 경위, 용도, 관계 등을 구체적으로 작성해 주세요.</p>
+            <p class="somyeong-heading" style="font-weight: bold; margin-bottom: 6px; font-size: 12px;">3. 첨부 자료 (해당 시)</p>
+            <p style="margin-left: 12px; margin-bottom: 24px;"></p>
+            <div class="somyeong-sign" style="margin-top: auto; padding-top: 16px; text-align: right;">
+                <p style="margin: 0;">위 내용과 같음을 확인합니다.</p>
+                <p style="margin: 4px 0 0 0;">성명: ________________ (인)</p>
+            </div>
+        </div>
+    </div>
+
+    {% include '_fullscreen_persist.html' %}
+</body>
+</html>

@@ -1,0 +1,33 @@
+{# 위험도 종합의견 2페이지: 공식 행 + 섹션 헤더 + 변수 설명 테이블 + 리포트 포함 #}
+<div class="risk-opinion-formula-row">
+    <div class="opinion-print-title" style="margin:0;">금융정보 위험도 종합의견</div>
+    <div class="risk-formula-image-wrap">
+        <span class="risk-formula">R = Σ<sub>i=1</sub><sup>n</sup> (w<sub>i</sub> × log<sub>10</sub>(1 + f<sub>i</sub>×a<sub>i</sub>))</span>
+    </div>
+</div>
+<div class="opinion-print-header">
+    <span><span>1. 위험도 분석 결과</span><span>2. 위험 등급 판정</span><span>3. 항목별 소명 전략 (상위 항목)</span></span>
+    {% if review_start_date or review_end_date %}<span>검토기간: {{ review_start_date|default('') }} ~ {{ review_end_date|default('') }}</span>{% endif %}
+</div>
+<table class="risk-var-table" style="width:100%; border-collapse:collapse; font-size:9pt; margin-bottom:8px;">
+    <thead>
+        <tr>
+            <th style="border:1px solid #ddd; padding:4px; background:#f0f0f0;">변수</th>
+            <th style="border:1px solid #ddd; padding:4px; background:#f0f0f0;">항목</th>
+            <th style="border:1px solid #ddd; padding:4px; background:#f0f0f0;">설명</th>
+            <th style="border:1px solid #ddd; padding:4px; background:#f0f0f0;">예시</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><td style="border:1px solid #ddd; padding:4px;">f<sub>i</sub></td><td style="border:1px solid #ddd; padding:4px;">지출 빈도</td><td style="border:1px solid #ddd; padding:4px;">특정 기간 내 해당 업종/항목 결제 횟수</td><td style="border:1px solid #ddd; padding:4px;">10회, 50회 등</td></tr>
+        <tr><td style="border:1px solid #ddd; padding:4px;">a<sub>i</sub></td><td style="border:1px solid #ddd; padding:4px;">지출 금액</td><td style="border:1px solid #ddd; padding:4px;">해당 건의 결제 금액 (또는 평균 금액)</td><td style="border:1px solid #ddd; padding:4px;">50,000원 등</td></tr>
+        <tr><td style="border:1px solid #ddd; padding:4px;">w<sub>i</sub></td><td style="border:1px solid #ddd; padding:4px;">법적 가중치</td><td style="border:1px solid #ddd; padding:4px;">업종별 위험도에 따른 상수 (1.0 기준)</td><td style="border:1px solid #ddd; padding:4px;">자료소명지표(1.0) 기준</td></tr>
+        <tr><td style="border:1px solid #ddd; padding:4px;">R</td><td style="border:1px solid #ddd; padding:4px;">위험도 점수</td><td style="border:1px solid #ddd; padding:4px;">최종 산출된 위험도 지수</td><td style="border:1px solid #ddd; padding:4px;">점수가 높을수록 고위험</td></tr>
+    </tbody>
+</table>
+
+{% if risk_report %}
+<div class="risk-report-prompt-block" style="margin-top:8px;">
+    {% include '_risk_report_content.html' %}
+</div>
+{% endif %}

@@ -1,0 +1,53 @@
+---
+description: 공동 폴더 data(지속JSON)·temp(임시)·readme(문서). .source=클라이언트 업로드
+alwaysApply: true
+---
+
+# 데이터·카테고리 구분 (공동 폴더)
+
+## 루트 공동 폴더 (path_config.py)
+
+- **data/** — 지속 가능한 JSON (은행·신용카드·금융정보 공통)
+  - **category_table.json** (data 폴더. `lib.path_config.get_category_table_json_path()`), **bank_after.json**, **card_after.json**, **cash_after.json**. 업종분류_table.xlsx는 `readme/backup_업종분류_to_xlsx.py`로 data에 내보내기.
+- **temp/** — 임시 파일·임시 JSON 전부 (예: _myrisk_json_temp.json, .cat_tbl_*.json, .data_*.json, run_full_flow.log). `.gitignore`에 `temp/` 포함.
+- **export/** — 분석·내보내기 결과 JSON/HTML (앱 미참조). 루트에 흩어진 *_summary, *_category, *_by_* 등은 `python scripts/json_정리.py` 로 한 번에 data/temp/export 로 분류 가능.
+- **readme/** — 문서(txt, md, 유틸 스크립트) 모음. 상세 목록은 readme/README_문서목록.md 참고.
+
+## .source 폴더 (클라이언트)
+
+- **.source/** 아래의 **xls, xlsx**는 **클라이언트에서 사용**하는 원본/업로드 데이터입니다.
+- **Git/GitHub에는 포함하지 않습니다.** (`.gitignore`에 `.source/` 포함)
+- **category_table.xlsx**: **MyRisk/.source/category_table.xlsx** — 카테고리 테이블 엑셀 원본. 내보내기·복구·xlsx→json 변환 시 이 경로 사용. `lib.path_config.get_category_table_xlsx_path()`.
+## 서버에서 사용하는 경로
+
+- **지속 JSON**: **MyRisk/data/** (category_table.json, bank_after, card_after, cash_after). category_table.json은 data 폴더에서만 관리.
+- **원본 업로드용** xls/xlsx 폴더:
+  - 은행거래: **.source/Bank**
+  - 신용카드: **.source/Card**
+  - (금융정보는 bank_after·card_after만 사용. .source/Cash 미사용)
+
+## category_table.json 읽기/쓰기 통합 (category_table_io.py)
+
+- **MyRisk/category_table_io.py**에서 읽기/쓰기 기능을 일관되게 제공합니다.
+- `load_category_table(path)`: 안전한 읽기 (JSON, 손상 시 빈 DataFrame 반환)
+- `create_empty_category_table(path)`: 빈 [분류, 키워드, 카테고리] 생성·저장 (기존 있으면 보존)
+- `normalize_category_df(df)`: 구분 제거, 표준 컬럼 보장, fillna
+- `CATEGORY_TABLE_COLUMNS`, `safe_write_category_table`
+- process_bank_data, process_card_data, process_cash_data, bank_app, card_app, cash_app는 모두 이 모듈을 사용합니다.
+
+## category_table.json 생성·읽기 순서
+
+- **category_table.json는 bank_before, card_before, cash_before 파일 생성·읽기 후에만** 생성·읽기를 시도합니다.
+- 앱 로드 시점에 빈 category_table를 생성하지 않습니다. 각 모듈(ensure_all_bank_files, ensure_all_cash_files, card 전처리)에서 before 파일을 먼저 확보한 뒤 category_table를 생성·갱신합니다.
+
+## 카테고리 파일 (상세)
+
+- **구분(은행거래/신용카드) 컬럼은 사용하지 않습니다.** 은행·신용카드·금융정보가 동일한 카테고리 테이블(분류·키워드·카테고리)을 공유합니다.
+- **거래방법·거래지점 분류는 사용하지 않습니다.** 분류는 전처리, 후처리, 계정과목 등만 사용합니다.
+- `bank_category.xlsx`, `card_category.xlsx`, `cash_category.xlsx`는 사용하지 않습니다.
+
+## before → after 생성 시
+
+- **before에서 after 파일을 만들 때는 반드시 category의 전처리/후처리를 수행**합니다.
+- MyBank·MyCash: `classify_and_save()`에서 `load_category_table()`(category_table.json 은행거래/금융정보) 로드 후 `classify_2_chasu` 등으로 전처리·후처리 적용.
+- MyCard: card_after 생성 시 category_table.json(신용카드) 규칙으로 가맹점명 기반 카테고리 적용.

@@ -1,0 +1,42 @@
+---
+description: Git 커밋 메시지 한글 깨짐 방지
+alwaysApply: true
+---
+
+# Git 커밋 메시지: 한글/영문 모두 허용
+
+## 적용된 설정
+
+- Git 전역: `i18n.commitEncoding=utf-8`, `i18n.logOutputEncoding=utf-8`, `core.quotepath=false`
+- 터미널: Cursor·PowerShell UTF-8 설정 완료
+- 위 설정이 되어 있으면 **한글·영문 커밋 메시지 모두** 사용 가능합니다.
+
+## 규칙
+
+- **한글** 예: `feat: 은행 잔액 그래프 절대값 표시`
+- **영문** 예: `feat(bank): show balance graph as absolute value`
+- CI·외부 도구에서 깨짐이 보이면 해당 환경 인코딩을 확인하거나, 영문 메시지를 사용하세요.
+
+## 배포/에이전트 진행 시 한글 깨짐 방지 (필수)
+
+- **원인**: Cursor가 터미널에 넘기는 `git commit -m "한글..."` 문자열이 CP949 등으로 전달되면 커밋 메시지가 깨집니다.
+- **방법**: 한글 커밋 메시지를 쓸 때는 **UTF-8로 저장된 파일**을 사용해 커밋합니다.
+  1. 메시지를 UTF-8 파일로 저장 (예: `commit_msg_utf8.txt`)
+  2. `git commit -F commit_msg_utf8.txt` 또는 `git commit --amend -F commit_msg_utf8.txt`
+- **에이전트**: 한글 커밋 메시지가 필요할 때는 반드시 `-F 파일` 방식을 사용하고, 파일은 UTF-8로 작성합니다. `-m "한글..."` 직접 전달은 사용하지 않습니다.
+- **초기 설정**: 최초 1회 `setup-git-utf8.ps1` 실행 또는 아래 명령으로 Git 인코딩 설정.
+  ```powershell
+  git config --global i18n.commitEncoding utf-8
+  git config --global i18n.logOutputEncoding utf-8
+  git config core.quotepath false
+  ```
+
+## GitHub에서 한글이 깨져 보일 때
+
+- **원인**: 과거에 `git commit -m "한글..."` 로 커밋했거나, 터미널이 CP949일 때 커밋하면 메시지가 저장소에 잘못된 인코딩으로 저장됩니다. GitHub는 저장된 바이트를 그대로 표시하므로 `?꾩껜`, `諛섑솚` 같은 깨진 문자가 보입니다.
+- **이미 푸시된 커밋**: 수정하려면 히스토리 변경(rebase 등)이 필요해 보통 하지 않습니다. **앞으로만** `-F` + UTF-8 파일로 커밋하면 새 커밋부터는 한글이 정상 표시됩니다.
+- **확인**: `git log -1 --format=%B` 로 최근 커밋 메시지가 한글로 정상인지 확인. GitHub 저장소 페이지의 파일/폴더 옆 "마지막 커밋 메시지"도 같은 인코딩으로 표시됩니다.
+
+## 참고
+
+- 상세: `Git_호스팅_가이드.md` 2장, `Railway_가입_배포_도메인.md` 5장.
