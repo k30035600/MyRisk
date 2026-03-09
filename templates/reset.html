@@ -7,65 +7,88 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { overflow-x: hidden; }
-        body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 6px; overflow-y: auto; overflow-x: hidden; }
-        .page-wrap { display: flex; flex-direction: column; width: 100%; min-height: calc(100vh - 12px); }
-        .panels-row { display: flex; flex: 1; width: 100%; }
-        .left-panel { width: 50%; min-width: 0; padding: 12px; background: rgba(255,255,255,0.95); border-radius: 8px; margin: 0 6px 0 0; box-shadow: 0 4px 16px rgba(0,0,0,0.08); font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; text-align: left; display: flex; flex-direction: column; }
-        .bottom-actions { display: flex; gap: 12px; padding-top: 8px; width: 100%; }
-        .bottom-actions .btn { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 2.5em; padding: 14px 24px; line-height: 1.2; box-sizing: border-box; border-radius: 8px; text-decoration: none; font-size: 1em; font-weight: bold; font-family: inherit; }
-        .left-panel .panel-header { font-size: 1em; font-weight: bold; color: #333; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid #e0e0e0; }
+        body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background: #FFFFFF; color: #8E8E8E; min-height: 100vh; padding: 0; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; }
+
+        .top-nav { background: #2C3E50; padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; }
+        .top-nav .brand { font-size: 1.05em; font-weight: bold; color: #fff; }
+        .top-nav .brand span { color: #27AE60; }
+        .top-nav .nav-links { display: flex; gap: 18px; }
+        .top-nav .nav-links a { color: rgba(255,255,255,0.75); text-decoration: none; font-size: 0.88em; transition: color 0.2s; }
+        .top-nav .nav-links a:hover { color: #fff; }
+
+        .page-wrap { display: flex; flex-direction: column; width: 100%; flex: 1; max-width: 1400px; margin: 0 auto; padding: 16px 24px 12px; }
+        .panels-row { display: flex; flex: 1; width: 100%; gap: 16px; }
+
+        .left-panel { width: 50%; min-width: 0; padding: 20px; background: #FAFBFC; border-radius: 10px; border: 1px solid #EAEDF0; font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; text-align: left; display: flex; flex-direction: column; }
+        .left-panel .panel-header { font-size: 1.05em; font-weight: 700; color: #2C3E50; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px solid #A9DFBF; }
         .left-panel .form-line { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
-        .left-panel .form-line label { font-size: 0.85em; color: #333; font-weight: bold; white-space: nowrap; }
+        .left-panel .form-line label { font-size: 0.85em; color: #2C3E50; font-weight: 600; white-space: nowrap; }
         .left-panel .form-line .form-inline { display: flex; align-items: center; gap: 6px; }
         .left-panel .form-line.form-line-simya { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
         .left-panel .form-line .form-inline.simya { justify-content: center; text-align: center; }
-        .left-panel input[type="text"] { padding: 6px 8px; font-size: 0.9em; border: 1px solid #ddd; border-radius: 4px; width: 120px; }
+        .left-panel input[type="text"], .left-panel input[type="email"] { padding: 7px 10px; font-size: 0.9em; border: 1px solid #D5DAE0; border-radius: 6px; width: 120px; transition: border-color 0.2s; background: #fff; }
+        .left-panel input[type="text"]:focus, .left-panel input[type="email"]:focus { outline: none; border-color: #27AE60; box-shadow: 0 0 0 2px rgba(39,174,96,0.12); }
         .left-panel .form-inline input { width: 90px; }
         .left-panel .form-line-applicant { display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; text-align: left; align-items: flex-start; }
         .left-panel .form-line-applicant .form-row { display: flex; align-items: center; justify-content: flex-start; gap: 10px; text-align: left; width: 100%; }
-        .left-panel .form-line-applicant .form-row label { font-size: 0.85em; color: #333; font-weight: bold; white-space: nowrap; min-width: 4.5em; text-align: left; }
-        .left-panel .applicant-input { width: 100%; max-width: 480px; min-width: 320px; height: 36px; padding: 8px 12px; font-size: 0.95em; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; text-align: left; }
+        .left-panel .form-line-applicant .form-row label { font-size: 0.85em; color: #2C3E50; font-weight: 600; white-space: nowrap; min-width: 4.5em; text-align: left; }
+        .left-panel .applicant-input { width: 100%; max-width: 480px; min-width: 320px; height: 36px; padding: 8px 12px; font-size: 0.95em; border: 1px solid #D5DAE0; border-radius: 6px; box-sizing: border-box; text-align: left; background: #fff; }
+        .left-panel .applicant-input:focus { outline: none; border-color: #27AE60; box-shadow: 0 0 0 2px rgba(39,174,96,0.12); }
+
         .right-panel { width: 50%; min-width: 0; display: flex; flex-direction: column; }
-        .container { background: white; border-radius: 8px; box-shadow: 0 6px 24px rgba(0,0,0,0.12); padding: 6px; width: 100%; max-width: 100%; overflow-x: auto; font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; display: flex; flex-direction: column; flex: 1; min-height: 0; }
-        h1 { font-size: 0.95em; color: #333; margin-bottom: 2px; line-height: 1.2; }
+        .container { background: #fff; border-radius: 10px; border: 1px solid #EAEDF0; padding: 8px; width: 100%; max-width: 100%; overflow-x: auto; font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; display: flex; flex-direction: column; flex: 1; min-height: 0; }
+
+        h1 { font-size: 0.95em; color: #2C3E50; margin-bottom: 2px; line-height: 1.2; font-weight: 700; }
+
         .reset-table { width: 100%; max-width: 100%; border-collapse: collapse; font-size: 0.9em; line-height: 1; table-layout: fixed; font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; }
         .reset-table col { width: 12.5%; }
         .reset-table col.col-first { width: 6.25%; }
         .reset-table col.col-select-col { width: 6.25%; }
         .reset-table tr { line-height: 1; }
-        .reset-table th, .reset-table td { border: 1px solid #ddd; padding: 4px 6px; text-align: center; vertical-align: middle; overflow: hidden; text-overflow: ellipsis; line-height: 1.4; }
-        .reset-table th { background: #f5f5f5; font-weight: bold; color: #333; }
+        .reset-table th, .reset-table td { border: 1px solid #E8ECF0; padding: 5px 7px; text-align: center; vertical-align: middle; overflow: hidden; text-overflow: ellipsis; line-height: 1.4; }
+        .reset-table th { background: #2C3E50; font-weight: 600; color: #FFFFFF; }
+        .reset-table tbody tr:nth-child(even) { background: #F8FAFB; }
+        .reset-table tbody tr:hover { background: #EBF5F0; }
         .reset-table .col-task { text-align: left; }
-        .reset-table .col-select input[type="checkbox"] { margin: 0; transform: scale(0.8); vertical-align: middle; }
-        .reset-table input[type="radio"] { margin: 0; vertical-align: middle; }
-        .reset-table input[type="radio"]:disabled { opacity: 0.5; cursor: not-allowed; }
-        .reset-table input[type="checkbox"]:disabled { opacity: 0.5; cursor: not-allowed; }
+        .reset-table .col-select input[type="checkbox"] { margin: 0; transform: scale(0.85); vertical-align: middle; accent-color: #27AE60; }
+        .reset-table input[type="radio"] { margin: 0; vertical-align: middle; accent-color: #27AE60; }
+        .reset-table input[type="radio"]:disabled { opacity: 0.4; cursor: not-allowed; }
+        .reset-table input[type="checkbox"]:disabled { opacity: 0.4; cursor: not-allowed; }
         .reset-table button { margin: 0; padding: 4px 6px; line-height: 1.3; vertical-align: middle; }
-        .reset-table .col-size { font-variant-numeric: tabular-nums; text-align: right; }
+        .reset-table .col-size { font-variant-numeric: tabular-nums; text-align: right; color: #8E8E8E; }
         .reset-table thead th.col-size { text-align: center; }
-        .reset-table .title-cell { background: #f0f0f0; font-weight: bold; }
+        .reset-table .title-cell { background: #34495E; font-weight: 600; color: #fff; }
         .reset-table .vertical-text { writing-mode: vertical-lr; text-orientation: mixed; white-space: nowrap; display: inline-block; padding: 0; font-size: 1.25em; font-weight: bold; }
-        .btn-execute { padding: 8px 16px; font-size: 0.9em; cursor: pointer; background: #667eea; color: white; border: none; border-radius: 6px; font-family: inherit; width: 100%; line-height: 1.2; min-height: 34px; box-sizing: border-box; }
+        .reset-table td[style*="background:#f9f9f9"] { background: #F4F6F8 !important; color: #2C3E50; }
+        .reset-table td[style*="background:#f0f0f0"] { background: #EBF5F0 !important; color: #2C3E50; }
+
+        .btn-execute { padding: 8px 16px; font-size: 0.9em; cursor: pointer; background: #27AE60; color: #fff; border: none; border-radius: 6px; font-family: inherit; width: 100%; line-height: 1.2; min-height: 34px; box-sizing: border-box; transition: background 0.2s; }
+        .btn-execute:hover { background: #219A52; }
+        .btn-execute:disabled { background: #D5DAE0; color: #8E8E8E; cursor: not-allowed; }
         .reset-table input, .reset-table button { margin: 0; vertical-align: middle; line-height: 1.2; min-height: 0; }
-        .btn-execute:hover { background: #5568d3; }
+
         .reset-actions { margin-top: 4px; display: flex; gap: 6px; flex-wrap: wrap; justify-content: space-between; align-items: center; }
         .reset-actions .btn-end { margin-left: auto; }
         .reset-actions .btn { padding: 10px 20px; font-size: 1em; cursor: pointer; border: none; border-radius: 8px; font-family: inherit; text-decoration: none; display: inline-block; }
-        .btn-primary { background: #667eea; color: white; }
-        .btn-primary:hover { background: #5568d3; }
-        .btn-secondary { background: #e0e0e0; color: #333; }
-        .btn-secondary:hover { background: #d0d0d0; }
-        .btn-home { background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%); color: #fff; justify-content: flex-end; }
-        .btn-home:hover { filter: brightness(1.1); }
-        .btn-shutdown { background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%); color: #fff; justify-content: flex-start; }
-        .btn-shutdown:hover { filter: brightness(1.1); }
+        .btn-primary { background: #27AE60; color: white; }
+        .btn-primary:hover { background: #219A52; }
+        .btn-secondary { background: #fff; color: #2C3E50; border: 2px solid #2C3E50; }
+        .btn-secondary:hover { background: #2C3E50; color: #fff; }
+
+        .bottom-actions { display: flex; gap: 12px; padding-top: 12px; width: 100%; }
+        .bottom-actions .btn { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 2.5em; padding: 14px 24px; line-height: 1.2; box-sizing: border-box; border-radius: 8px; text-decoration: none; font-size: 1em; font-weight: bold; font-family: inherit; transition: background 0.2s, box-shadow 0.2s; }
+        .btn-home { background: #27AE60; color: #fff; }
+        .btn-home:hover { background: #219A52; box-shadow: 0 4px 12px rgba(39,174,96,0.2); }
+        .btn-shutdown { background: #fff; color: #2C3E50; border: 2px solid #2C3E50; }
+        .btn-shutdown:hover { background: #2C3E50; color: #fff; box-shadow: 0 4px 12px rgba(44,62,80,0.15); }
+
         @media (max-width: 1024px) {
             .panels-row { flex-direction: column; }
-            .left-panel, .right-panel { width: 100%; margin: 0 0 8px 0; }
+            .left-panel, .right-panel { width: 100%; }
         }
         @media (max-width: 768px) {
-            body { padding: 4px; }
-            .left-panel, .right-panel { padding: 8px; }
+            .page-wrap { padding: 8px 12px; }
+            .left-panel, .right-panel { padding: 12px; }
             .applicant-input { min-width: 0; max-width: 100%; }
             .reset-table { font-size: 0.75em; }
             .reset-table th, .reset-table td { padding: 3px 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 0; }
@@ -83,6 +106,13 @@
     </style>
 </head>
 <body>
+    <nav class="top-nav">
+        <div class="brand"><span>My</span>Risk</div>
+        <div class="nav-links">
+            <a href="/">홈</a>
+            <a href="/help">도움말</a>
+        </div>
+    </nav>
     <div class="page-wrap">
       <div class="panels-row">
         <div class="left-panel">
