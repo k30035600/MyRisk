@@ -13,7 +13,10 @@
         if (p && p.catch) p.catch(function() {});
     }
     try {
-        if (localStorage.getItem(KEY) === '1') {
+        var _v = localStorage.getItem(KEY);
+        var shouldFs = (_v === null) ? true : (_v === '1');
+        if (shouldFs) {
+            if (_v === null) localStorage.setItem(KEY, '1');
             document.addEventListener('click', function _h() {
                 document.removeEventListener('click', _h, true);
                 enterFs();
