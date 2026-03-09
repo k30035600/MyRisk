@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-데이터 JSON 읽기/쓰기 (DataFrame ↔ .json).
-- safe_write_data_json(path, df): DataFrame을 UTF-8 JSON으로 저장. 성공 시 True, 실패 시 False.
-- safe_read_data_json(path, default_empty=True): JSON 파일을 DataFrame으로 읽기. 없/손상 시 default_empty면 빈 DataFrame, 아니면 None.
+데이터 JSON 읽기·쓰기 (DataFrame ↔ .json).
+
+DataFrame을 UTF-8 JSON(records 형식)으로 저장·로드한다. datetime·numpy 타입은 JSON 호환으로 변환한다.
+
+주요 함수: safe_write_data_json, safe_read_data_json
 """
 import os
 import json

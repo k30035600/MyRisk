@@ -1,123 +1,51 @@
 # -*- coding: utf-8 -*-
 """
-은행거래 전처리·분류·저장 (process_bank_data.py)
+은행거래 전처리·분류·저장.
 
-[역할]
-- .source/Bank 엑셀 → 통합·전처리·계정과목 분류·후처리 → data/bank_after.json 저장.
-- bank_before는 중간 산출물로만 사용 가능; 앱에서는 bank_after만 노출.
-
-[주요 함수]
-- integrate_bank_transactions(): .source/Bank xls/xlsx 읽기·통합·전처리(category_table '전처리' 규칙). bank_before.json 저장 후 DataFrame 반환.
-- classify_and_save(input_df=None): input_df 없으면 bank_before 있으면 로드, 없으면 integrate로 df 확보 → 계정과목·후처리 적용 → bank_after.json 저장.
-
-[source 읽기·before/after 생성 조건] (카드 process_card_data와 동일)
-- before·after 모두 있음 → source 읽지 않음, 기존 JSON 사용.
-- before 없음 → source 읽기 → before·after 생성.
-- before만 있음(after 없음) → source 읽지 않음, before 파일에서 로드 후 after만 생성.
+.source/Bank 엑셀 → 통합·전처리·계정과목 분류·후처리 → data/bank_after.json 저장.
+bank_before는 중간 산출물로만 사용; 앱에서는 bank_after만 노출한다.
 """
-import pandas as pd
 import os
 import re
 import sys
-import time
 import traceback
 import unicodedata
-import zipfile
 from pathlib import Path
 
-if sys.platform == 'win32':
-    try:
-        import ctypes
-        kernel32 = ctypes.windll.kernel32
-        kernel32.SetConsoleOutputCP(65001)
-        kernel32.SetConsoleCP(65001)
-    except (OSError, AttributeError):
-        pass  # 콘솔 CP 설정 실패 시 무시
+import pandas as pd
 
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 _PROJECT_ROOT = os.environ.get('MYRISK_ROOT') or os.path.normpath(os.path.join(_SCRIPT_DIR, '..'))
-# category_table.json: data 폴더에서 관리 (lib.path_config.get_category_table_json_path와 동일 경로)
-CATEGORY_TABLE_FILE = str((Path(_PROJECT_ROOT) / 'data' / 'category_table.json').resolve()) if _PROJECT_ROOT else None
 if _PROJECT_ROOT and _PROJECT_ROOT not in sys.path:
     sys.path.insert(0, _PROJECT_ROOT)
-try:
-    from lib.shared_app_utils import is_bad_zip_error as _is_bad_zip_error, safe_str, clean_amount
-except ImportError:
-    def _is_bad_zip_error(e):
-        msg = str(e).lower()
-        return isinstance(e, zipfile.BadZipFile) or 'not a zip file' in msg or 'bad zip' in msg
-try:
-    from lib.excel_io import safe_write_excel
-except ImportError:
-    def safe_write_excel(df, filepath, max_retries=3):
-        df.to_excel(filepath, index=False, engine='openpyxl')
-        return True
-try:
-    from lib.category_table_defaults import get_default_rules
-except ImportError:
-    get_default_rules = None
-try:
-    from lib.category_table_io import (
-        safe_write_category_table,
-        load_category_table,
-        create_empty_category_table,
-        ensure_prepost_in_table,
-        normalize_category_df,
-        normalize_주식회사_for_match,
-        CATEGORY_TABLE_COLUMNS,
-        CATEGORY_TABLE_EXTENDED_COLUMNS,
-    )
-except ImportError:
-    import json as _json
-    def safe_write_category_table(path, df, extended=False):
-        path = path.replace('.xlsx', '.json') if path else path
-        if not path: return
-        cols = ['분류', '키워드', '카테고리', '위험도', '업종코드'] if extended else ['분류', '키워드', '카테고리']
-        for c in cols:
-            if c not in df.columns:
-                df = df.copy()
-                df[c] = ''
-        rec = df[cols].copy().fillna('').to_dict('records')
-        with open(path, 'w', encoding='utf-8') as f:
-            _json.dump(rec, f, ensure_ascii=False, indent=2)
-    def load_category_table(path, default_empty=True):
-        path = path.replace('.xlsx', '.json') if path else path
-        if not path or not os.path.exists(path): return pd.DataFrame(columns=['분류', '키워드', '카테고리']) if default_empty else None
-        with open(path, 'r', encoding='utf-8') as f:
-            data = _json.load(f)
-        return pd.DataFrame(data) if data else (pd.DataFrame(columns=['분류', '키워드', '카테고리']) if default_empty else None)
-    def create_empty_category_table(path):
-        path = path.replace('.xlsx', '.json') if path else path
-        if path:
-            with open(path, 'w', encoding='utf-8') as f:
-                _json.dump([], f, ensure_ascii=False)
-    def normalize_category_df(df, extended=False):
-        cols = ['분류', '키워드', '카테고리', '위험도', '업종코드'] if extended else ['분류', '키워드', '카테고리']
-        if df is None or df.empty: return pd.DataFrame(columns=cols)
-        df = df.fillna(''); df = df.drop(columns=['구분'], errors='ignore')
-        for c in cols: df[c] = df[c] if c in df.columns else ''
-        return df[cols].copy()
-    def ensure_prepost_in_table(path):
-        return load_category_table(path, default_empty=True)
-    CATEGORY_TABLE_COLUMNS = ['분류', '키워드', '카테고리']
-    def normalize_주식회사_for_match(text):
-        if text is None or (isinstance(text, str) and not str(text).strip()):
-            return '' if text is None else str(text).strip()
-        val = str(text).strip()
-        val = re.sub(r'[\s/]*주식회사[\s/]*', '(주)', val)
-        val = re.sub(r'[\s/]*㈜[\s/]*', '(주)', val)
-        val = re.sub(r'(\(주\)[\s/]*)+', '(주)', val)
-        return val
-try:
-    from lib.path_config import get_data_dir, get_bank_after_path, get_category_table_json_path, get_source_bank_dir
-    CATEGORY_TABLE_FILE = get_category_table_json_path()
-    SOURCE_BANK_DIR = get_source_bank_dir()
-    OUTPUT_FILE = get_bank_after_path()
-    BANK_BEFORE_FILE = os.path.join(get_data_dir(), 'bank_before.json')
-except ImportError:
-    SOURCE_BANK_DIR = os.path.join(_PROJECT_ROOT, '.source', 'Bank') if _PROJECT_ROOT else None
-    OUTPUT_FILE = os.path.join(_PROJECT_ROOT, 'data', 'bank_after.json') if _PROJECT_ROOT else os.path.join(_SCRIPT_DIR, 'bank_after.json')
-    BANK_BEFORE_FILE = os.path.join(_PROJECT_ROOT, 'data', 'bank_before.json') if _PROJECT_ROOT else os.path.join(_SCRIPT_DIR, 'bank_before.json')
+
+from lib.shared_app_utils import (
+    is_bad_zip_error as _is_bad_zip_error,
+    safe_str,
+    clean_amount,
+    setup_win32_utf8,
+)
+from lib.excel_io import safe_write_excel
+from lib.category_table_defaults import get_default_rules
+from lib.category_table_io import (
+    safe_write_category_table,
+    load_category_table,
+    create_empty_category_table,
+    ensure_prepost_in_table,
+    normalize_category_df,
+    normalize_주식회사_for_match,
+    CATEGORY_TABLE_COLUMNS,
+    CATEGORY_TABLE_EXTENDED_COLUMNS,
+)
+from lib.path_config import get_data_dir, get_bank_after_path, get_category_table_json_path, get_source_bank_dir
+from lib.data_json_io import safe_write_data_json, safe_read_data_json
+
+setup_win32_utf8()
+
+CATEGORY_TABLE_FILE = get_category_table_json_path()
+SOURCE_BANK_DIR = get_source_bank_dir()
+OUTPUT_FILE = get_bank_after_path()
+BANK_BEFORE_FILE = os.path.join(get_data_dir(), 'bank_before.json')
 
 
 def _safe_print(*args, **kwargs):
@@ -134,11 +62,7 @@ def _safe_read_data_file(path, default_empty=True):
     if not path or not os.path.exists(path) or os.path.getsize(path) == 0:
         return pd.DataFrame() if default_empty else None
     if str(path).lower().endswith('.json'):
-        try:
-            from lib.data_json_io import safe_read_data_json
-            return safe_read_data_json(path, default_empty=default_empty)
-        except ImportError:
-            return pd.DataFrame() if default_empty else None
+        return safe_read_data_json(path, default_empty=default_empty)
     try:
         return pd.read_excel(path, engine='openpyxl')
     except Exception as e:
@@ -555,20 +479,8 @@ def integrate_bank_transactions(output_file=None):
     if not all_data:
         combined_df = pd.DataFrame(columns=['거래일', '거래시간', '은행명', '계좌번호', '입금액', '출금액',
                                            '사업자번호', '폐업', '취소', '적요', '내용', '송금메모', '거래점'])
-        # 카드와 동일: 데이터 없어도 bank_before.json은 생성 (나중에 after 생성·표시 흐름과 일치)
-        try:
-            from lib.data_json_io import safe_write_data_json
-            if safe_write_data_json(BANK_BEFORE_FILE, combined_df):
-                _safe_print(f"저장: {BANK_BEFORE_FILE} (0건)", flush=True)
-        except ImportError:
-            try:
-                import json
-                os.makedirs(os.path.dirname(BANK_BEFORE_FILE), exist_ok=True)
-                with open(BANK_BEFORE_FILE, 'w', encoding='utf-8') as f:
-                    json.dump([], f, ensure_ascii=False, indent=2)
-                _safe_print(f"저장: {BANK_BEFORE_FILE} (0건)", flush=True)
-            except Exception as e:
-                _safe_print(f"경고: bank_before.json 저장 실패 - {e}", flush=True)
+        if safe_write_data_json(BANK_BEFORE_FILE, combined_df):
+            _safe_print(f"저장: {BANK_BEFORE_FILE} (0건)", flush=True)
         return combined_df
 
     combined_df = pd.concat(all_data, ignore_index=True)
@@ -642,35 +554,15 @@ def integrate_bank_transactions(output_file=None):
             existing_columns.append(col)
     combined_df = combined_df[existing_columns]
 
-    # 전처리 결과를 data/bank_before.json으로 저장 (source xls/xlsx 읽기 + 전처리 결과)
-    try:
-        from lib.data_json_io import safe_write_data_json
-        if safe_write_data_json(BANK_BEFORE_FILE, combined_df):
-            _safe_print(f"저장: {BANK_BEFORE_FILE}", flush=True)
-    except ImportError:
-        try:
-            import json
-            os.makedirs(os.path.dirname(BANK_BEFORE_FILE), exist_ok=True)
-            rec = combined_df.fillna('').to_dict('records')
-            for row in rec:
-                for k, v in list(row.items()):
-                    if hasattr(v, 'isoformat'):
-                        row[k] = v.isoformat()
-            with open(BANK_BEFORE_FILE, 'w', encoding='utf-8') as f:
-                json.dump(rec, f, ensure_ascii=False, indent=2)
-            _safe_print(f"저장: {BANK_BEFORE_FILE}", flush=True)
-        except Exception as e:
-            _safe_print(f"경고: bank_before.json 저장 실패 - {e}", flush=True)
+    if safe_write_data_json(BANK_BEFORE_FILE, combined_df):
+        _safe_print(f"저장: {BANK_BEFORE_FILE}", flush=True)
 
     return combined_df
 
 
 def create_category_table(df):
     """통합·전처리 데이터를 기반으로 category_table.json 생성(구분 없음). 전처리·후처리·계정과목만 사용."""
-    load_rules = get_default_rules
-    if load_rules is None:
-        from lib.category_table_defaults import get_default_rules as load_rules
-    unique_category_data = load_rules('bank')
+    unique_category_data = get_default_rules('bank')
 
     # DataFrame 생성 (get_default_rules에서 이미 중복 제거됨)
     category_df = pd.DataFrame(unique_category_data)
@@ -1301,14 +1193,7 @@ def classify_and_save(input_file=None, output_file=None, input_df=None):
                 os.makedirs(out_dir, exist_ok=True)
             except OSError as ex:
                 _safe_print(f"오류: 출력 폴더 생성 실패 - {out_dir}: {ex}")
-        try:
-            from lib.data_json_io import safe_write_data_json
-            safe_write_data_json(output_file, result_df)
-        except ImportError:
-            if not safe_write_excel(result_df, output_file):
-                LAST_CLASSIFY_ERROR = f"파일 저장 실패: {output_file} (쓰기 권한 또는 파일 사용 중 확인)"
-                _safe_print(f"오류: {LAST_CLASSIFY_ERROR}")
-                return (False, LAST_CLASSIFY_ERROR, 0)
+        safe_write_data_json(output_file, result_df)
     except PermissionError as e:
         LAST_CLASSIFY_ERROR = f"bank_after 저장 권한 없음(파일을 닫아주세요): {e}"
         _safe_print(f"오류: {LAST_CLASSIFY_ERROR}")

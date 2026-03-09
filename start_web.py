@@ -1,14 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-웹 서버 기동 진입점 (start_web.py)
+웹 서버 실행 진입점 (start_web.py).
 
-[역할]
-- PORT 환경변수 해석: 없거나 '$PORT'이면 8080 사용 (Heroku/Railway 호환).
-- gunicorn 우선 실행; 미설치 시(Windows 등) waitress로 app:app 실행.
-
-[사용]
-  python start_web.py   또는 호스팅에서 이 스크립트를 프로세스로 지정.
+PORT 환경변수 해석 후 gunicorn 우선 실행하며,
+미설치 시(Windows 등) waitress로 app:app을 실행한다.
 """
 import os
 import sys

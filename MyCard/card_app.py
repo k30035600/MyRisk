@@ -1,19 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-MyCard (신용카드) Flask 서브앱 (card_app.py)
+신용카드 Flask 서브앱 (card_app.py).
 
-[역할]
-- 전처리 페이지(/): 전처리전(.source/Card 원본 엑셀 직접 읽기, Bank와 동일)·카테고리 적용(card_after)·카테고리 조회·그래프.
-- 카테고리 페이지(/category): category_table + card_after 테이블·필터·출력.
-- card_after 생성: ensure 또는 API 시 process_card_data에서 통합→전처리→분류·후처리 후 data/card_after.json 저장.
-
-[데이터]
-- 전처리전: .source/Card 의 .xls, .xlsx를 header=None으로 읽어 원본 그대로 표시 (Bank /api/source-data와 동일 방식).
-- 결과: data/card_after.json. 카테고리: data/category_table.json(공통).
-- 캐시: _source_card_cache(전처리전 원본), _card_after_cache_obj(카테고리 적용, lib.after_cache). 재생성·reintegrate 시 무효화.
-
-[유지보수]
-- process_card_data는 일반 import (은행과 동일). ensure_working_directory로 API 시 cwd를 MyCard로 고정. 라우트 prefix: /card.
+전처리 페이지·카테고리 페이지를 제공하고,
+process_card_data로 card_after 생성 및 data 저장을 수행한다.
 """
 from flask import Flask, render_template, jsonify, request
 import traceback

@@ -1,0 +1,324 @@
+/**
+ * MyRisk 디자인 토큰 및 전역 스타일.
+ *
+ * CSS 변수(색상, 테이블, 입출금, 위험도 등), 글로벌 리셋,
+ * 내비게이션(.main-nav), 버튼, 스피너, 분류후 테이블 헤더,
+ * 합계행 구분선, 위험도 등급 배경, 다크 모드 대응.
+ */
+
+/* ─── 1. Design Tokens (CSS Custom Properties) ─── */
+:root {
+    /* Brand */
+    --color-primary:      #2C3E50; /* Deep Navy   — 네비, 헤더, 타이틀 */
+    --color-primary-dark:  #1A252F;
+    --color-action:       #27AE60; /* Emerald Green — 실행 버튼, 성공 */
+    --color-action-dark:  #219A52;
+    --color-action-light: #A9DFBF; /* Soft Mint   — 보조 하이라이트 */
+
+    /* Income / Expense */
+    --color-income:       #1565C0; /* 입금 파란색 */
+    --color-expense:      #C62828; /* 출금 빨간색 */
+    --color-income-light: #90CAF9; /* 어두운 배경 위 입금 */
+    --color-expense-light:#EF9A9A; /* 어두운 배경 위 출금 */
+
+    /* Neutral */
+    --color-bg:           #F8F9FA; /* Off White   — 페이지 배경 */
+    --color-surface:      #FFFFFF;
+    --color-text:         #34495E; /* Steel Gray  — 본문 텍스트 */
+    --color-text-muted:   #7F8C8D;
+    --color-disabled:     #95A5A6;
+
+    /* Table — 분류 전 (전처리전/전처리후/카테고리 조회) */
+    --color-table-header: #E8ECF0; /* 전처리 헤더 — 배경과 확실히 구분 */
+    --color-table-stripe: #F8F9FA;
+    --color-table-hover:  #E8F5E9; /* Very Pale Green */
+    --color-table-sum:    #E8ECF0; /* 분류 전 합계행 */
+
+    /* Table — 분류 후 (카테고리적용후/업종분류/기본분석/종합분석) */
+    --color-post-header:      #34495E; /* Steel Navy — 네비(#2C3E50)와 미세 분리 */
+    --color-post-header-text: #FFFFFF;
+    --color-post-sum:         #E8EDF3; /* 밝은 네이비 합계행 */
+
+    /* 위험도 등급별 배경 (1호~10호) */
+    --color-risk-1:  transparent;           /* 0.1 분류제외 */
+    --color-risk-2:  #FFF8E1;              /* 0.5 심야폐업 — 연한 노란 */
+    --color-risk-3:  #FFF3E0;              /* 1.0 자료소명 — 연한 노란 */
+    --color-risk-4:  #FFE0B2;              /* 1.5 비정형 — 연한 주황 */
+    --color-risk-5:  #FFCCBC;              /* 2.0 투기성 — 연한 주황 */
+    --color-risk-6:  #FFAB91;              /* 2.5 사기파산 — 주황 */
+    --color-risk-7:  #EF9A9A;              /* 3.0 가상자산 — 연한 빨강 */
+    --color-risk-8:  #E57373;              /* 3.5 자산은닉 — 빨강 */
+    --color-risk-9:  #EF5350;              /* 4.0 과소비 — 진한 빨강 */
+    --color-risk-10: #E53935;              /* 5.0 사행성 — 강한 빨강 */
+
+    /* Border */
+    --color-border:       #E8ECF0;
+    --color-border-light: #EAEDF0;
+    --color-border-card:  #E0E0E0;
+
+    /* Status */
+    --color-warning:      #E67E22; /* Muted Orange */
+    --color-gold:         #F39C12;
+
+    /* Radius */
+    --radius-sm:  4px;
+    --radius-md:  8px;
+    --radius-lg:  10px;
+    --radius-xl:  14px;
+
+    /* Font */
+    --font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+}
+
+/* ─── 2. Font Hierarchy ─── */
+h1, h2, .header h1 {
+    color: var(--color-primary) !important;
+    font-weight: 700;
+}
+h3, h4, .panel-title {
+    color: var(--color-primary);
+    font-weight: 400;
+}
+body, td, th, p, span, label, input, select, textarea {
+    color: var(--color-text);
+}
+
+/* ─── 3. Table Design ─── */
+table thead,
+table thead th {
+    background-color: var(--color-table-header) !important;
+    color: var(--color-primary) !important;
+    font-weight: 700 !important;
+}
+table tr.sum-row,
+table tr.total-row,
+table tr[data-sum-row="true"] {
+    background-color: var(--color-table-sum) !important;
+}
+table tbody tr:nth-child(even) {
+    background-color: var(--color-table-stripe);
+}
+table tbody tr:hover {
+    background-color: var(--color-table-hover) !important;
+}
+
+/* ─── 4. Income / Expense ─── */
+.amt-income, .cell-income {
+    color: var(--color-income) !important;
+    font-weight: 600;
+}
+.amt-expense, .cell-expense {
+    color: var(--color-expense) !important;
+}
+
+/* ─── 4b. 분류 후 테이블 헤더 ─── */
+.post-header thead,
+.post-header thead th {
+    background-color: var(--color-post-header) !important;
+    color: var(--color-post-header-text) !important;
+    font-weight: 700 !important;
+}
+.post-header thead th.col-income {
+    color: var(--color-income-light) !important;
+}
+.post-header thead th.col-expense {
+    color: var(--color-expense-light) !important;
+}
+.post-header tr.sum-row,
+.post-header tr.total-row,
+.post-header tr[data-sum-row="true"],
+.post-header tfoot tr {
+    background-color: var(--color-post-sum) !important;
+    font-weight: bold;
+}
+
+/* ─── 4c. 합계행 구분선 (전체 통일) ─── */
+table tr.sum-row,
+table tr.total-row,
+table tr[data-sum-row="true"],
+table tfoot tr {
+    border-top: 2px solid var(--color-primary) !important;
+}
+
+/* ─── 4d. 위험도 등급별 배경 ─── */
+tr[data-risk="1"], tr.risk-1 { background-color: var(--color-risk-1) !important; }
+tr[data-risk="2"], tr.risk-2 { background-color: var(--color-risk-2) !important; }
+tr[data-risk="3"], tr.risk-3 { background-color: var(--color-risk-3) !important; }
+tr[data-risk="4"], tr.risk-4 { background-color: var(--color-risk-4) !important; }
+tr[data-risk="5"], tr.risk-5 { background-color: var(--color-risk-5) !important; }
+tr[data-risk="6"], tr.risk-6 { background-color: var(--color-risk-6) !important; }
+tr[data-risk="7"], tr.risk-7 { background-color: var(--color-risk-7) !important; }
+tr[data-risk="8"], tr.risk-8 { background-color: var(--color-risk-8) !important; }
+tr[data-risk="9"], tr.risk-9 { background-color: var(--color-risk-9) !important; }
+tr[data-risk="10"], tr.risk-10 { background-color: var(--color-risk-10) !important; }
+
+/* ─── 5. Button Standards ─── */
+.btn-action, .btn-primary-action {
+    background: var(--color-action);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 8px 16px;
+    font-size: 0.9em;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s;
+}
+.btn-action:hover, .btn-primary-action:hover {
+    background: var(--color-action-dark);
+}
+.btn-outline, .btn-secondary-action {
+    background: var(--color-surface);
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
+    border-radius: var(--radius-sm);
+    padding: 8px 16px;
+    font-size: 0.9em;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s, color 0.2s;
+}
+.btn-outline:hover, .btn-secondary-action:hover {
+    background: var(--color-primary);
+    color: #fff;
+}
+
+/* ─── 6. Loading Spinner ─── */
+.myrisk-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid var(--color-border);
+    border-top-color: var(--color-action);
+    border-radius: 50%;
+    animation: myrisk-spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+@keyframes myrisk-spin { to { transform: rotate(360deg); } }
+
+/* ─── 7. Status ─── */
+.status-warning { color: var(--color-warning); }
+.status-success { color: var(--color-action); }
+
+/* ─── 8. Navigation (shared) ─── */
+.main-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 6px;
+    background: var(--color-primary);
+    border-radius: var(--radius-md);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    width: 100%;
+}
+.nav-item {
+    padding: 6px 10px;
+    background: rgba(255,255,255,0.9);
+    color: var(--color-primary);
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+    white-space: nowrap;
+}
+.nav-item:hover {
+    background: rgba(255,255,255,1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+.nav-item.active {
+    background: var(--color-action);
+    color: #fff;
+}
+
+/* ─── 9. Dark Mode ─── */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-primary:      #E8ECF0;
+        --color-primary-dark:  #B0B8C1;
+        --color-action:       #2ECC71;
+        --color-action-dark:  #27AE60;
+        --color-action-light: #1A3A2A;
+
+        --color-bg:           #1A1A2E;
+        --color-surface:      #22223B;
+        --color-text:         #E0E0E0;
+        --color-text-muted:   #9E9E9E;
+        --color-disabled:     #616161;
+
+        --color-income:       #42A5F5;
+        --color-expense:      #EF5350;
+        --color-income-light: #90CAF9;
+        --color-expense-light:#EF9A9A;
+
+        --color-table-header: #2A2A40;
+        --color-table-stripe: #1E1E32;
+        --color-table-hover:  #2A3A2E;
+        --color-table-sum:    #2A2A40;
+
+        --color-post-header:      #283848;
+        --color-post-header-text: #E0E0E0;
+        --color-post-sum:         #2A3040;
+
+        --color-risk-1:  transparent;
+        --color-risk-2:  #3A3520;
+        --color-risk-3:  #3A3018;
+        --color-risk-4:  #3A2A15;
+        --color-risk-5:  #3A2518;
+        --color-risk-6:  #3A2020;
+        --color-risk-7:  #402020;
+        --color-risk-8:  #4A1A1A;
+        --color-risk-9:  #501515;
+        --color-risk-10: #5A1010;
+
+        --color-border:       #3A3A50;
+        --color-border-light: #2E2E44;
+        --color-border-card:  #3A3A50;
+
+        --color-warning:      #F39C12;
+        --color-gold:         #F1C40F;
+    }
+
+    body {
+        background-color: var(--color-bg);
+        color: var(--color-text);
+    }
+
+    .header, .container, .box, .panel {
+        background: var(--color-surface);
+        border-color: var(--color-border);
+    }
+
+    .main-nav {
+        background: var(--color-bg);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .nav-item {
+        background: var(--color-surface);
+        color: var(--color-text);
+    }
+    .nav-item:hover {
+        background: var(--color-border);
+    }
+
+    table, table th, table td {
+        border-color: var(--color-border) !important;
+    }
+
+    input, select, textarea {
+        background: var(--color-surface);
+        border-color: var(--color-border);
+        color: var(--color-text);
+    }
+
+    a { color: var(--color-action); }
+
+    .box-shadow, .card, .service-card {
+        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+}

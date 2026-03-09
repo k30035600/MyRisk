@@ -5,11 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>은행거래 카테고리</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="/static/common.css">
+    <script src="/static/common.js"></script>
     <style>
-        /* 모든 테이블 헤더 배경: Deep Navy */
-        table thead, table thead th { background-color: #2C3E50 !important; color: #FFFFFF !important; }
-        /* 모든 테이블 합계 행 배경: Pale Emerald */
-        table tr.sum-row, table tr.total-row, table tr[data-sum-row="true"] { background-color: #EBF5F0 !important; }
         * {
             margin: 0;
             padding: 0;
@@ -28,7 +26,7 @@
             padding: 10px;
             height: 100vh;
             font-family: 'Malgun Gothic', sans-serif;
-            background-color: #f5f5f5;
+            background-color: #F8F9FA;
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -61,7 +59,7 @@
         }
 
         .header h1 {
-            color: #000000;
+            color: #2C3E50;
             margin: 0;
             text-align: left;
             flex: 0 0 auto;
@@ -81,7 +79,7 @@
             flex-wrap: wrap;
             gap: 4px;
             padding: 6px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #2C3E50;
             border-radius: 8px;
             margin-bottom: 0;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
@@ -91,7 +89,7 @@
         .nav-item {
             padding: 6px 10px;
             background: rgba(255, 255, 255, 0.9);
-            color: #333;
+            color: #2C3E50;
             text-decoration: none;
             border-radius: 5px;
             font-weight: bold;
@@ -110,7 +108,7 @@
         }
 
         .nav-item.active {
-            background: #FF9800;
+            background: #27AE60;
             color: white;
         }
 
@@ -125,20 +123,20 @@
 
         .filter-group label {
             font-weight: bold;
-            color: #333;
+            color: #2C3E50;
         }
 
         .filter-group select,
         .filter-group input {
             padding: 8px 12px;
-            border: 1px solid #ddd;
+            border: 1px solid #E8ECF0;
             border-radius: 4px;
             font-size: 14px;
         }
 
         #bank-filter {
             padding: 8px 12px;
-            border: 1px solid #ddd;
+            border: 1px solid #E8ECF0;
             border-radius: 4px;
             font-size: 14px;
             text-align: center;
@@ -147,7 +145,7 @@
         /* 헤더: 은행명·출력 (신용카드 카테고리와 동일 속성) */
         #category-bank-filter {
             padding: 8px 12px;
-            border: 1px solid #ddd;
+            border: 1px solid #E8ECF0;
             border-radius: 4px;
             font-size: 14px;
         }
@@ -156,7 +154,7 @@
         }
         .category-print-btn {
             padding: 8px 16px;
-            background: #FF9800;
+            background: #27AE60;
             color: white;
             border: none;
             border-radius: 4px;
@@ -166,7 +164,7 @@
             transition: all 0.3s ease;
         }
         .category-print-btn:hover {
-            background: #F57C00;
+            background: #219A52;
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
@@ -193,20 +191,23 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            background-color: #FFCC80;
+            background-color: #34495E;
+            color: #FFFFFF;
             isolation: isolate;
         }
         #category-applied-table thead tr,
         #category-applied-table-index thead tr {
             height: 18px;
-            background-color: #FFCC80;
+            background-color: #34495E;
+            color: #FFFFFF;
         }
         #category-applied-table thead th,
         #category-applied-table-index thead th {
             padding: 2px 2px;
             font-size: 11px;
-            border: 1px solid #ddd;
-            background-color: #FFCC80 !important;
+            border: 1px solid #E8ECF0;
+            background-color: #34495E !important;
+            color: #FFFFFF !important;
             box-shadow: 0 2px 2px 0 rgba(0,0,0,0.08);
         }
         #category-applied-table tbody tr,
@@ -218,7 +219,7 @@
         #category-applied-table-index tbody td {
             padding: 2px;
             font-size: 11px;
-            border: 1px solid #ddd;
+            border: 1px solid #E8ECF0;
         }
 
         /* 카테고리 적용후 테이블: 자릿수 모자르면 말줄임 */
@@ -234,10 +235,10 @@
 
         /* split 테이블 (헤더/본문 분리 → 스크롤 시 행 비침 방지) */
         .split-table-wrap { display: flex; flex-direction: column; min-height: 0; width: 100%; overflow: hidden; }
-        .split-table-header { flex: 0 0 auto; background-color: #FFCC80; z-index: 10; }
-        .split-table-header-table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 11px; margin: 0; background-color: #FFCC80; }
-        .split-table-header-table thead tr:first-child th { background-color: #FFCC80 !important; }
-        .split-table-header-table th, .split-table-header-table td { padding: 2px 2px !important; border: 1px solid #ddd; font-weight: bold !important; text-align: center !important; background-color: #f9f9f9 !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+        .split-table-header { flex: 0 0 auto; background-color: #34495E; z-index: 10; }
+        .split-table-header-table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 11px; margin: 0; background-color: #34495E; }
+        .split-table-header-table thead tr:first-child th { background-color: #34495E !important; color: #FFFFFF !important; }
+        .split-table-header-table th, .split-table-header-table td { padding: 2px 2px !important; border: 1px solid #E8ECF0; font-weight: bold !important; text-align: center !important; background-color: #34495E !important; color: #FFFFFF !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
         .split-table-body-wrap { flex: 1; min-height: 0; overflow-y: auto; overflow-x: auto; scrollbar-gutter: stable; }
         .split-table-body-wrap::-webkit-scrollbar { width: 10px; height: 10px; }
         .split-table-body-wrap::-webkit-scrollbar-track { background: #e8e8e8; border-radius: 5px; }
@@ -263,7 +264,7 @@
         }
 
         .chart-card h2 {
-            color: #000000;
+            color: #2C3E50;
             font-size: 18px;
             margin-top: 0;
             margin-bottom: 10px;
@@ -343,9 +344,9 @@
             width: 100%;
             table-layout: fixed;
             flex-shrink: 0;
-            background-color: #FFCC80;
+            background-color: #E8ECF0;
         }
-        #category-definition-table thead th { background-color: #FFCC80 !important; }
+        #category-definition-table thead th { background-color: #E8ECF0 !important; }
         
         #category-definition-table tbody {
             display: block;
@@ -407,14 +408,14 @@
         .loading {
             text-align: center;
             padding: 40px;
-            color: #000000;
+            color: #2C3E50;
             animation: blink 1.5s ease-in-out infinite;
         }
 
         .error {
             text-align: center;
             padding: 20px;
-            color: #000000;
+            color: #2C3E50;
             background: #ffebee;
             border-radius: 4px;
             margin: 10px 0;
@@ -626,12 +627,12 @@
         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap; flex-shrink: 0;">
             <h2 style="margin: 0;">은행거래 카테고리 조회</h2>
             <div id="bank-applied-summary" style="margin-left: auto; font-size: 12px; font-weight: bold;">
-                <span id="bank-applied-summary-count">집계: 0건</span>, <span class="label">입금:</span> <span id="bank-applied-summary-deposit" style="color: #0000FF;">0</span>원 <span id="bank-applied-summary-deposit-count"></span>, <span class="label">출금:</span> <span id="bank-applied-summary-withdraw" style="color: #FF0000;">0</span>원 <span id="bank-applied-summary-withdraw-count"></span>
+                <span id="bank-applied-summary-count">집계: 0건</span>, <span class="label">입금:</span> <span id="bank-applied-summary-deposit" style="color: #1565C0;">0</span>원 <span id="bank-applied-summary-deposit-count"></span>, <span class="label">출금:</span> <span id="bank-applied-summary-withdraw" style="color: #C62828;">0</span>원 <span id="bank-applied-summary-withdraw-count"></span>
             </div>
         </div>
         <div class="bank_category-container" style="overflow-x: auto; overflow-y: auto; flex: 1; min-height: 0;">
             <div id="category-applied-content" style="width: 100%; height: 100%; overflow-y: auto;">
-                <div class="loading" style="padding: 20px; text-align: center; color: #666;">데이터 로딩중 ... (0건)</div>
+                <div class="loading" style="padding: 20px; text-align: center; color: #34495E;">데이터 로딩중 ... (0건)</div>
             </div>
         </div>
     </div>
@@ -652,59 +653,6 @@
         // API 기본 경로 설정 (현재 페이지 경로 기반)
         const API_BASE = window.location.pathname.startsWith('/bank') ? '/bank' : '';
         let _simyaRangesCache = [];
-        function timeToSeconds(s) {
-            if (!s || s === null || s === undefined) return null;
-            const str = String(s).trim();
-            let h, m, sec;
-            if (str.includes(':')) {
-                const p = str.split(':');
-                h = parseInt(p[0], 10) || 0;
-                m = parseInt(p[1], 10) || 0;
-                sec = parseInt(p[2], 10) || 0;
-            } else {
-                const cleaned = str.replace(/\D/g, '');
-                if (cleaned.length >= 6) {
-                    h = parseInt(cleaned.substr(0, 2), 10) || 0;
-                    m = parseInt(cleaned.substr(2, 2), 10) || 0;
-                    sec = parseInt(cleaned.substr(4, 2), 10) || 0;
-                } else return null;
-            }
-            return h * 3600 + m * 60 + sec;
-        }
-        function isTimeInSimyaRanges(timeStr) {
-            if (!_simyaRangesCache || _simyaRangesCache.length === 0) return false;
-            const t = timeToSeconds(timeStr);
-            if (t === null) return false;
-            if (t === 0) return false;
-            for (const r of _simyaRangesCache) {
-                const start = timeToSeconds(r.start);
-                const end = timeToSeconds(r.end);
-                if (start === null || end === null) continue;
-                if (end >= start) {
-                    if (t >= start && t <= end) return true;
-                } else {
-                    if (t >= start || t <= end) return true;
-                }
-            }
-            return false;
-        }
-        
-        // 숫자 포맷팅
-        function formatNumber(num) {
-            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
-        
-        // 금액 포맷팅
-        function formatAmount(value) {
-            if (value === null || value === undefined || value === '') {
-                return '0';
-            }
-            const num = parseFloat(value);
-            if (isNaN(num)) {
-                return '0';
-            }
-            return Math.round(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
 
         // 은행명 목록 로드 (api/analysis/by-bank, 신용카드 카테고리와 동일 방식)
         async function loadCategoryBankFilterList() {
@@ -765,7 +713,7 @@
                         btn.parentNode.replaceChild(newBtn, btn);
                         const updatedBtn = document.getElementById('export-bank_category-btn');
                         updatedBtn.textContent = '생성';
-                        updatedBtn.style.background = '#FF9800';
+                        updatedBtn.style.background = '#E67E22';
                         updatedBtn.addEventListener('click', generateCategoryTable);
                     }
                     // 테이블에 에러 메시지 표시
@@ -783,7 +731,7 @@
                     btn.parentNode.replaceChild(newBtn, btn);
                     const updatedBtn = document.getElementById('export-bank_category-btn');
                     updatedBtn.textContent = '출력';
-                    updatedBtn.style.background = '#4CAF50';
+                    updatedBtn.style.background = '#27AE60';
                     updatedBtn.addEventListener('click', function() {
                         const currentAction = document.getElementById('new-category-chasu').value;
                         if (currentAction === '수정' || currentAction === '삭제') {
@@ -804,7 +752,7 @@
                 
                 if (!data.data || data.data.length === 0) {
                     document.getElementById('category-definition-table-body').innerHTML = 
-                        '<tr><td colspan="5" style="padding: 20px; text-align: center; color: #666; white-space: normal;">카테고리 데이터가 없습니다.</td></tr>';
+                        '<tr><td colspan="5" style="padding: 20px; text-align: center; color: #34495E; white-space: normal;">카테고리 데이터가 없습니다.</td></tr>';
                     allCategoryTableData = [];
                     return;
                 }
@@ -828,7 +776,7 @@
                     btn.parentNode.replaceChild(newBtn, btn);
                     const updatedBtn = document.getElementById('export-bank_category-btn');
                     updatedBtn.textContent = '생성';
-                    updatedBtn.style.background = '#FF9800';
+                    updatedBtn.style.background = '#E67E22';
                     updatedBtn.addEventListener('click', generateCategoryTable);
                 }
             }
@@ -864,7 +812,7 @@
                     if (btn) {
                         btn.disabled = false;
                         btn.textContent = originalText;
-                        btn.style.background = '#FF9800';
+                        btn.style.background = '#E67E22';
                     }
                 }
             } catch (error) {
@@ -874,7 +822,7 @@
                 if (btn) {
                     btn.disabled = false;
                     btn.textContent = originalText;
-                    btn.style.background = '#FF9800';
+                    btn.style.background = '#E67E22';
                 }
             }
         }
@@ -934,7 +882,7 @@
             
             if (filteredData.length === 0) {
                 document.getElementById('category-definition-table-body').innerHTML = 
-                    '<tr><td colspan="5" style="padding: 20px; text-align: center; color: #666; white-space: normal;">카테고리 데이터가 없습니다.</td></tr>';
+                    '<tr><td colspan="5" style="padding: 20px; text-align: center; color: #34495E; white-space: normal;">카테고리 데이터가 없습니다.</td></tr>';
                 updateDropdownOptions();
                 return;
             }
@@ -976,11 +924,11 @@
                 const cursorStyle = 'cursor: pointer;';
                 
                 tableHtml += `<tr class="bank_category-row" data-i="${index}" data-chasu="${분류}" data-keyword="${키워드}" data-category="${카테고리}" style="border-bottom: 1px solid #eee;${rowBgColor ? ` background-color: ${rowBgColor};` : ''}${cursorStyle}" onclick="selectCategoryRow(this)">
-                    <td style="border: 1px solid #ddd; padding: 2px;">${분류}</td>
-                    <td style="border: 1px solid #ddd; padding: 2px;">${키워드}</td>
-                    <td style="border: 1px solid #ddd; padding: 2px;">${카테고리}</td>
-                    <td style="text-align: center; border: 1px solid #ddd; padding: 2px;">${업종코드}</td>
-                    <td style="text-align: center; border: 1px solid #ddd; padding: 2px;">${위험도}</td>
+                    <td style="border: 1px solid #E8ECF0; padding: 2px;">${분류}</td>
+                    <td style="border: 1px solid #E8ECF0; padding: 2px;">${키워드}</td>
+                    <td style="border: 1px solid #E8ECF0; padding: 2px;">${카테고리}</td>
+                    <td style="text-align: center; border: 1px solid #E8ECF0; padding: 2px;">${업종코드}</td>
+                    <td style="text-align: center; border: 1px solid #E8ECF0; padding: 2px;">${위험도}</td>
                 </tr>`;
             });
             
@@ -1127,7 +1075,7 @@
                     selectedRowData = null;
                     
                     // 버튼 텍스트를 "출력"으로 변경
-                    updateButtonText('출력', '#4CAF50');
+                    updateButtonText('출력', '#27AE60');
                     
                     // 차수 필터를 "전체"로 변경
                     document.getElementById('new-category-chasu').value = '';
@@ -1204,9 +1152,9 @@
                 'h2 { text-align: center; margin: 0 0 20px 0; font-size: 18px; }' +
                 'table { border-collapse: collapse; width: 100%; margin-top: 10px; font-size: 11px; }' +
                 'th, td { border: 1px solid #333; padding: 6px; text-align: left; }' +
-                'th { background-color: #f5f5f5; font-weight: bold; text-align: center; }' +
+                'th { background-color: #F8F9FA; font-weight: bold; text-align: center; }' +
                 'tr:nth-child(even) { background-color: rgba(255, 152, 0, 0.1); }' +
-                '.header-info { text-align: center; margin-bottom: 15px; font-size: 12px; color: #666; }' +
+                '.header-info { text-align: center; margin-bottom: 15px; font-size: 12px; color: #34495E; }' +
                 '</style>' +
                 '</head><body><div class="report-wrap">' +
                 '<div class="header-info">' +
@@ -1247,13 +1195,13 @@
                 else if (col === '거래시간') displayValue = formatTime(displayValue);
                 else if (col === '입금액' || col === '출금액') displayValue = displayValue ? formatNumber(parseFloat(displayValue) || 0) : '';
                 let cellBgColor = isEvenRow ? (columnBgColors[col] || '') : '';
-                let cellStyle = ' style="white-space: nowrap; text-align: left; padding: 2px; border: 1px solid #ddd;' + (cellBgColor ? ' background-color: ' + cellBgColor + ';' : '') + '"';
+                let cellStyle = ' style="white-space: nowrap; text-align: left; padding: 2px; border: 1px solid #E8ECF0;' + (cellBgColor ? ' background-color: ' + cellBgColor + ';' : '') + '"';
                 if (col === '입금액' || col === '출금액') {
-                    cellStyle = ' style="white-space: nowrap; text-align: right; padding: 2px; border: 1px solid #ddd; color: ' + (col === '입금액' ? '#0000FF' : col === '출금액' ? '#FF0000' : '#000000') + '; font-size: 11px;' + (cellBgColor ? ' background-color: ' + cellBgColor + ';' : '') + '"';
+                    cellStyle = ' style="white-space: nowrap; text-align: right; padding: 2px; border: 1px solid #E8ECF0; color: ' + (col === '입금액' ? '#1565C0' : col === '출금액' ? '#C62828' : '#34495E') + '; font-size: 11px;' + (cellBgColor ? ' background-color: ' + cellBgColor + ';' : '') + '"';
                 } else if (['거래일','거래시간','은행명','취소'].indexOf(col) >= 0) {
-                    cellStyle = ' style="white-space: nowrap; text-align: center; padding: 2px; border: 1px solid #ddd;' + (cellBgColor ? ' background-color: ' + cellBgColor + ';' : '') + '"';
+                    cellStyle = ' style="white-space: nowrap; text-align: center; padding: 2px; border: 1px solid #E8ECF0;' + (cellBgColor ? ' background-color: ' + cellBgColor + ';' : '') + '"';
                 } else if (['키워드','카테고리','기타거래'].indexOf(col) >= 0) {
-                    cellStyle = ' style="white-space: nowrap; text-align: left; padding: 2px; border: 1px solid #ddd; font-size: 1.0em; font-weight: bold;' + (cellBgColor ? ' background-color: ' + cellBgColor + ';' : '') + '"';
+                    cellStyle = ' style="white-space: nowrap; text-align: left; padding: 2px; border: 1px solid #E8ECF0; font-size: 1.0em; font-weight: bold;' + (cellBgColor ? ' background-color: ' + cellBgColor + ';' : '') + '"';
                 }
                 html += '<td' + cellStyle + '>' + displayValue + '</td>';
             });
@@ -1288,7 +1236,7 @@
             const contentDiv = document.getElementById('category-applied-content');
             if (!contentDiv) return;
             
-            contentDiv.innerHTML = '<div class="loading" style="padding: 20px; text-align: center; color: #666;">데이터 로딩중 ... (0건)<br><small>첫 화면을 먼저 불러옵니다.</small></div>';
+            contentDiv.innerHTML = '<div class="loading" style="padding: 20px; text-align: center; color: #34495E;">데이터 로딩중 ... (0건)<br><small>첫 화면을 먼저 불러옵니다.</small></div>';
             
             try {
                 const response = await fetch(`${API_BASE}/api/category-applied-data?limit=${CATEGORY_APPLIED_PAGE_SIZE}&offset=0`);
@@ -1309,7 +1257,7 @@
                     const total = data.total || 0;
                     if (total > CATEGORY_APPLIED_PAGE_SIZE) {
                         // 1000건+전체 2번 그리기 방지: 나머지 받은 뒤 테이블·그래프 한 번만 그림
-                        contentDiv.innerHTML = '<div class="loading" style="padding: 20px; text-align: center; color: #666;">데이터 로딩중 ... (' + total + '건)</div>';
+                        contentDiv.innerHTML = '<div class="loading" style="padding: 20px; text-align: center; color: #34495E;">데이터 로딩중 ... (' + total + '건)</div>';
                         const restRes = await fetch(`${API_BASE}/api/category-applied-data?offset=${CATEGORY_APPLIED_PAGE_SIZE}`);
                         const restData = await restRes.json();
                         if (restData.data && restData.data.length > 0) {
@@ -1323,7 +1271,7 @@
                     renderCategoryAppliedTableForIndex(categoryAppliedDataOriginalForIndex, { totalDeposit: depositAmount, totalWithdraw: withdrawAmount });
                     loadMonthlyTrend();
                 } else {
-                    contentDiv.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">데이터가 없습니다. 은행 전처리 후 카테고리 생성을 실행하면 여기에 표시됩니다.</div>';
+                    contentDiv.innerHTML = '<div style="padding: 20px; text-align: center; color: #34495E;">데이터가 없습니다. 은행 전처리 후 카테고리 생성을 실행하면 여기에 표시됩니다.</div>';
                 }
             } catch (error) {
                 console.error('Error loading category applied data:', error);
@@ -1337,7 +1285,7 @@
             if (!contentDiv) return;
             
             if (!data || data.length === 0) {
-                contentDiv.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">데이터가 없습니다.</div>';
+                contentDiv.innerHTML = '<div style="padding: 20px; text-align: center; color: #34495E;">데이터가 없습니다.</div>';
                 const countEl = document.getElementById('bank-applied-summary-count');
                 const depositEl = document.getElementById('bank-applied-summary-deposit');
                 const depositCountEl = document.getElementById('bank-applied-summary-deposit-count');
@@ -1435,22 +1383,23 @@
                 '카테고리': 'rgba(255, 152, 0, 0.1)', '기타거래': 'rgba(255, 152, 0, 0.1)'
             };
             
-            let html = '<div class="split-table-wrap"><div class="split-table-header"><table class="split-table-header-table" style="background-color: white; table-layout: fixed; width: 100%; font-size: 11px; border-collapse: collapse;" aria-hidden="true"><thead>';
+            let html = '<div class="split-table-wrap"><div class="split-table-header"><table class="split-table-header-table" style="background-color: #34495E; color: #FFFFFF; table-layout: fixed; width: 100%; font-size: 11px; border-collapse: collapse;" aria-hidden="true"><thead>';
             html += '<tr>';
             availableColumns.forEach(col => {
                 const ratio = columnWidths[col] || 1.0;
                 const width = ((ratio / totalRatio) * 100).toFixed(2);
                 const headerAlign = col === '계좌번호' ? 'left' : 'center';
                 const headerBgColor = columnBgColors[col] || '';
-                html += `<th style="width: ${width}%; white-space: nowrap; text-align: ${headerAlign}; padding: 2px 2px; border: 1px solid #ddd;${headerBgColor ? ` background-color: ${headerBgColor};` : ''}">${col}</th>`;
+                const headerTextColor = col === '입금액' ? ' color: #90CAF9;' : col === '출금액' ? ' color: #EF9A9A;' : '';
+                html += `<th style="width: ${width}%; white-space: nowrap; text-align: ${headerAlign}; padding: 2px 2px; border: 1px solid #E8ECF0;${headerBgColor ? ` background-color: ${headerBgColor};` : ''}${headerTextColor}">${col}</th>`;
             });
             html += '</tr><tr>';
             availableColumns.forEach(col => {
                 const ratio = columnWidths[col] || 1.0;
                 const width = ((ratio / totalRatio) * 100).toFixed(2);
                 const filterAlign = col === '계좌번호' ? 'left' : 'center';
-                html += `<th style="width: ${width}%; padding: 2px 2px; border: 1px solid #ddd; text-align: ${filterAlign};">
-                    <select id="filter-category-applied-index-${col}" style="width: 100%; padding: 1px 2px; font-size: 11px; border: 1px solid #ddd; border-radius: 2px;">
+                html += `<th style="width: ${width}%; padding: 2px 2px; border: 1px solid #E8ECF0; text-align: ${filterAlign};">
+                    <select id="filter-category-applied-index-${col}" style="width: 100%; padding: 1px 2px; font-size: 11px; border: 1px solid #E8ECF0; border-radius: 2px;">
                         <option value="">전체</option>`;
                 if (col === '거래시간') {
                     html += '<option value="__심야구분__">심야구분</option>';
@@ -1503,13 +1452,13 @@
                         cellBgColor = columnBgColors[col] || '';
                     }
                     
-                    let cellStyle = ` style="white-space: nowrap; text-align: left; padding: 2px; border: 1px solid #ddd;${cellBgColor ? ` background-color: ${cellBgColor};` : ''}"`;
+                    let cellStyle = ` style="white-space: nowrap; text-align: left; padding: 2px; border: 1px solid #E8ECF0;${cellBgColor ? ` background-color: ${cellBgColor};` : ''}"`;
                     if (col === '입금액' || col === '출금액') {
-                        cellStyle = ` style="white-space: nowrap; text-align: right; padding: 2px; border: 1px solid #ddd; color: ${col === '입금액' ? '#0000FF' : col === '출금액' ? '#FF0000' : '#000000'}; font-size: 11px;${cellBgColor ? ` background-color: ${cellBgColor};` : ''}"`;
+                        cellStyle = ` style="white-space: nowrap; text-align: right; padding: 2px; border: 1px solid #E8ECF0; color: ${col === '입금액' ? '#1565C0' : col === '출금액' ? '#C62828' : '#34495E'}; font-size: 11px;${cellBgColor ? ` background-color: ${cellBgColor};` : ''}"`;
                     } else if (col === '거래일' || col === '거래시간' || col === '은행명' || col === '사업자번호' || col === '폐업' || col === '취소') {
-                        cellStyle = ` style="white-space: nowrap; text-align: center; padding: 2px; border: 1px solid #ddd;${cellBgColor ? ` background-color: ${cellBgColor};` : ''}"`;
+                        cellStyle = ` style="white-space: nowrap; text-align: center; padding: 2px; border: 1px solid #E8ECF0;${cellBgColor ? ` background-color: ${cellBgColor};` : ''}"`;
                     } else if (col === '키워드' || col === '카테고리' || col === '기타거래') {
-                        cellStyle = ` style="white-space: nowrap; text-align: left; padding: 2px; border: 1px solid #ddd; font-size: 1.0em; font-weight: bold;${cellBgColor ? ` background-color: ${cellBgColor};` : ''}"`;
+                        cellStyle = ` style="white-space: nowrap; text-align: left; padding: 2px; border: 1px solid #E8ECF0; font-size: 1.0em; font-weight: bold;${cellBgColor ? ` background-color: ${cellBgColor};` : ''}"`;
                     }
                     
                     html += `<td${cellStyle}>${displayValue}</td>`;
@@ -1527,19 +1476,19 @@
                 });
             }
             
-            html += '<tr class="sum-row" data-sum-row="true" style="background-color: #FFCC80; font-weight: bold; border-top: 2px solid #ddd;">';
+            html += '<tr class="sum-row" data-sum-row="true" style="background-color: #E8EDF3; font-weight: bold; border-top: 2px solid #E8ECF0;">';
             availableColumns.forEach(col => {
-                let cellStyle = ' style="white-space: nowrap; text-align: left; padding: 4px; border: 1px solid #ddd;"';
+                let cellStyle = ' style="white-space: nowrap; text-align: left; padding: 4px; border: 1px solid #E8ECF0;"';
                 let displayValue = '';
                 
                 if (col === '입금액') {
-                    cellStyle = ' style="white-space: nowrap; text-align: right; padding: 2px; border: 1px solid #ddd; color: #0000FF; font-size: 11px;"';
+                    cellStyle = ' style="white-space: nowrap; text-align: right; padding: 2px; border: 1px solid #E8ECF0; color: #1565C0; font-size: 11px;"';
                     displayValue = formatNumber(totalDeposit);
                 } else if (col === '출금액') {
-                    cellStyle = ' style="white-space: nowrap; text-align: right; padding: 2px; border: 1px solid #ddd; color: #FF0000; font-size: 11px;"';
+                    cellStyle = ' style="white-space: nowrap; text-align: right; padding: 2px; border: 1px solid #E8ECF0; color: #C62828; font-size: 11px;"';
                     displayValue = formatNumber(totalWithdraw);
                 } else if (col === '거래일' || col === '거래시간') {
-                    cellStyle = ' style="white-space: nowrap; text-align: center; padding: 2px; border: 1px solid #ddd;"';
+                    cellStyle = ' style="white-space: nowrap; text-align: center; padding: 2px; border: 1px solid #E8ECF0;"';
                     displayValue = '합계';
                 }
                 
@@ -1634,7 +1583,7 @@ const rowIndex = parseInt(row.getAttribute('data-i'));
                             const isEmpty = cellValue === '' || cellValue === null || cellValue === undefined || String(cellValue).trim() === '';
                             if (!isEmpty) shouldShow = false;
                         } else if (col === '거래시간' && filterValue === '__심야구분__') {
-                            if (!isTimeInSimyaRanges(rowData['거래시간'])) shouldShow = false;
+                            if (!isTimeInSimyaRanges(rowData['거래시간'], _simyaRangesCache)) shouldShow = false;
                         } else if (col === '카테고리' && filterValue === '__기타거래__') {
                             const cat = String(cellValue || '').trim();
                             if (cat !== '' && cat !== '기타거래') shouldShow = false;
@@ -1701,16 +1650,16 @@ const rowIndex = parseInt(row.getAttribute('data-i'));
                         totalWithdraw += parseFloat(rowData['출금액']) || 0;
                     });
                     
-                    const sumRowHtml = '<tr class="sum-row" data-sum-row="true" style="background-color: #FFCC80; font-weight: bold; border-top: 2px solid #ddd;">' +
+                    const sumRowHtml = '<tr class="sum-row" data-sum-row="true" style="background-color: #E8EDF3; font-weight: bold; border-top: 2px solid #E8ECF0;">' +
                         availableColumns.map(col => {
                             if (col === '입금액') {
-                                return `<td style="white-space: nowrap; text-align: right; padding: 2px; border: 1px solid #ddd; color: #0000FF; font-size: 11px;" data-sum-col="입금액">${formatNumber(totalDeposit)}</td>`;
+                                return `<td style="white-space: nowrap; text-align: right; padding: 2px; border: 1px solid #E8ECF0; color: #1565C0; font-size: 11px;" data-sum-col="입금액">${formatNumber(totalDeposit)}</td>`;
                             } else if (col === '출금액') {
-                                return `<td style="white-space: nowrap; text-align: right; padding: 2px; border: 1px solid #ddd; color: #FF0000; font-size: 11px;" data-sum-col="출금액">${formatNumber(totalWithdraw)}</td>`;
+                                return `<td style="white-space: nowrap; text-align: right; padding: 2px; border: 1px solid #E8ECF0; color: #C62828; font-size: 11px;" data-sum-col="출금액">${formatNumber(totalWithdraw)}</td>`;
                             } else if (col === '거래일' || col === '거래시간') {
-                                return `<td style="white-space: nowrap; text-align: center; padding: 2px; border: 1px solid #ddd;" data-sum-col="${col}">합계</td>`;
+                                return `<td style="white-space: nowrap; text-align: center; padding: 2px; border: 1px solid #E8ECF0;" data-sum-col="${col}">합계</td>`;
                             } else {
-                                return `<td style="white-space: nowrap; text-align: center; padding: 2px; border: 1px solid #ddd;" data-sum-col="${col}"></td>`;
+                                return `<td style="white-space: nowrap; text-align: center; padding: 2px; border: 1px solid #E8ECF0;" data-sum-col="${col}"></td>`;
                             }
                         }).join('') +
                         '</tr>';
@@ -1739,7 +1688,7 @@ const rowIndex = parseInt(row.getAttribute('data-i'));
                     // 선택된 행 초기화
                     selectedRowData = null;
                     // 버튼 텍스트를 "완료"로 변경
-                    updateButtonText('완료', '#FF9800');
+                    updateButtonText('완료', '#E67E22');
                     // 테이블 재출력 (행 선택 가능하게)
                     renderCategoryDefinitionTable();
                 } else {
@@ -1753,7 +1702,7 @@ const rowIndex = parseInt(row.getAttribute('data-i'));
                     selectedRowData = null;
                     // 버튼 텍스트를 "출력"으로 변경
                     const fileExists = allCategoryTableData && allCategoryTableData.length > 0;
-                    updateButtonText('출력', '#4CAF50');
+                    updateButtonText('출력', '#27AE60');
                     // 테이블만 재출력 (키워드/카테고리 필터는 유지)
                     renderCategoryDefinitionTable();
                 }
@@ -1890,35 +1839,6 @@ const rowIndex = parseInt(row.getAttribute('data-i'));
             }
         });
         
-        // 날짜 형식 변환: yy.mm.dd 또는 yy/mm/dd
-        function formatDate(dateStr, useDot = false) {
-            if (!dateStr) return '';
-            const date = new Date(dateStr);
-            if (isNaN(date.getTime())) {
-                // 이미 포맷된 날짜일 수 있음
-                return dateStr;
-            }
-            const year = date.getFullYear().toString().substring(2);
-            const month = (date.getMonth() + 1).toString().padStart(2, '0');
-            const day = date.getDate().toString().padStart(2, '0');
-            const separator = useDot ? '.' : '/';
-            return `${year}${separator}${month}${separator}${day}`;
-        }
-        
-        // 시간 형식 변환: hh:mm:ss
-        function formatTime(timeStr) {
-            if (!timeStr) return '';
-            if (typeof timeStr === 'string' && timeStr.includes(':')) {
-                // 이미 시간 형식인 경우
-                const parts = timeStr.split(':');
-                if (parts.length === 2) {
-                    return `${parts[0]}:${parts[1]}:00`;
-                }
-                return timeStr;
-            }
-            return timeStr;
-        }
-        
         // 카테고리 적용후 출력용 데이터 (필터 반영) - Index 테이블만 사용
         function getCategoryAppliedDataForExport() {
             const tableIndex = document.getElementById('category-applied-table-index');
@@ -1991,7 +1911,7 @@ const rowIndex = parseInt(row.getAttribute('data-i'));
             const theadCells = availableColumns.map(col => {
                 const w = ((exportColWidths[col] != null ? exportColWidths[col] : 1) / totalRatio * 100).toFixed(2);
                 const cls = ellipsisCols.indexOf(col) >= 0 ? ' class="col-ellipsis"' : '';
-                return '<th style="border:1px solid #333;padding:4px;background:#f5f5f5;text-align:center;width:' + w + '%;"' + cls + '>' + (col.replace(/</g,'&lt;').replace(/>/g,'&gt;')) + '</th>';
+                return '<th style="border:1px solid #333;padding:4px;background:#F8F9FA;text-align:center;width:' + w + '%;"' + cls + '>' + (col.replace(/</g,'&lt;').replace(/>/g,'&gt;')) + '</th>';
             }).join('');
             let sum입금액 = 0, sum출금액 = 0;
             const exportCumulativeBalance = [];
@@ -2010,7 +1930,7 @@ const rowIndex = parseInt(row.getAttribute('data-i'));
                 else if (col === '출금액') val = formatNum(sum출금액);
                 const align = getAlign(col);
                 const cls = ellipsisCols.indexOf(col) >= 0 ? ' class="col-ellipsis"' : '';
-                return '<td style="border:1px solid #333;padding:4px;text-align:' + align + ';font-weight:bold;background:#FFCC80;"' + cls + '>' + (val.replace(/</g,'&lt;').replace(/>/g,'&gt;')) + '</td>';
+                return '<td style="border:1px solid #333;padding:4px;text-align:' + align + ';font-weight:bold;background:#E8EDF3;"' + cls + '>' + (val.replace(/</g,'&lt;').replace(/>/g,'&gt;')) + '</td>';
             }).join('');
             const sumRow = '<tr class="sum-row">' + sumRowCells + '</tr>';
             const ROWS_PER_PAGE = 30;
@@ -2081,7 +2001,7 @@ const rowIndex = parseInt(row.getAttribute('data-i'));
                         }
                         chart.update('none');
                     }
-                    var legendArr = (typeof window.__monthlyTrendLegend !== 'undefined' && window.__monthlyTrendLegend && window.__monthlyTrendLegend.length) ? window.__monthlyTrendLegend : [{ name: '입금액', color: 'rgba(0,0,255,0.5)' }, { name: '출금액', color: 'rgba(255,0,0,0.5)' }];
+                    var legendArr = (typeof window.__monthlyTrendLegend !== 'undefined' && window.__monthlyTrendLegend && window.__monthlyTrendLegend.length) ? window.__monthlyTrendLegend : [{ name: '입금액', color: 'rgba(21,101,192,0.5)' }, { name: '출금액', color: 'rgba(198,40,40,0.5)' }];
                     var legendPrintHtml = '<div class="print-chart-legend">' + legendArr.map(function(item) { return '<span class="print-legend-item"><span class="print-legend-color" style="background:' + item.color + '"></span>' + String(item.name).replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</span>'; }).join('') + '</div>';
                     chartHtml = '<div class="print-page-graph"><h2>은행거래 월별 추이 그래프 (전체)</h2><div class="header-info">출력 일시: ' + printDate + '</div>' + legendPrintHtml + '<div class="print-graph-img-wrap"><img src="' + chartDataUrl + '" alt="월별 입출금 추이" /></div></div>';
                 } catch (e) {}
@@ -2109,9 +2029,9 @@ const rowIndex = parseInt(row.getAttribute('data-i'));
                 '.print-page-graph { height: 100vh; max-height: 100vh; overflow: hidden; display: flex; flex-direction: column; margin: 0; padding: 0; } .print-page-graph h2, .print-page-graph .header-info, .print-page-graph .print-chart-legend { flex-shrink: 0; } .print-chart-legend { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 16px; margin-bottom: 6px; font-size: 10px; } .print-legend-item { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; } .print-legend-color { width: 10px; height: 10px; min-width: 10px; min-height: 10px; display: inline-block; -webkit-print-color-adjust: exact; print-color-adjust: exact; } .print-page-graph .print-graph-img-wrap { flex: 1; min-height: 0; height: calc(100vh - 70px); display: flex; align-items: flex-end; justify-content: center; } .print-page-graph .print-graph-img-wrap img { height: 100%; width: auto; max-width: 100%; object-fit: contain; object-position: bottom center; display: block; } .print-page-graph h2, .print-page h2 { text-align: center; margin: 0 0 8px 0; font-size: 14px; } .print-page { margin-bottom: 10px; }' +
                 'table { border-collapse: collapse; width: 100%; margin-top: 5px; font-size: 10px; table-layout: fixed; }' +
                 'th, td { border: 1px solid #333; padding: 4px; }' +
-                'th { background-color: #f5f5f5; font-weight: bold; }' +
+                'th { background-color: #F8F9FA; font-weight: bold; }' +
                 'tr:nth-child(even) { background-color: rgba(33, 150, 243, 0.08); }' +
-                '.header-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 10px; color: #666; } .header-info-right { margin-left: auto; }' +
+                '.header-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 10px; color: #34495E; } .header-info-right { margin-left: auto; }' +
                 '.col-ellipsis { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; max-width: 100%; }' +
                 'table td.col-ellipsis, table th.col-ellipsis { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }' +
                 '</style></head><body><div class="report-wrap">' + chartHtml + pagesHtml + '</div>' +
@@ -2144,14 +2064,14 @@ const rowIndex = parseInt(row.getAttribute('data-i'));
                     alert(`카테고리 파일 생성 완료!\n${result.message}\n\n카테고리 조회 데이터를 새로고침합니다.`);
                     btn.disabled = false;
                     btn.textContent = originalText;
-                    btn.style.backgroundColor = '#2196F3';
+                    btn.style.backgroundColor = '#27AE60';
                     btn.style.cursor = 'pointer';
                     await loadCategoryAppliedDataForIndex();
                 } else {
                     alert(`오류: ${(result.error || '카테고리 파일 생성 실패').replace(/\n/g, ' ')}`);
                     btn.disabled = false;
                     btn.textContent = originalText;
-                    btn.style.backgroundColor = '#2196F3';
+                    btn.style.backgroundColor = '#27AE60';
                     btn.style.cursor = 'pointer';
                 }
             } catch (error) {
@@ -2160,7 +2080,7 @@ const rowIndex = parseInt(row.getAttribute('data-i'));
                 alert('카테고리 파일 생성 중 오류: ' + msg);
                 btn.disabled = false;
                 btn.textContent = originalText;
-                btn.style.backgroundColor = '#2196F3';
+                btn.style.backgroundColor = '#27AE60';
                 btn.style.cursor = 'pointer';
             }
         }
@@ -2437,12 +2357,12 @@ const rowIndex = parseInt(row.getAttribute('data-i'));
                         datasets: datasets.length ? datasets : [{
                             label: '입금액',
                             data: allMonths.map(() => 0),
-                            backgroundColor: 'rgba(0, 0, 255, 0.5)',
+                            backgroundColor: 'rgba(21, 101, 192, 0.5)',
                             stack: 'deposit'
                         }, {
                             label: '출금액',
                             data: allMonths.map(() => 0),
-                            backgroundColor: 'rgba(255, 0, 0, 0.5)',
+                            backgroundColor: 'rgba(198, 40, 40, 0.5)',
                             stack: 'withdraw'
                         }]
                     },
@@ -2506,9 +2426,9 @@ const rowIndex = parseInt(row.getAttribute('data-i'));
                     legendEl.innerHTML = catsToShow.length ? catsToShow.map(function(cat, idx) {
                         const color = CATEGORY_COLORS[idx % CATEGORY_COLORS.length];
                         return '<span><span style="display:inline-block;width:10px;height:10px;background:' + color + ';margin-right:4px;vertical-align:middle;"></span>' + String(cat).replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</span>';
-                    }).join('') : '<span><span style="display:inline-block;width:10px;height:10px;background:rgba(0,0,255,0.5);margin-right:4px;vertical-align:middle;"></span>입금액</span><span><span style="display:inline-block;width:10px;height:10px;background:rgba(255,0,0,0.5);margin-right:4px;vertical-align:middle;"></span>출금액</span>';
+                    }).join('') : '<span><span style="display:inline-block;width:10px;height:10px;background:rgba(21,101,192,0.5);margin-right:4px;vertical-align:middle;"></span>입금액</span><span><span style="display:inline-block;width:10px;height:10px;background:rgba(198,40,40,0.5);margin-right:4px;vertical-align:middle;"></span>출금액</span>';
                 }
-                window.__monthlyTrendLegend = catsToShow.length ? catsToShow.map(function(cat, idx) { return { name: cat, color: CATEGORY_COLORS[idx % CATEGORY_COLORS.length] }; }) : [{ name: '입금액', color: 'rgba(0,0,255,0.5)' }, { name: '출금액', color: 'rgba(255,0,0,0.5)' }];
+                window.__monthlyTrendLegend = catsToShow.length ? catsToShow.map(function(cat, idx) { return { name: cat, color: CATEGORY_COLORS[idx % CATEGORY_COLORS.length] }; }) : [{ name: '입금액', color: 'rgba(21,101,192,0.5)' }, { name: '출금액', color: 'rgba(198,40,40,0.5)' }];
             } catch (error) {
                 console.error('차트 생성 오류:', error);
             }
@@ -2525,8 +2445,8 @@ const rowIndex = parseInt(row.getAttribute('data-i'));
                 categoryMonthlyTrendChart = null;
             }
             var legendEl = document.querySelector('.monthly-chart-legend');
-            if (legendEl) legendEl.innerHTML = '<span><span style="display:inline-block;width:10px;height:10px;background:rgba(0,0,255,0.5);margin-right:4px;vertical-align:middle;"></span>입금액</span><span><span style="display:inline-block;width:10px;height:10px;background:rgba(255,0,0,0.5);margin-right:4px;vertical-align:middle;"></span>출금액</span>';
-            window.__monthlyTrendLegend = [{ name: '입금액', color: 'rgba(0,0,255,0.5)' }, { name: '출금액', color: 'rgba(255,0,0,0.5)' }];
+            if (legendEl) legendEl.innerHTML = '<span><span style="display:inline-block;width:10px;height:10px;background:rgba(21,101,192,0.5);margin-right:4px;vertical-align:middle;"></span>입금액</span><span><span style="display:inline-block;width:10px;height:10px;background:rgba(198,40,40,0.5);margin-right:4px;vertical-align:middle;"></span>출금액</span>';
+            window.__monthlyTrendLegend = [{ name: '입금액', color: 'rgba(21,101,192,0.5)' }, { name: '출금액', color: 'rgba(198,40,40,0.5)' }];
             try {
                 // Chart.js 4.x 사용
                 const Chart = window.Chart || (window.chartjs && window.chartjs.Chart);
@@ -2542,15 +2462,15 @@ const rowIndex = parseInt(row.getAttribute('data-i'));
                         datasets: [{
                             label: '입금액',
                             data: [],
-                            borderColor: 'rgba(0, 0, 255, 0.5)',
-                            backgroundColor: 'rgba(0, 0, 255, 0.5)',
+                            borderColor: 'rgba(21, 101, 192, 0.5)',
+                            backgroundColor: 'rgba(21, 101, 192, 0.5)',
                             tension: 0.4,
                             fill: true
                         }, {
                             label: '출금액',
                             data: [],
-                            borderColor: 'rgba(255, 0, 0, 0.5)',
-                            backgroundColor: 'rgba(255, 0, 0, 0.5)',
+                            borderColor: 'rgba(198, 40, 40, 0.5)',
+                            backgroundColor: 'rgba(198, 40, 40, 0.5)',
                             tension: 0.4,
                             fill: true
                         }]

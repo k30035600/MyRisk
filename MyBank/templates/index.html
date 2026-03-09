@@ -7,11 +7,9 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>은행거래 전처리</title>
+    <link rel="stylesheet" href="/static/common.css">
+    <script src="/static/common.js"></script>
     <style>
-        /* 모든 테이블 헤더 배경: Deep Navy */
-        table thead, table thead th { background-color: #2C3E50 !important; color: #FFFFFF !important; }
-        /* 모든 테이블 합계 행 배경: Pale Emerald */
-        table tr.sum-row, table tr.total-row, table tr[data-sum-row="true"] { background-color: #EBF5F0 !important; }
         * {
             margin: 0;
             padding: 0;
@@ -30,7 +28,7 @@
             padding: 10px;
             height: 100vh;
             font-family: 'Malgun Gothic', sans-serif;
-            background-color: #f5f5f5;
+            background-color: #F8F9FA;
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -63,7 +61,7 @@
         }
 
         .header h1 {
-            color: #000000;
+            color: #2C3E50;
             margin: 0;
             text-align: left;
             flex: 0 0 auto;
@@ -83,7 +81,7 @@
             flex-wrap: wrap;
             gap: 4px;
             padding: 6px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #2C3E50;
             border-radius: 8px;
             margin-bottom: 0;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
@@ -93,7 +91,7 @@
         .nav-item {
             padding: 6px 10px;
             background: rgba(255, 255, 255, 0.9);
-            color: #333;
+            color: #2C3E50;
             text-decoration: none;
             border-radius: 5px;
             font-weight: bold;
@@ -112,7 +110,7 @@
         }
 
         .nav-item.active {
-            background: #FF9800;
+            background: #27AE60;
             color: white;
         }
         
@@ -222,11 +220,11 @@
         }
         
         .category-work-box {
-            border-top: 3px solid #4CAF50;
+            border-top: 3px solid #27AE60;
         }
         
         .category-work-box .box-title {
-            color: #4CAF50;
+            color: #27AE60;
         }
         
         .category-applied-box {
@@ -370,13 +368,13 @@
 
         .filter-group label {
             font-weight: bold;
-            color: #333;
+            color: #2C3E50;
         }
 
         .filter-group select,
         .filter-group input {
             padding: 8px 12px;
-            border: 1px solid #ddd;
+            border: 1px solid #E8ECF0;
             border-radius: 4px;
             font-size: 12px;
         }
@@ -384,7 +382,7 @@
         /* 필터 선택 시 배경색: "전체"일 경우만 흰색, 나머지는 더 진한 회색 */
         .filter-group select,
         .filter-group input {
-            background-color: #f5f5f5 !important;
+            background-color: #F8F9FA !important;
         }
         
         .filter-group select.filter-selected,
@@ -399,7 +397,7 @@
         
         /* 테이블 필터 선택 시 배경색: "전체"일 경우만 흰색, 나머지는 더 진한 회색 */
         table select {
-            background-color: #f5f5f5 !important;
+            background-color: #F8F9FA !important;
         }
         
         table select.filter-selected {
@@ -431,7 +429,7 @@
 
         .data-filter {
             padding: 8px 12px;
-            border: 1px solid #ddd;
+            border: 1px solid #E8ECF0;
             border-radius: 4px;
             font-size: 12px;
         }
@@ -459,7 +457,7 @@
             padding-right: 4px !important;
         }
         #right-filter-section select {
-            background-color: #f5f5f5 !important;
+            background-color: #F8F9FA !important;
         }
         #right-filter-section select.filter-default {
             background-color: white !important;
@@ -476,7 +474,7 @@
 
         .stat-item {
             font-weight: bold;
-            color: #333;
+            color: #2C3E50;
             padding: 0;
             margin: 0;
             text-align: right;
@@ -515,12 +513,12 @@
             align-items: center;
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 2px solid #ddd;
+            border-bottom: 2px solid #E8ECF0;
         }
         
         .modal-header h2 {
             margin: 0;
-            color: #333;
+            color: #2C3E50;
         }
         
         .close {
@@ -545,14 +543,14 @@
         
         .modal-table th,
         .modal-table td {
-            border: 1px solid #ddd;
+            border: 1px solid #E8ECF0;
             padding: 2px 4px;
             text-align: left;
             line-height: 1.2;
         }
         
         .modal-table th {
-            background-color: #f5f5f5;
+            background-color: #F8F9FA;
             font-weight: bold;
             position: sticky;
             top: 0;
@@ -574,11 +572,11 @@
         .modal-empty {
             text-align: center;
             padding: 20px;
-            color: #666;
+            color: #34495E;
         }
 
         .stat-item .label {
-            color: #666;
+            color: #34495E;
             margin-right: 5px;
         }
         
@@ -586,7 +584,7 @@
         .header-stats-text {
             font-size: clamp(10px, calc(0.45vw + 2px), 13px);
             font-weight: bold;
-            color: #333;
+            color: #2C3E50;
         }
         .header-stats-text .stat-item,
         .header-stats-text .stat-item .label,
@@ -596,7 +594,7 @@
             font-weight: inherit;
         }
         .header-stats-text .label {
-            color: #666;
+            color: #34495E;
         }
         .header-stats-text .header-stats-group {
             display: flex;
@@ -612,7 +610,7 @@
 
         .btn-reintegrate {
             padding: 6px 12px;
-            background-color: #FF9800;
+            background-color: #27AE60;
             color: white;
             border: none;
             border-radius: 4px;
@@ -620,13 +618,13 @@
             font-size: 12px;
             margin-right: 10px;
         }
-        .btn-reintegrate:hover { background-color: #F57C00; }
+        .btn-reintegrate:hover { background-color: #219150; }
         .btn-reintegrate:disabled { opacity: 0.6; cursor: not-allowed; }
 
         .box-title {
             font-weight: 700;
             font-size: 20px;
-            color: #333;
+            color: #2C3E50;
             margin-right: 15px;
             margin-top: 0px;
             margin-bottom: 0px;
@@ -685,12 +683,12 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            background-color: #FFCC80 !important;
+            background-color: #E8ECF0 !important;
             isolation: isolate;
         }
         #source-data-table thead th,
         #processed-data-table thead th {
-            background-color: #FFCC80 !important;
+            background-color: #E8ECF0 !important;
             box-shadow: 0 2px 2px 0 rgba(0,0,0,0.08);
             font-size: 11px !important;
         }
@@ -743,7 +741,7 @@
         }
         
         .file-item-content::-webkit-scrollbar-track {
-            background: #f5f5f5;
+            background: #F8F9FA;
             border-radius: 3px;
         }
         
@@ -758,10 +756,10 @@
 
         .file-header {
             font-weight: bold;
-            color: #333;
+            color: #2C3E50;
             margin-bottom: 8px;
             padding-bottom: 8px;
-            border-bottom: 2px solid #ddd;
+            border-bottom: 2px solid #E8ECF0;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -798,7 +796,7 @@
         
         .filter-row select {
             padding: 8px 4px;
-            border: 1px solid #ddd;
+            border: 1px solid #E8ECF0;
             border-radius: 4px;
             font-size: 12px;
             flex: 1 1 auto;
@@ -815,7 +813,7 @@
             display: flex;
             gap: 15px;
             font-size: 12px;
-            color: #555;
+            color: #34495E;
         }
         
         .file-header-stat {
@@ -839,12 +837,12 @@
             padding: 10px;
             background: white;
             border-radius: 4px;
-            border-left: 3px solid #4CAF50;
+            border-left: 3px solid #27AE60;
         }
 
         .sheet-name {
             font-weight: bold;
-            color: #4CAF50;
+            color: #27AE60;
             margin-bottom: 6px;
             font-size: 12px;
             font-weight: 700;
@@ -906,8 +904,8 @@
             font-weight: bold !important;
         }
 
-        /* 전처리전 테이블: 마지막 행 배경 #FFCC80 */
-        #source-data-table tbody tr:last-child td { background-color: #FFCC80 !important; }
+        /* 전처리전 테이블: 마지막 행 배경 #E8ECF0 */
+        #source-data-table tbody tr:last-child td { background-color: #E8ECF0 !important; }
         /* 전처리전 테이블: 파란색 기반 패턴 */
         #source-data-table tr:nth-child(even) {
             background-color: rgba(33, 150, 243, 0.1);
@@ -942,11 +940,11 @@
         /* 카테고리 조회 말풍선 - 금융정보 업종분류조회 말풍선과 동일 속성 (최상위 레이어 보장) */
         #row-tooltip-overlay { position: fixed; inset: 0; z-index: 2147483647; pointer-events: none; display: none; }
         #row-tooltip-overlay .row-tooltip-bubble { pointer-events: auto; }
-        .row-tooltip-bubble { position: fixed; z-index: 2147483647; max-width: 480px; max-height: 70vh; min-width: 220px; min-height: 80px; overflow: auto; background: rgb(255, 204, 128); border: 1px solid #ddd; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); padding: 10px; font-size: 11px; line-height: 1.2; font-family: 'Malgun Gothic', sans-serif; }
-        .row-tooltip-bubble .tooltip-title { font-weight: bold; color: #333; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid #eee; }
+        .row-tooltip-bubble { position: fixed; z-index: 2147483647; max-width: 480px; max-height: 70vh; min-width: 220px; min-height: 80px; overflow: auto; background: rgb(255, 204, 128); border: 1px solid #E8ECF0; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); padding: 10px; font-size: 11px; line-height: 1.2; font-family: 'Malgun Gothic', sans-serif; }
+        .row-tooltip-bubble .tooltip-title { font-weight: bold; color: #2C3E50; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid #eee; }
         .row-tooltip-bubble .tooltip-row { display: flex; gap: 8px; padding: 3px 0; border-bottom: 1px solid rgba(0,0,0,0.1); }
         .row-tooltip-bubble .tooltip-row:last-child { border-bottom: none; }
-        .row-tooltip-bubble .tooltip-key { flex: 0 0 100px; color: #333; opacity: 0.8; }
+        .row-tooltip-bubble .tooltip-key { flex: 0 0 100px; color: #2C3E50; opacity: 0.8; }
         .row-tooltip-bubble .tooltip-val { flex: 1; word-break: break-all; color: #111; opacity: 1; }
         .row-tooltip-selected { background-color: #bbb !important; }
 
@@ -960,16 +958,16 @@
             height: 18px;
             min-height: 18px;
         }
-        /* 말풍선 출력 테이블 헤더 배경 (hex: #FFCC80), sticky 시 행이 헤더 뒤로 비치지 않도록 */
+        /* 말풍선 출력 테이블 헤더 배경 (hex: #E8ECF0), sticky 시 행이 헤더 뒤로 비치지 않도록 */
         #category-query-table thead {
             position: sticky;
             top: 0;
             z-index: 100;
-            background-color: #FFCC80;
+            background-color: #E8ECF0;
             isolation: isolate;
         }
         #category-query-table thead th {
-            background-color: #FFCC80 !important;
+            background-color: #E8ECF0 !important;
             box-shadow: 0 2px 2px 0 rgba(0,0,0,0.08);
             font-size: 11px !important;
         }
@@ -985,18 +983,18 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            background-color: #FFCC80 !important;
+            background-color: #E8ECF0 !important;
             isolation: isolate;
             transform: translateZ(0);
         }
         #source-data-table thead th,
         #processed-data-table thead th {
             opacity: 1 !important;
-            background-color: #FFCC80 !important;
+            background-color: #E8ECF0 !important;
             z-index: 100;
             isolation: isolate;
             /* 헤더색과 같은 불투명 그림자로 스크롤 시 비치는 행을 위에서 덮어서 가림 */
-            box-shadow: 0 6px 0 0 #FFCC80, 0 2px 3px 0 rgba(0,0,0,0.1);
+            box-shadow: 0 6px 0 0 #E8ECF0, 0 2px 3px 0 rgba(0,0,0,0.1);
             transform: translateZ(0);
         }
 
@@ -1026,7 +1024,7 @@
         }
         .processed-data-table-header {
             flex: 0 0 auto;
-            background-color: #FFCC80;
+            background-color: #E8ECF0;
             z-index: 10;
             padding-right: 10px;
             box-sizing: border-box;
@@ -1037,14 +1035,14 @@
             border-collapse: collapse;
             font-size: 11px;
             margin: 0;
-            background-color: #FFCC80;
+            background-color: #E8ECF0;
         }
         .processed-data-header-table th {
             padding: 2px 2px !important;
-            border: 1px solid #ddd;
+            border: 1px solid #E8ECF0;
             font-weight: bold !important;
             text-align: center !important;
-            background-color: #FFCC80 !important;
+            background-color: #E8ECF0 !important;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -1085,7 +1083,7 @@
         }
         .split-table-header {
             flex: 0 0 auto;
-            background-color: #FFCC80;
+            background-color: #E8ECF0;
             z-index: 10;
         }
         .split-table-header-table {
@@ -1094,12 +1092,12 @@
             border-collapse: collapse;
             font-size: 11px;
             margin: 0;
-            background-color: #FFCC80;
+            background-color: #E8ECF0;
         }
         .split-table-header-table th,
         .split-table-header-table td {
             padding: 2px 2px !important;
-            border: 1px solid #ddd;
+            border: 1px solid #E8ECF0;
             font-weight: bold !important;
             text-align: center !important;
             background-color: #f9f9f9 !important;
@@ -1108,7 +1106,7 @@
             text-overflow: ellipsis;
             min-width: 0;
         }
-        .split-table-header-table thead tr:first-child th { background-color: #FFCC80 !important; }
+        .split-table-header-table thead tr:first-child th { background-color: #E8ECF0 !important; }
         .split-table-body-wrap {
             flex: 1;
             min-height: 0;
@@ -1143,7 +1141,7 @@
             background-color: inherit;
             box-shadow: 0 2px 2px 0 rgba(0,0,0,0.06);
         }
-        #category-query-table thead tr:first-child th { background-color: #FFCC80 !important; }
+        #category-query-table thead tr:first-child th { background-color: #E8ECF0 !important; }
         #category-query-table thead tr:nth-child(2) th { background-color: #f9f9f9 !important; }
         /* 전처리전/전처리후/카테고리 조회/은행거래 카테고리 적용후 테이블: 행 높이 동일 (18px) */
         #category-query-table-header thead tr {
@@ -1626,20 +1624,20 @@
         }
 
         .left-box {
-            border-top: 3px solid #2196F3;
+            border-top: 3px solid #2C3E50;
         }
 
         .left-box .box-title {
-            color: #2196F3;
+            color: #2C3E50;
             font-size: 18px !important;
         }
 
         .right-box {
-            border-top: 3px solid #FF9800;
+            border-top: 3px solid #27AE60;
         }
 
         .right-box .box-title {
-            color: #FF9800;
+            color: #27AE60;
             font-size: 18px !important;
         }
         /* 카테고리 조회/적용후 타이틀: 은행거래 카테고리 페이지의 "은행거래 카테고리 조회" 텍스트 크기와 동일 (18px) */
@@ -1662,7 +1660,7 @@
         .loading {
             text-align: center;
             padding: 40px;
-            color: #666;
+            color: #34495E;
             animation: blink 1.5s ease-in-out infinite;
         }
 
@@ -1715,7 +1713,7 @@
         }
         #category-definition-table thead th,
         #category-definition-table thead td { background-color: inherit; box-shadow: 0 2px 2px 0 rgba(0,0,0,0.06); }
-        #category-definition-table thead tr:first-child th { background-color: #FFCC80 !important; }
+        #category-definition-table thead tr:first-child th { background-color: #E8ECF0 !important; }
         #category-definition-table thead tr:nth-child(2) td,
         #category-definition-table thead tr:nth-child(3) td { background-color: #f9f9f9 !important; }
         /* 카테고리 정의 헤더 테이블 컬럼 너비 (split 시 동일 비율) */
@@ -1800,16 +1798,16 @@
                                 </div>
                                 <div class="stat-item" style="margin-right: 0; margin-left: 15px;">
                                     <span class="label">입금:</span>
-                                    <span id="left-deposit" style="color: #0000FF;">0</span>원
+                                    <span id="left-deposit" style="color: #1565C0;">0</span>원
                                 </div>
                                 <div class="stat-item" style="margin-right: 0; margin-left: 15px;">
                                     <span class="label">출금:</span>
-                                    <span id="left-withdraw" style="color: #FF0000;">0</span>원
+                                    <span id="left-withdraw" style="color: #C62828;">0</span>원
                                 </div>
                             </div>
                         </div>
                         <div id="left-file-filter-section" style="border: 1px solid #e0e0e0; border-radius: 4px; background: #f8f9fa; box-sizing: border-box; width: calc(100% - 20px);">
-                            <div style="font-weight: bold; width: 100%; box-sizing: border-box; opacity: 0.5;"><select id="left-file-selector" style="border: 1px solid #ddd; border-radius: 4px; font-size: 12px; box-sizing: border-box; width: 100%;"><option value="">전체</option></select></div>
+                            <div style="font-weight: bold; width: 100%; box-sizing: border-box; opacity: 0.5;"><select id="left-file-selector" style="border: 1px solid #E8ECF0; border-radius: 4px; font-size: 12px; box-sizing: border-box; width: 100%;"><option value="">전체</option></select></div>
                         </div>
                     </div>
             </div>
@@ -1827,26 +1825,26 @@
                                 </div>
                                 <div class="stat-item" style="margin-right: 0; margin-left: 15px;">
                                     <span class="label">입금:</span>
-                                    <span id="right-deposit" style="color: #0000FF;">0</span>원<span id="right-deposit-count"></span>
+                                    <span id="right-deposit" style="color: #1565C0;">0</span>원<span id="right-deposit-count"></span>
                                 </div>
                                 <div class="stat-item" style="margin-right: 0; margin-left: 15px;">
                                     <span class="label">출금:</span>
-                                    <span id="right-withdraw" style="color: #FF0000;">0</span>원<span id="right-withdraw-count"></span>
+                                    <span id="right-withdraw" style="color: #C62828;">0</span>원<span id="right-withdraw-count"></span>
                                 </div>
                             </div>
                         </div>
                         <div id="right-filter-section" style="border: 1px solid #e0e0e0; border-radius: 4px; background: #f8f9fa; box-sizing: border-box; width: calc(100% - 20px);">
                             <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px;">
                                 <div style="display: flex; align-items: center; gap: 8px;">
-                                    <select id="right-bank-filter" style="border: 1px solid #ddd; border-radius: 4px; font-size: 12px; min-width: 120px;">
+                                    <select id="right-bank-filter" style="border: 1px solid #E8ECF0; border-radius: 4px; font-size: 12px; min-width: 120px;">
                                         <option value="">은행전체</option>
                                     </select>
-                                    <select id="right-account-filter" style="border: 1px solid #ddd; border-radius: 4px; font-size: 12px; min-width: 140px;">
+                                    <select id="right-account-filter" style="border: 1px solid #E8ECF0; border-radius: 4px; font-size: 12px; min-width: 140px;">
                                         <option value="">계좌전체</option>
                                     </select>
                                 </div>
                                 <div style="display: flex; align-items: center; gap: 8px;">
-                                    <select id="right-year-filter" style="border: 1px solid #ddd; border-radius: 4px; font-size: 12px; min-width: 90px;">
+                                    <select id="right-year-filter" style="border: 1px solid #E8ECF0; border-radius: 4px; font-size: 12px; min-width: 90px;">
                                         <option value="">전체</option>
                                     </select>
                                 </div>
@@ -1875,7 +1873,7 @@
                         <h2 style="margin: 0; padding-bottom: 3px;">카테고리 조회</h2>
                     </div>
                     <div style="display: flex; align-items: center; gap: 8px;">
-                        <button id="export-bank_category-btn" style="padding: 6px 12px; {% if category_file_exists is defined and category_file_exists %}background: #4CAF50;{% else %}background: #FF9800;{% endif %} color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; height: auto;">{% if category_file_exists is defined and category_file_exists %}출력{% else %}생성{% endif %}</button>
+                        <button id="export-bank_category-btn" style="padding: 6px 12px; {% if category_file_exists is defined and category_file_exists %}background: #27AE60;{% else %}background: #E67E22;{% endif %} color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; height: auto;">{% if category_file_exists is defined and category_file_exists %}출력{% else %}생성{% endif %}</button>
                     </div>
                 </div>
                 <div id="bank-category-definition-container" class="bank_category-container has-split-table bank_category-definition-container" style="overflow: hidden; flex: 1; position: relative; display: flex; flex-direction: column;">
@@ -1884,14 +1882,14 @@
                             <table id="category-definition-table" style="width: 100%; border-collapse: collapse; font-size: 11px;">
                                 <thead>
                                 <tr>
-                                    <th style="text-align: left; border: 1px solid #ddd; padding: 2px 2px; white-space: nowrap;">분류</th>
-                                    <th style="text-align: left; border: 1px solid #ddd; padding: 2px 2px; white-space: nowrap;">키워드</th>
-                                    <th style="text-align: left; border: 1px solid #ddd; padding: 2px 2px; white-space: nowrap;">카테고리</th>
-                                    <th style="text-align: center; border: 1px solid #ddd; padding: 2px 2px; white-space: nowrap;">업종코드</th>
-                                    <th style="text-align: center; border: 1px solid #ddd; padding: 2px 2px; white-space: nowrap;">위험도</th>
+                                    <th style="text-align: left; border: 1px solid #E8ECF0; padding: 2px 2px; white-space: nowrap;">분류</th>
+                                    <th style="text-align: left; border: 1px solid #E8ECF0; padding: 2px 2px; white-space: nowrap;">키워드</th>
+                                    <th style="text-align: left; border: 1px solid #E8ECF0; padding: 2px 2px; white-space: nowrap;">카테고리</th>
+                                    <th style="text-align: center; border: 1px solid #E8ECF0; padding: 2px 2px; white-space: nowrap;">업종코드</th>
+                                    <th style="text-align: center; border: 1px solid #E8ECF0; padding: 2px 2px; white-space: nowrap;">위험도</th>
                                 </tr>
                                 <tr style="background-color: #f9f9f9;">
-                                    <td style="border: 1px solid #ddd; padding: 2px 2px;">
+                                    <td style="border: 1px solid #E8ECF0; padding: 2px 2px;">
                                         <select id="new-category-chasu" style="padding: 1px 2px; width: 100%; font-size: 11px; border: 1px solid #ccc; border-radius: 2px;">
                                             <option value="">전체</option>
                                             <option value="입력">입력</option>
@@ -1907,21 +1905,21 @@
                                             <option value="해외송금">해외송금</option>
                                         </select>
                                     </td>
-                                    <td style="border: 1px solid #ddd; padding: 2px 2px;">
+                                    <td style="border: 1px solid #E8ECF0; padding: 2px 2px;">
                                         <select id="new-category-keyword-filter" style="padding: 1px 2px; width: 100%; font-size: 11px; border: 1px solid #ccc; border-radius: 2px;">
                                             <option value="">전체</option>
                                         </select>
                                     </td>
-                                    <td style="border: 1px solid #ddd; padding: 2px 2px;">
+                                    <td style="border: 1px solid #E8ECF0; padding: 2px 2px;">
                                         <select id="new-category-name-filter" style="padding: 1px 2px; width: 100%; font-size: 11px; border: 1px solid #ccc; border-radius: 2px;">
                                             <option value="">전체</option>
                                         </select>
                                     </td>
-                                    <td style="border: 1px solid #ddd; padding: 2px 2px;"></td>
-                                    <td style="border: 1px solid #ddd; padding: 2px 2px;"></td>
+                                    <td style="border: 1px solid #E8ECF0; padding: 2px 2px;"></td>
+                                    <td style="border: 1px solid #E8ECF0; padding: 2px 2px;"></td>
                                 </tr>
                                 <tr style="background-color: #f9f9f9;">
-                                    <td style="border: 1px solid #ddd; padding: 2px 2px;">
+                                    <td style="border: 1px solid #E8ECF0; padding: 2px 2px;">
                                         <select id="new-category-chasu-input" style="padding: 1px 2px; width: 100%; font-size: 11px; border: 1px solid #ccc; border-radius: 2px; box-sizing: border-box;">
                                             <option value="" selected>분류선택</option>
                                             <option value="계정과목">계정과목</option>
@@ -1934,31 +1932,31 @@
                                             <option value="심야구분">심야구분</option>
                                         </select>
                                     </td>
-                                    <td style="border: 1px solid #ddd; padding: 2px 2px;">
+                                    <td style="border: 1px solid #E8ECF0; padding: 2px 2px;">
                                         <input type="text" id="new-category-keyword-input" placeholder="키워드 직접 입력" style="padding: 1px 2px; width: 100%; font-size: 11px; border: 1px solid #ccc; border-radius: 2px; box-sizing: border-box;">
                                     </td>
-                                    <td style="border: 1px solid #ddd; padding: 2px 2px;">
+                                    <td style="border: 1px solid #E8ECF0; padding: 2px 2px;">
                                         <input type="text" id="new-category-name-input" placeholder="카테고리 직접 입력" style="padding: 1px 2px; width: 100%; font-size: 11px; border: 1px solid #ccc; border-radius: 2px; box-sizing: border-box;">
                                     </td>
-                                    <td style="border: 1px solid #ddd; padding: 2px 2px;"></td>
-                                    <td style="border: 1px solid #ddd; padding: 2px 2px;"></td>
+                                    <td style="border: 1px solid #E8ECF0; padding: 2px 2px;"></td>
+                                    <td style="border: 1px solid #E8ECF0; padding: 2px 2px;"></td>
                                 </tr>
                                 </thead>
                     <tbody id="category-definition-table-body">
                         {% if category_table_rows is defined and category_table_rows %}
                         {% for row in category_table_rows %}
                         <tr class="bank_category-row" data-i="{{ loop.index0 }}" data-chasu="{{ (row.분류 or '')|e }}" data-keyword="{{ (row.키워드 or '')|e }}" data-category="{{ (row.카테고리 or '')|e }}" style="border-bottom: 1px solid #eee;{% if loop.index0 % 2 == 1 %} background-color: rgba(255, 152, 0, 0.1);{% endif %} cursor: pointer;" onclick="selectCategoryRow(this)">
-                            <td style="border: 1px solid #ddd; padding: 2px;">{{ (row.분류 or '')|e }}</td>
-                            <td style="border: 1px solid #ddd; padding: 2px;">{{ (row.키워드 or '')|e }}</td>
-                            <td style="border: 1px solid #ddd; padding: 2px;">{{ (row.카테고리 or '')|e }}</td>
-                            <td style="text-align: center; border: 1px solid #ddd; padding: 2px;">{{ (row.업종코드 or '')|e }}</td>
-                            <td style="text-align: center; border: 1px solid #ddd; padding: 2px;">{{ (row.위험도 or '')|e }}</td>
+                            <td style="border: 1px solid #E8ECF0; padding: 2px;">{{ (row.분류 or '')|e }}</td>
+                            <td style="border: 1px solid #E8ECF0; padding: 2px;">{{ (row.키워드 or '')|e }}</td>
+                            <td style="border: 1px solid #E8ECF0; padding: 2px;">{{ (row.카테고리 or '')|e }}</td>
+                            <td style="text-align: center; border: 1px solid #E8ECF0; padding: 2px;">{{ (row.업종코드 or '')|e }}</td>
+                            <td style="text-align: center; border: 1px solid #E8ECF0; padding: 2px;">{{ (row.위험도 or '')|e }}</td>
                         </tr>
                         {% endfor %}
                         {% elif category_file_exists is defined and not category_file_exists %}
                         <tr><td colspan="5" style="padding: 20px; text-align: center; color: #F44336;">category_table.json 파일이 없습니다.</td></tr>
                         {% else %}
-                        <tr><td colspan="5" style="padding: 20px; text-align: center; color: #666;">카테고리 데이터가 없습니다.</td></tr>
+                        <tr><td colspan="5" style="padding: 20px; text-align: center; color: #34495E;">카테고리 데이터가 없습니다.</td></tr>
                         {% endif %}
                     </tbody>
                             </table>
@@ -1991,13 +1989,13 @@
                         </div>
                         <div class="header-stats-group">
                             <span id="category-query-count">집계: 0건</span>
-                            <span><span class="label">입금:</span> <span id="category-query-deposit" style="color: #0000FF;">0</span>원<span id="category-query-deposit-count"></span></span>
-                            <span><span class="label">출금:</span> <span id="category-query-withdraw" style="color: #FF0000;">0</span>원<span id="category-query-withdraw-count"></span></span>
+                            <span><span class="label">입금:</span> <span id="category-query-deposit" style="color: #1565C0;">0</span>원<span id="category-query-deposit-count"></span></span>
+                            <span><span class="label">출금:</span> <span id="category-query-withdraw" style="color: #C62828;">0</span>원<span id="category-query-withdraw-count"></span></span>
                         </div>
                     </div>
                     <div class="bank_category-container bank_category-query-container" style="overflow: hidden; flex: 1; min-height: 0; display: flex; flex-direction: column;">
                         <div id="category-query-content" style="width: 100%; height: 100%; min-height: 0;">
-                            <div class="loading" style="padding: 20px; text-align: center; color: #666;">데이터 로딩중 ... (0건)</div>
+                            <div class="loading" style="padding: 20px; text-align: center; color: #34495E;">데이터 로딩중 ... (0건)</div>
                         </div>
                     </div>
                 </div>
@@ -2130,14 +2128,6 @@
             });
         }
 
-        const FETCH_TIMEOUT_MS = 60000;
-        function fetchWithTimeout(url, options, timeoutMs) {
-            const ms = timeoutMs || FETCH_TIMEOUT_MS;
-            const ctrl = new AbortController();
-            const id = setTimeout(() => ctrl.abort(), ms);
-            return fetch(url, { ...options, signal: ctrl.signal }).finally(() => clearTimeout(id));
-        }
-
         // null 안전 textContent 설정 (loadRightData 등에서 사용)
         function safeSetTextContent(el, text) {
             if (el && typeof el.textContent !== 'undefined') {
@@ -2145,107 +2135,7 @@
             }
         }
 
-        // 숫자 포맷팅
-        function formatNumber(num) {
-            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
-        
-        // 날짜 형식 변환: yy.mm.dd (카테고리적용후용), yy/mm/dd (기본)
-        function formatDate(dateStr, useDot = false) {
-            if (!dateStr || dateStr === null || dateStr === undefined || dateStr === '') {
-                return '';
-            }
-            try {
-                const date = new Date(dateStr);
-                if (isNaN(date.getTime())) {
-                    // 날짜 문자열이 이미 형식화되어 있을 수도 있음
-                    if (typeof dateStr === 'string') {
-                        if (useDot && dateStr.includes('.')) {
-                            return dateStr;
-                        } else if (!useDot && dateStr.includes('/')) {
-                            return dateStr;
-                        }
-                    }
-                    return dateStr;
-                }
-                const year = date.getFullYear().toString().slice(-2);
-                const month = (date.getMonth() + 1).toString().padStart(2, '0');
-                const day = date.getDate().toString().padStart(2, '0');
-                const separator = useDot ? '.' : '/';
-                return `${year}${separator}${month}${separator}${day}`;
-            } catch (e) {
-                return dateStr;
-            }
-        }
-        
-        // 시간 형식 변환: hh:mm:ss
-        function formatTime(timeStr) {
-            if (!timeStr || timeStr === null || timeStr === undefined || timeStr === '') {
-                return '';
-            }
-            const str = timeStr.toString().trim();
-            // 이미 hh:mm:ss 형식이면 그대로 반환
-            if (/^\d{2}:\d{2}:\d{2}$/.test(str)) {
-                return str;
-            }
-            // hh:mm 형식이면 :00 추가
-            if (/^\d{2}:\d{2}$/.test(str)) {
-                return str + ':00';
-            }
-            // 다른 형식 처리
-            return str;
-        }
-        
-        // 심야구분: category_table.json 분류=심야구분 키워드(시작/종료) 기반 시간 포함 여부
         let _simyaRangesCache = [];
-        function timeToSeconds(s) {
-            if (!s || s === null || s === undefined) return null;
-            const str = String(s).trim();
-            let h, m, sec;
-            if (str.includes(':')) {
-                const p = str.split(':');
-                h = parseInt(p[0], 10) || 0;
-                m = parseInt(p[1], 10) || 0;
-                sec = parseInt(p[2], 10) || 0;
-            } else {
-                const cleaned = str.replace(/\D/g, '');
-                if (cleaned.length >= 6) {
-                    h = parseInt(cleaned.substr(0, 2), 10) || 0;
-                    m = parseInt(cleaned.substr(2, 2), 10) || 0;
-                    sec = parseInt(cleaned.substr(4, 2), 10) || 0;
-                } else return null;
-            }
-            return h * 3600 + m * 60 + sec;
-        }
-        function isTimeInSimyaRanges(timeStr) {
-            if (!_simyaRangesCache || _simyaRangesCache.length === 0) return false;
-            const t = timeToSeconds(timeStr);
-            if (t === null) return false;
-            if (t === 0) return false;
-            for (const r of _simyaRangesCache) {
-                const start = timeToSeconds(r.start);
-                const end = timeToSeconds(r.end);
-                if (start === null || end === null) continue;
-                if (end >= start) {
-                    if (t >= start && t <= end) return true;
-                } else {
-                    if (t >= start || t <= end) return true;
-                }
-            }
-            return false;
-        }
-        
-        // 금액 형식 변환: 천단위 구분 기호
-        function formatAmount(value) {
-            if (value === null || value === undefined || value === '') {
-                return '0';
-            }
-            const num = parseFloat(value);
-            if (isNaN(num)) {
-                return '0';
-            }
-            return Math.round(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
 
         // 파일 목록 로드
         async function loadSourceFiles() {
@@ -2703,9 +2593,9 @@
                                 // 입금액/출금액 색상 적용
                                 let cellStyle = '';
                                 if (col === '입금액' || col.includes('입금')) {
-                                    cellStyle = ' style="color: #0000FF;"';
+                                    cellStyle = ' style="color: #1565C0;"';
                                 } else if (col === '출금액' || col.includes('출금')) {
-                                    cellStyle = ' style="color: #FF0000;"';
+                                    cellStyle = ' style="color: #C62828;"';
                                 }
                                 
                                 // 숫자인지 확인하여 정렬 설정
@@ -2775,8 +2665,8 @@
                     else displayValue = value;
                 }
                 let cellStyle = '';
-                if (col === '입금액') cellStyle = ' style="color: #0000FF; white-space: nowrap; text-align: right !important;"';
-                else if (col === '출금액') cellStyle = ' style="color: #FF0000; white-space: nowrap; text-align: right !important;"';
+                if (col === '입금액') cellStyle = ' style="color: #1565C0; white-space: nowrap; text-align: right !important;"';
+                else if (col === '출금액') cellStyle = ' style="color: #C62828; white-space: nowrap; text-align: right !important;"';
                 else if (col === '거래일' || col === '거래시간' || col === '은행명') cellStyle = ' style="white-space: nowrap; text-align: center !important;"';
                 else if (col === '계좌번호') cellStyle = ' style="white-space: nowrap; text-align: left !important;"';
                 else cellStyle = ' style="white-space: nowrap; text-align: left !important;"';
@@ -2811,8 +2701,8 @@
         }
 
         function getProcessedCellStyle(col) {
-            if (col === '입금액') return ' style="color: #0000FF; white-space: nowrap; text-align: right !important;"';
-            if (col === '출금액') return ' style="color: #FF0000; white-space: nowrap; text-align: right !important;"';
+            if (col === '입금액') return ' style="color: #1565C0; white-space: nowrap; text-align: right !important;"';
+            if (col === '출금액') return ' style="color: #C62828; white-space: nowrap; text-align: right !important;"';
             if (['거래일', '거래시간', '은행명'].indexOf(col) >= 0) return ' style="white-space: nowrap; text-align: center !important;"';
             if (col === '계좌번호') return ' style="white-space: nowrap; text-align: left !important;"';
             return ' style="white-space: nowrap; text-align: left !important;"';
@@ -2846,10 +2736,10 @@
                 html += '</tr>';
             });
 
-            html += '<tr class="sum-row" data-sum-row="true" style="background-color: #f0f0f0; font-weight: bold;">';
+            html += '<tr class="sum-row" data-sum-row="true" style="background-color: #E8ECF0; font-weight: bold;">';
             columns.forEach(col => {
-                if (col === '입금액') html += `<td style="text-align: right; color: #0000FF;" data-sum-col="입금액">${formatAmount(sumDeposit)}</td>`;
-                else if (col === '출금액') html += `<td style="text-align: right; color: #FF0000;" data-sum-col="출금액">${formatAmount(sumWithdraw)}</td>`;
+                if (col === '입금액') html += `<td style="text-align: right; color: #1565C0;" data-sum-col="입금액">${formatAmount(sumDeposit)}</td>`;
+                else if (col === '출금액') html += `<td style="text-align: right; color: #C62828;" data-sum-col="출금액">${formatAmount(sumWithdraw)}</td>`;
                 else if (col === '거래일') html += '<td style="text-align: center;" data-sum-col="거래일">합계</td>';
                 else html += `<td data-sum-col="${col}"></td>`;
             });
@@ -3385,11 +3275,11 @@
                     const updatedBtn = document.getElementById('export-bank_category-btn');
                     if (!window.__categoryFileExists) {
                         updatedBtn.textContent = '생성';
-                        updatedBtn.style.background = '#FF9800';
+                        updatedBtn.style.background = '#E67E22';
                         updatedBtn.addEventListener('click', generateCategoryTable);
                     } else {
                         updatedBtn.textContent = '출력';
-                        updatedBtn.style.background = '#4CAF50';
+                        updatedBtn.style.background = '#27AE60';
                         updatedBtn.addEventListener('click', function() {
                             const currentAction = document.getElementById('new-category-chasu').value;
                             if (currentAction === '입력' || currentAction === '수정' || currentAction === '삭제') {
@@ -3469,7 +3359,7 @@
                         btn.parentNode.replaceChild(newBtn, btn);
                         const updatedBtn = document.getElementById('export-bank_category-btn');
                         updatedBtn.textContent = '생성';
-                        updatedBtn.style.background = '#FF9800';
+                        updatedBtn.style.background = '#E67E22';
                         updatedBtn.addEventListener('click', generateCategoryTable);
                     }
                     const fileErr = (data.error || 'category_table.json 파일이 없습니다.').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -3486,7 +3376,7 @@
                     btn.parentNode.replaceChild(newBtn, btn);
                     const updatedBtn = document.getElementById('export-bank_category-btn');
                     updatedBtn.textContent = '출력';
-                    updatedBtn.style.background = '#4CAF50';
+                    updatedBtn.style.background = '#27AE60';
                     updatedBtn.addEventListener('click', function() {
                         const currentAction = document.getElementById('new-category-chasu').value;
                         if (currentAction === '입력' || currentAction === '수정' || currentAction === '삭제') {
@@ -3506,7 +3396,7 @@
                 
                 if (!data.data || data.data.length === 0) {
                     document.getElementById('category-definition-table-body').innerHTML = 
-                        '<tr><td colspan="5" style="padding: 20px; text-align: center; color: #666; white-space: normal;">카테고리 데이터가 없습니다.</td></tr>';
+                        '<tr><td colspan="5" style="padding: 20px; text-align: center; color: #34495E; white-space: normal;">카테고리 데이터가 없습니다.</td></tr>';
                     allCategoryTableData = [];
                     if (typeof updateCategoryDefinitionSummary === 'function') updateCategoryDefinitionSummary(0);
                     return;
@@ -3530,7 +3420,7 @@
                     btn.parentNode.replaceChild(newBtn, btn);
                     const updatedBtn = document.getElementById('export-bank_category-btn');
                     updatedBtn.textContent = '생성';
-                    updatedBtn.style.background = '#FF9800';
+                    updatedBtn.style.background = '#E67E22';
                     updatedBtn.addEventListener('click', generateCategoryTable);
                 }
             }
@@ -3569,7 +3459,7 @@
                     if (btn) {
                         btn.disabled = false;
                         btn.textContent = originalText;
-                        btn.style.background = '#FF9800';
+                        btn.style.background = '#E67E22';
                     }
                 }
             } catch (error) {
@@ -3578,7 +3468,7 @@
                 if (btn) {
                     btn.disabled = false;
                     btn.textContent = originalText;
-                    btn.style.background = '#FF9800';
+                    btn.style.background = '#E67E22';
                 }
             }
         }
@@ -3660,7 +3550,7 @@
             
             if (filteredData.length === 0) {
                 document.getElementById('category-definition-table-body').innerHTML = 
-                    '<tr><td colspan="5" style="padding: 20px; text-align: center; color: #666; white-space: normal;">카테고리 데이터가 없습니다.</td></tr>';
+                    '<tr><td colspan="5" style="padding: 20px; text-align: center; color: #34495E; white-space: normal;">카테고리 데이터가 없습니다.</td></tr>';
                 updateDropdownOptions();
                 if (typeof updateCategoryDefinitionSummary === 'function') updateCategoryDefinitionSummary(0);
                 return;
@@ -3702,11 +3592,11 @@
                 const cursorStyle = 'cursor: pointer;';
                 
                 tableHtml += `<tr class="bank_category-row" data-i="${index}" data-chasu="${(분류 || '').toString().replace(/"/g, '&quot;')}" data-keyword="${(키워드 || '').toString().replace(/"/g, '&quot;')}" data-category="${(카테고리 || '').toString().replace(/"/g, '&quot;')}" data-업종코드="${(업종코드 || '').toString().replace(/"/g, '&quot;')}" data-위험도="${(위험도 || '').toString().replace(/"/g, '&quot;')}" style="border-bottom: 1px solid #eee;${rowBgColor ? ` background-color: ${rowBgColor};` : ''}${cursorStyle}" onclick="selectCategoryRow(this)">
-                    <td style="border: 1px solid #ddd; padding: 2px;">${분류}</td>
-                    <td style="border: 1px solid #ddd; padding: 2px;">${키워드}</td>
-                    <td style="border: 1px solid #ddd; padding: 2px;">${카테고리}</td>
-                    <td style="text-align: center; border: 1px solid #ddd; padding: 2px;">${업종코드}</td>
-                    <td style="text-align: center; border: 1px solid #ddd; padding: 2px;">${위험도}</td>
+                    <td style="border: 1px solid #E8ECF0; padding: 2px;">${분류}</td>
+                    <td style="border: 1px solid #E8ECF0; padding: 2px;">${키워드}</td>
+                    <td style="border: 1px solid #E8ECF0; padding: 2px;">${카테고리}</td>
+                    <td style="text-align: center; border: 1px solid #E8ECF0; padding: 2px;">${업종코드}</td>
+                    <td style="text-align: center; border: 1px solid #E8ECF0; padding: 2px;">${위험도}</td>
                 </tr>`;
             });
             
@@ -3807,7 +3697,7 @@
             if (nameInput) nameInput.value = '';
             selectedRowData = null;
             toggleInputFields(false);
-            updateButtonText('출력', '#4CAF50');
+            updateButtonText('출력', '#27AE60');
             renderCategoryDefinitionTable();
         }
 
@@ -3851,7 +3741,7 @@
                         try { sessionStorage.setItem('reset_default_common_action', 'json_to_xlsx'); } catch (e) {}
                         await loadCategoryDefinitionTable();
                         selectedRowData = null;
-                        updateButtonText('출력', '#4CAF50');
+                        updateButtonText('출력', '#27AE60');
                         document.getElementById('new-category-chasu').value = '';
                         toggleInputFields(false);
                         renderCategoryDefinitionTable();
@@ -3926,7 +3816,7 @@
                     document.getElementById('new-category-keyword-input').value = '';
                     document.getElementById('new-category-name-input').value = '';
                     selectedRowData = null;
-                    updateButtonText('출력', '#4CAF50');
+                    updateButtonText('출력', '#27AE60');
                     document.getElementById('new-category-chasu').value = '';
                     toggleInputFields(false);
                     renderCategoryDefinitionTable();
@@ -3987,7 +3877,7 @@
                 '@media print { ' +
                 'body { margin: 0; padding: 0; } ' +
                 '.no-print { display: none; } ' +
-                '.print-header { padding: 4px 8px; font-size: 11px; border-bottom: 1px solid #ddd; margin-bottom: 8px; }' +
+                '.print-header { padding: 4px 8px; font-size: 11px; border-bottom: 1px solid #E8ECF0; margin-bottom: 8px; }' +
                 '.print-body { }' +
                 'table { page-break-inside: auto; } ' +
                 'tr { page-break-inside: avoid; page-break-after: auto; } ' +
@@ -3999,7 +3889,7 @@
                 '.print-header .header-left { text-align: left; } .print-header .header-right { text-align: right; }' +
                 'table { border-collapse: collapse; width: 100%; margin-top: 0; font-size: 11px; table-layout: fixed; }' +
                 'th, td { border: 1px solid #333; padding: 6px; text-align: left; }' +
-                'th { background-color: #f5f5f5; font-weight: bold; text-align: center; }' +
+                'th { background-color: #F8F9FA; font-weight: bold; text-align: center; }' +
                 'tr:nth-child(even) { background-color: rgba(255, 152, 0, 0.1); }' +
                 '</style>' +
                 '</head><body><div class="report-wrap">' +
@@ -4039,13 +3929,13 @@
                 else if (col === '거래시간') displayValue = displayValue ? formatTime(displayValue) : '';
                 else if (col === '입금액' || col === '출금액') displayValue = displayValue ? formatNumber(parseFloat(displayValue) || 0) : '';
                 let cellBgColor = isEvenRow ? (columnBgColors[col] || '') : '';
-                let cellStyle = ' style="white-space: nowrap; text-align: left; padding: 4px; border: 1px solid #ddd;' + (cellBgColor ? ' background-color: ' + cellBgColor + ';' : '') + '"';
+                let cellStyle = ' style="white-space: nowrap; text-align: left; padding: 4px; border: 1px solid #E8ECF0;' + (cellBgColor ? ' background-color: ' + cellBgColor + ';' : '') + '"';
                 if (col === '입금액' || col === '출금액') {
-                    cellStyle = ' style="white-space: nowrap; text-align: right; padding: 4px; border: 1px solid #ddd; color: ' + (col === '입금액' ? '#0000FF' : '#FF0000') + '; font-size: 11px;' + (cellBgColor ? ' background-color: ' + cellBgColor + ';' : '') + '"';
+                    cellStyle = ' style="white-space: nowrap; text-align: right; padding: 4px; border: 1px solid #E8ECF0; color: ' + (col === '입금액' ? '#1565C0' : '#C62828') + '; font-size: 11px;' + (cellBgColor ? ' background-color: ' + cellBgColor + ';' : '') + '"';
                 } else if (['취소','입출금','은행명','거래일','거래시간'].indexOf(col) >= 0) {
-                    cellStyle = ' style="white-space: nowrap; text-align: center; padding: 4px; border: 1px solid #ddd;' + (cellBgColor ? ' background-color: ' + cellBgColor + ';' : '') + '"';
+                    cellStyle = ' style="white-space: nowrap; text-align: center; padding: 4px; border: 1px solid #E8ECF0;' + (cellBgColor ? ' background-color: ' + cellBgColor + ';' : '') + '"';
                 } else if (col === '계좌번호') {
-                    cellStyle = ' style="white-space: nowrap; text-align: left; padding: 4px; border: 1px solid #ddd;' + (cellBgColor ? ' background-color: ' + cellBgColor + ';' : '') + '"';
+                    cellStyle = ' style="white-space: nowrap; text-align: left; padding: 4px; border: 1px solid #E8ECF0;' + (cellBgColor ? ' background-color: ' + cellBgColor + ';' : '') + '"';
                 }
                 html += '<td' + cellStyle + '>' + displayValue + '</td>';
             });
@@ -4135,13 +4025,13 @@
                     // 그래프는 renderCategoryQueryTable 내부 setTimeout에서 1회만 갱신
                 } else {
                     contentEl.innerHTML = 
-                        '<div class="loading" style="padding: 20px; text-align: center; color: #666;">데이터 로딩중 ... (0건)</div>';
+                        '<div class="loading" style="padding: 20px; text-align: center; color: #34495E;">데이터 로딩중 ... (0건)</div>';
                 }
                 
                 // bank_after 파일 생성 버튼은 항상 활성화
                 if (btn) {
                     btn.disabled = false;
-                    btn.style.backgroundColor = '#2196F3';
+                    btn.style.backgroundColor = '#27AE60';
                     btn.style.cursor = 'pointer';
                 }
             } catch (error) {
@@ -4152,7 +4042,7 @@
                 
                 if (btn) {
                     btn.disabled = false;
-                    btn.style.backgroundColor = '#2196F3';
+                    btn.style.backgroundColor = '#27AE60';
                     btn.style.cursor = 'pointer';
                 }
             }
@@ -4163,7 +4053,7 @@
             const contentDiv = document.getElementById('category-query-content');
             categoryQueryTableData = data || [];
             if (!data || data.length === 0) {
-                contentDiv.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">데이터가 없습니다.</div>';
+                contentDiv.innerHTML = '<div style="padding: 20px; text-align: center; color: #34495E;">데이터가 없습니다.</div>';
                 return;
             }
             const fullTotalDeposit = options && options.totalDeposit != null ? options.totalDeposit : null;
@@ -4270,7 +4160,7 @@
                 const headerBgColor = columnBgColors[col] || '';
                 const displayName = columnDisplayNames[col] || col;
                 const headerAlign = col === '계좌번호' ? 'left' : 'center';
-                html += `<th style="width: ${width}%; white-space: nowrap; text-align: ${headerAlign}; padding: 2px 2px; border: 1px solid #ddd;${headerBgColor ? ` background-color: ${headerBgColor};` : ''}">${displayName}</th>`;
+                html += `<th style="width: ${width}%; white-space: nowrap; text-align: ${headerAlign}; padding: 2px 2px; border: 1px solid #E8ECF0;${headerBgColor ? ` background-color: ${headerBgColor};` : ''}">${displayName}</th>`;
             });
             html += '</tr>';
             html += '<tr style="background-color: #f9f9f9;">';
@@ -4278,7 +4168,7 @@
                 const ratio = columnWidths[col] || 1.0;
                 const width = ((ratio / totalRatio) * 100).toFixed(2);
                 const filterAlign = col === '계좌번호' ? 'left' : 'center';
-                html += `<th style="width: ${width}%; padding: 2px 2px; border: 1px solid #ddd; text-align: ${filterAlign};">
+                html += `<th style="width: ${width}%; padding: 2px 2px; border: 1px solid #E8ECF0; text-align: ${filterAlign};">
                     <select id="filter-category-query-${col}" style="width: 100%; padding: 1px 2px; font-size: 11px; border: 1px solid #ccc; border-radius: 2px;">
                         <option value="">전체</option>`;
                 if (col === '거래시간') {
@@ -4337,13 +4227,13 @@
                         cellBgColor = columnBgColors[col] || '';
                     }
                     
-                    let cellStyle = ` style="white-space: nowrap; text-align: left; padding: 4px; border: 1px solid #ddd;${cellBgColor ? ` background-color: ${cellBgColor};` : ''}"`;
+                    let cellStyle = ` style="white-space: nowrap; text-align: left; padding: 4px; border: 1px solid #E8ECF0;${cellBgColor ? ` background-color: ${cellBgColor};` : ''}"`;
                     if (col === '입금액' || col === '출금액') {
-                        cellStyle = ` style="white-space: nowrap; text-align: right; padding: 4px; border: 1px solid #ddd; color: ${col === '입금액' ? '#0000FF' : '#FF0000'}; font-size: 11px;${cellBgColor ? ` background-color: ${cellBgColor};` : ''}"`;
+                        cellStyle = ` style="white-space: nowrap; text-align: right; padding: 4px; border: 1px solid #E8ECF0; color: ${col === '입금액' ? '#1565C0' : '#C62828'}; font-size: 11px;${cellBgColor ? ` background-color: ${cellBgColor};` : ''}"`;
                     } else if (col === '취소' || col === '은행명' || col === '거래일' || col === '거래시간') {
-                        cellStyle = ` style="white-space: nowrap; text-align: center; padding: 4px; border: 1px solid #ddd;${cellBgColor ? ` background-color: ${cellBgColor};` : ''}"`;
+                        cellStyle = ` style="white-space: nowrap; text-align: center; padding: 4px; border: 1px solid #E8ECF0;${cellBgColor ? ` background-color: ${cellBgColor};` : ''}"`;
                     } else if (col === '계좌번호') {
-                        cellStyle = ` style="white-space: nowrap; text-align: left; padding: 4px; border: 1px solid #ddd;${cellBgColor ? ` background-color: ${cellBgColor};` : ''}"`;
+                        cellStyle = ` style="white-space: nowrap; text-align: left; padding: 4px; border: 1px solid #E8ECF0;${cellBgColor ? ` background-color: ${cellBgColor};` : ''}"`;
                     }
                     
                     html += `<td${cellStyle}>${displayValue}</td>`;
@@ -4361,19 +4251,19 @@
                 });
             }
             
-            html += '<tr class="sum-row" data-sum-row="true" style="font-weight: bold; border-top: 2px solid #ddd; background-color: #f0f0f0;">';
+            html += '<tr class="sum-row" data-sum-row="true" style="font-weight: bold; border-top: 2px solid #E8ECF0; background-color: #E8ECF0;">';
             availableColumns.forEach(col => {
-                let cellStyle = ` style="white-space: nowrap; text-align: left; padding: 4px; border: 1px solid #ddd;"`;
+                let cellStyle = ` style="white-space: nowrap; text-align: left; padding: 4px; border: 1px solid #E8ECF0;"`;
                 let displayValue = '';
                 
                 if (col === '입금액') {
-                    cellStyle = ` style="white-space: nowrap; text-align: right; padding: 4px; border: 1px solid #ddd; color: #0000FF; font-size: 11px;"`;
+                    cellStyle = ` style="white-space: nowrap; text-align: right; padding: 4px; border: 1px solid #E8ECF0; color: #1565C0; font-size: 11px;"`;
                     displayValue = formatNumber(totalDeposit);
                 } else if (col === '출금액') {
-                    cellStyle = ` style="white-space: nowrap; text-align: right; padding: 4px; border: 1px solid #ddd; color: #FF0000; font-size: 11px;"`;
+                    cellStyle = ` style="white-space: nowrap; text-align: right; padding: 4px; border: 1px solid #E8ECF0; color: #C62828; font-size: 11px;"`;
                     displayValue = formatNumber(totalWithdraw);
                 } else if (col === '거래일') {
-                    cellStyle = ` style="white-space: nowrap; text-align: center; padding: 4px; border: 1px solid #ddd;"`;
+                    cellStyle = ` style="white-space: nowrap; text-align: center; padding: 4px; border: 1px solid #E8ECF0;"`;
                     displayValue = '합계';
                 }
                 
@@ -4495,7 +4385,7 @@
                             const isEmpty = cellValue === '' || cellValue === null || cellValue === undefined || String(cellValue).trim() === '';
                             if (!isEmpty) showRow = false;
                         } else if (col === '거래시간' && filterValue === '__심야구분__') {
-                            if (!isTimeInSimyaRanges(rowData['거래시간'])) showRow = false;
+                            if (!isTimeInSimyaRanges(rowData['거래시간'], _simyaRangesCache)) showRow = false;
                         } else if (col === '카테고리' && filterValue === '__기타거래__') {
                             const cat = String(cellValue || '').trim();
                             if (cat !== '' && cat !== '기타거래') showRow = false;
@@ -4560,16 +4450,16 @@
                     });
                     
                     const availableColumns = Array.from(table.querySelectorAll('thead tr:first-child th')).map(th => th.textContent.trim());
-                    const sumRowHtml = '<tr class="sum-row" data-sum-row="true" style="font-weight: bold; border-top: 2px solid #ddd; background-color: #f0f0f0;">' +
+                    const sumRowHtml = '<tr class="sum-row" data-sum-row="true" style="font-weight: bold; border-top: 2px solid #E8ECF0; background-color: #E8ECF0;">' +
                         availableColumns.map(col => {
                             if (col === '입금액') {
-                                return `<td style="white-space: nowrap; text-align: right; padding: 4px; border: 1px solid #ddd; color: #0000FF; font-size: 11px;" data-sum-col="입금액">${formatNumber(totalDeposit)}</td>`;
+                                return `<td style="white-space: nowrap; text-align: right; padding: 4px; border: 1px solid #E8ECF0; color: #1565C0; font-size: 11px;" data-sum-col="입금액">${formatNumber(totalDeposit)}</td>`;
                             } else if (col === '출금액') {
-                                return `<td style="white-space: nowrap; text-align: right; padding: 4px; border: 1px solid #ddd; color: #FF0000; font-size: 11px;" data-sum-col="출금액">${formatNumber(totalWithdraw)}</td>`;
+                                return `<td style="white-space: nowrap; text-align: right; padding: 4px; border: 1px solid #E8ECF0; color: #C62828; font-size: 11px;" data-sum-col="출금액">${formatNumber(totalWithdraw)}</td>`;
                             } else if (col === '거래일') {
-                                return `<td style="white-space: nowrap; text-align: center; padding: 4px; border: 1px solid #ddd;" data-sum-col="${col}">합계</td>`;
+                                return `<td style="white-space: nowrap; text-align: center; padding: 4px; border: 1px solid #E8ECF0;" data-sum-col="${col}">합계</td>`;
                             } else {
-                                return `<td style="white-space: nowrap; text-align: center; padding: 4px; border: 1px solid #ddd;" data-sum-col="${col}"></td>`;
+                                return `<td style="white-space: nowrap; text-align: center; padding: 4px; border: 1px solid #E8ECF0;" data-sum-col="${col}"></td>`;
                             }
                         }).join('') +
                         '</tr>';
@@ -4784,7 +4674,7 @@
                     if (btn) {
                         btn.disabled = false;
                         btn.textContent = btn.textContent || '';
-                        btn.style.backgroundColor = '#2196F3';
+                        btn.style.backgroundColor = '#27AE60';
                         btn.style.cursor = 'pointer';
                     }
                 }
@@ -4795,7 +4685,7 @@
                 if (btn) {
                     btn.disabled = false;
                     btn.textContent = btn.textContent || '';
-                    btn.style.backgroundColor = '#2196F3';
+                    btn.style.backgroundColor = '#27AE60';
                     btn.style.cursor = 'pointer';
                 }
             }
@@ -4813,7 +4703,7 @@
                         document.getElementById('new-category-keyword-input').value = '';
                         document.getElementById('new-category-name-input').value = '';
                         selectedRowData = null;
-                        updateButtonText('완료', '#FF9800');
+                        updateButtonText('완료', '#E67E22');
                         renderCategoryDefinitionTable();
                     } else {
                         toggleInputFields(false);
@@ -4821,7 +4711,7 @@
                         document.getElementById('new-category-keyword-input').value = '';
                         document.getElementById('new-category-name-input').value = '';
                         selectedRowData = null;
-                        updateButtonText('출력', '#4CAF50');
+                        updateButtonText('출력', '#27AE60');
                         // 분류가 전체이면 키워드/카테고리도 전체
                         if (!filterValue || filterValue === '' || filterValue === '전체') {
                             const kw = document.getElementById('new-category-keyword-filter');

@@ -8,10 +8,10 @@ alwaysApply: true
 ## 루트 공동 폴더 (path_config.py)
 
 - **data/** — 지속 가능한 JSON (은행·신용카드·금융정보 공통)
-  - **category_table.json** (data 폴더. `lib.path_config.get_category_table_json_path()`), **bank_after.json**, **card_after.json**, **cash_after.json**. 업종분류_table.xlsx는 `readme/backup_업종분류_to_xlsx.py`로 data에 내보내기.
+  - **category_table.json** (data 폴더. `lib.path_config.get_category_table_json_path()`), **bank_after.json**, **card_after.json**, **cash_after.json**. 업종분류_table.xlsx는 `readme/스크립트/backup_업종분류_to_xlsx.py`로 data에 내보내기.
 - **temp/** — 임시 파일·임시 JSON 전부 (예: _myrisk_json_temp.json, .cat_tbl_*.json, .data_*.json, run_full_flow.log). `.gitignore`에 `temp/` 포함.
 - **export/** — 분석·내보내기 결과 JSON/HTML (앱 미참조). 루트에 흩어진 *_summary, *_category, *_by_* 등은 `python scripts/json_정리.py` 로 한 번에 data/temp/export 로 분류 가능.
-- **readme/** — 문서(txt, md, 유틸 스크립트) 모음. 상세 목록은 readme/README_문서목록.md 참고.
+- **readme/** — 문서(txt, md, 유틸 스크립트) 모음. 하위 폴더: 가이드/, 스크립트/, 특허자료/, 참고자료/, 분석메모/. 상세 목록은 readme/README_문서목록.md 참고.
 
 ## .source 폴더 (Git/GitHub에 반드시 포함)
 

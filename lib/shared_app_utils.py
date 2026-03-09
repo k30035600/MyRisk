@@ -1,6 +1,13 @@
 # -*- coding: utf-8 -*-
-"""은행/카드/금융 앱 공통: 작업 디렉터리, JSON 직렬화, 파일 목록, 바이트 포맷."""
+"""
+은행/카드/금융정보 앱 공통 유틸리티.
+
+작업 디렉터리 전환, JSON 직렬화, 파일 목록, 바이트 포맷,
+텍스트·금액·시간 정리, 은행 필터 별칭 등 전 모듈에서 쓰는 함수를 모은다.
+"""
 import os
+import sys
+import io
 import functools
 import zipfile
 from pathlib import Path
@@ -123,16 +130,33 @@ def list_memory_bytes(lst):
         return 0
 
 
-# ── 텍스트·금액·시간 공통 유틸 (bank/card/cash process_*_data, *_app 공통) ──
+from lib.category_table_io import normalize_주식회사_for_match as _normalize_주식회사
 
-try:
-    from lib.category_table_io import normalize_주식회사_for_match as _normalize_주식회사
-except ImportError:
-    def _normalize_주식회사(text):
-        import re
-        text = re.sub(r'주식회사\s*', '(주)', text)
-        text = re.sub(r'㈜\s*', '(주)', text)
-        return text
+
+# ── Windows 콘솔 UTF-8 설정 ────────────────────────────────
+
+def setup_win32_utf8():
+    """Windows 콘솔 코드페이지를 65001(UTF-8)로 설정하고 stdout/stderr를 UTF-8로 래핑."""
+    if sys.platform != 'win32':
+        return
+    try:
+        import ctypes
+        kernel32 = ctypes.windll.kernel32
+        kernel32.SetConsoleOutputCP(65001)
+        kernel32.SetConsoleCP(65001)
+    except (OSError, AttributeError):
+        pass
+    for stream_name in ('stdout', 'stderr'):
+        stream = getattr(sys, stream_name, None)
+        if stream is None or isinstance(stream, io.TextIOWrapper):
+            continue
+        try:
+            binary = getattr(stream, 'buffer', None)
+            if binary:
+                wrapped = io.TextIOWrapper(binary, encoding='utf-8', errors='replace', line_buffering=True)
+                setattr(sys, stream_name, wrapped)
+        except Exception:
+            pass
 
 
 def safe_str(value):

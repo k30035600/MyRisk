@@ -26,39 +26,28 @@ import os
 import re
 import sys
 import unicodedata
-import time
 from datetime import datetime, timedelta
 from pathlib import Path
-
-# Windows 콘솔 인코딩 설정 (한글 출력을 위한 UTF-8 설정)
-if sys.platform == 'win32':
-    try:
-        if sys.stdout.encoding != 'utf-8':
-            sys.stdout.reconfigure(encoding='utf-8')
-        if sys.stderr.encoding != 'utf-8':
-            sys.stderr.reconfigure(encoding='utf-8')
-    except (AttributeError, OSError):
-        import codecs
-        sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'strict')
-        sys.stderr = codecs.getwriter('utf-8')(sys.stderr.buffer, 'strict')
 
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.normpath(os.path.join(_SCRIPT_DIR, '..'))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
-try:
-    from lib.path_config import get_data_dir, get_card_after_path, get_category_table_json_path, get_source_card_dir
-    SOURCE_DATA_DIR = os.path.dirname(get_source_card_dir())
-    SOURCE_CARD_DIR = get_source_card_dir()
-    CARD_BEFORE_FILE = os.path.join(get_data_dir(), 'card_before.json')
-    CARD_AFTER_FILE = get_card_after_path()
-    CATEGORY_TABLE_FILE = get_category_table_json_path()
-except ImportError:
-    SOURCE_DATA_DIR = os.path.join(PROJECT_ROOT, '.source')
-    SOURCE_CARD_DIR = os.path.join(PROJECT_ROOT, '.source', 'Card')
-    CARD_BEFORE_FILE = str(Path(PROJECT_ROOT) / 'data' / 'card_before.json') if PROJECT_ROOT else "card_before.json"
-    CARD_AFTER_FILE = str(Path(PROJECT_ROOT) / 'data' / 'card_after.json') if PROJECT_ROOT else "card_after.json"
-    CATEGORY_TABLE_FILE = str(Path(PROJECT_ROOT) / 'data' / 'category_table.json') if PROJECT_ROOT else None
+
+from lib.shared_app_utils import safe_str, clean_amount, setup_win32_utf8
+from lib.excel_io import safe_write_excel
+from lib.category_table_io import normalize_주식회사_for_match, safe_write_category_table, load_category_table, normalize_category_df, CATEGORY_TABLE_COLUMNS
+from lib.path_config import get_data_dir, get_card_after_path, get_category_table_json_path, get_source_card_dir
+from lib.data_json_io import safe_write_data_json, safe_read_data_json
+from lib.category_table_defaults import get_default_rules
+
+setup_win32_utf8()
+
+SOURCE_DATA_DIR = os.path.dirname(get_source_card_dir())
+SOURCE_CARD_DIR = get_source_card_dir()
+CARD_BEFORE_FILE = os.path.join(get_data_dir(), 'card_before.json')
+CARD_AFTER_FILE = get_card_after_path()
+CATEGORY_TABLE_FILE = get_category_table_json_path()
 def _card_before_exists():
     """card_before.json이 존재하고 유효한 데이터가 있으면 True. 없거나 비어 있으면 False. (은행 _bank_before_exists와 동일 조건: size<=2면 빈 JSON으로 간주)"""
     if not CARD_BEFORE_FILE or not os.path.isfile(CARD_BEFORE_FILE):
@@ -66,7 +55,6 @@ def _card_before_exists():
     if os.path.getsize(CARD_BEFORE_FILE) <= 2:
         return False
     try:
-        from lib.data_json_io import safe_read_data_json
         df = safe_read_data_json(CARD_BEFORE_FILE, default_empty=True)
         return df is not None and not df.empty
     except Exception:
@@ -102,56 +90,6 @@ HEADER_TO_STANDARD = {
 과세유형_헤더키워드 = '과세유형'
 # 금액 컬럼으로 간주할 헤더 키워드 (포함 시 숫자로 변환)
 AMOUNT_COLUMN_KEYWORDS = ('금액', '입금', '출금', '잔액')
-
-try:
-    from lib.excel_io import safe_write_excel
-except ImportError:
-    def safe_write_excel(df, filepath, max_retries=3):
-        df.to_excel(filepath, index=False, engine='openpyxl')
-        return True
-try:
-    from lib.category_table_io import normalize_주식회사_for_match
-except ImportError:
-    def normalize_주식회사_for_match(text):
-        if text is None or (isinstance(text, str) and not str(text).strip()):
-            return '' if text is None else str(text).strip()
-        val = str(text).strip()
-        val = re.sub(r'[\s/]*주식회사[\s/]*', '(주)', val)
-        val = re.sub(r'[\s/]*㈜[\s/]*', '(주)', val)
-        val = re.sub(r'(\(주\)[\s/]*)+', '(주)', val)
-        return val
-try:
-    from lib.shared_app_utils import safe_str, clean_amount
-except ImportError:
-    def safe_str(value):
-        if pd.isna(value) or value is None:
-            return ""
-        val = str(value).strip()
-        if val.lower() in ('nan', 'na', 'n', 'none', ''):
-            return ""
-        val = normalize_주식회사_for_match(val)
-        val = val.replace('((', '(').replace('))', ')')
-        val = val.replace('__', '_').replace('{}', '').replace('[]', '')
-        if val.count('(') != val.count(')'):
-            if val.count('(') > val.count(')'):
-                val = val.replace('(', '')
-            elif val.count(')') > val.count('('):
-                val = val.replace(')', '')
-        return val
-    def clean_amount(value):
-        if pd.isna(value) or value == '' or value == 0:
-            return 0
-        if isinstance(value, (int, float)):
-            return float(value)
-        value_str = str(value).replace(',', '').strip()
-        if value_str == '' or value_str == '-':
-            return 0
-        try:
-            return float(value_str)
-        except (ValueError, TypeError):
-            return 0
-        return False
-
 
 def normalize_brackets(text):
     """괄호 쌍 정규화: (( → (, )) → (, 불균형 시 보정."""
@@ -558,7 +496,6 @@ def _load_prepost_rules(category_path=None):
     if not path.exists():
         return [], []
     try:
-        from lib.category_table_io import load_category_table, normalize_category_df
         full = load_category_table(str(path), default_empty=True)
         if full is None or full.empty:
             return [], []
@@ -772,19 +709,7 @@ def integrate_card_excel(output_file=None, base_dir=None, skip_write=False):
         try:
             out_path = Path(CARD_BEFORE_FILE).resolve()
             out_path.parent.mkdir(parents=True, exist_ok=True)
-            try:
-                from lib.data_json_io import safe_write_data_json
-                if safe_write_data_json(str(out_path), combined_df):
-                    print(f"저장: {out_path}", flush=True)
-            except ImportError:
-                import json
-                rec = combined_df.fillna('').to_dict('records')
-                for row in rec:
-                    for k, v in list(row.items()):
-                        if hasattr(v, 'isoformat'):
-                            row[k] = v.isoformat()
-                with open(out_path, 'w', encoding='utf-8') as f:
-                    json.dump(rec, f, ensure_ascii=False, indent=2)
+            if safe_write_data_json(str(out_path), combined_df):
                 print(f"저장: {out_path}", flush=True)
         except Exception as e:
             print(f"오류: {CARD_BEFORE_FILE} 저장 실패 - {e}", file=sys.stderr, flush=True)
@@ -838,7 +763,6 @@ def classify_and_save(input_df=None):
         else:
             if _card_before_exists():
                 try:
-                    from lib.data_json_io import safe_read_data_json
                     df_card = safe_read_data_json(CARD_BEFORE_FILE, default_empty=True)
                 except Exception:
                     df_card = None
@@ -888,7 +812,6 @@ def classify_and_save(input_df=None):
 
         if had_category_file and CATEGORY_TABLE_FILE:
             try:
-                from lib.category_table_io import load_category_table, normalize_category_df
                 full = load_category_table(CATEGORY_TABLE_FILE, default_empty=True)
                 if full is not None and not full.empty:
                     df_cat = normalize_category_df(full)
@@ -943,16 +866,7 @@ def classify_and_save(input_df=None):
         extra = [c for c in df_card.columns if c not in card_after_cols]
         df_card = df_card.reindex(columns=existing + extra)
 
-        try:
-            from lib.data_json_io import safe_write_data_json
-            safe_write_data_json(CARD_AFTER_FILE, df_card)
-        except ImportError:
-            if safe_write_excel:
-                safe_write_excel(df_card, CARD_AFTER_FILE.replace('.json', '.xlsx'))
-            else:
-                err = 'lib.data_json_io 또는 excel_io 없음'
-                LAST_CLASSIFY_ERROR = err
-                return (False, err, 0)
+        safe_write_data_json(CARD_AFTER_FILE, df_card)
 
         if not had_category_file and CATEGORY_TABLE_FILE:
             try:
@@ -978,13 +892,6 @@ def classify_and_save(input_df=None):
 
 def create_category_table(df=None, category_filepath=None):
     """category_table.json 생성·갱신 (구분 없음). 분류 = 계정과목 등. 기본값 또는 .source/category_table.xlsx 동기화."""
-    try:
-        from lib.category_table_defaults import get_default_rules
-    except ImportError:
-        _root = os.environ.get('MYRISK_ROOT') or os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
-        if _root not in sys.path:
-            sys.path.insert(0, _root)
-        from lib.category_table_defaults import get_default_rules
     unique_category_data = get_default_rules('card')
     category_df = pd.DataFrame(unique_category_data).drop_duplicates(subset=['분류', '키워드', '카테고리'], keep='first')
     _root = os.environ.get('MYRISK_ROOT') or os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
@@ -995,10 +902,6 @@ def create_category_table(df=None, category_filepath=None):
         parent_dir = os.path.dirname(out_path)
         if parent_dir:
             os.makedirs(parent_dir, exist_ok=True)
-        _root = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
-        if _root not in sys.path:
-            sys.path.insert(0, _root)
-        from lib.category_table_io import safe_write_category_table, load_category_table, normalize_category_df, CATEGORY_TABLE_COLUMNS
         if len(category_df) == 0:
             category_df = pd.DataFrame(columns=CATEGORY_TABLE_COLUMNS)
         out = normalize_category_df(category_df, extended=True)

@@ -1,0 +1,178 @@
+/**
+ * 도움말 페이지 전용 스타일.
+ * static/help/*.md → marked.js 렌더링 후 적용.
+ */
+
+/* ─── 레이아웃 ─── */
+.help-container {
+    max-width: 2560px;
+    margin: 0 auto;
+    background: var(--color-surface, #fff);
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* ─── 타이포그래피 ─── */
+.help-container h1 {
+    color: var(--color-primary, #2C3E50);
+    margin-bottom: 30px;
+    font-size: 2em;
+    font-weight: 700;
+}
+.help-container h2 {
+    color: var(--color-primary, #2C3E50);
+    margin-top: 36px;
+    margin-bottom: 15px;
+    font-size: 1.5em;
+    border-bottom: 2px solid var(--color-action, #27AE60);
+    padding-bottom: 10px;
+}
+.help-container h3 {
+    color: var(--color-primary, #2C3E50);
+    margin-top: 22px;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+}
+.help-container h4 {
+    color: var(--color-primary, #2C3E50);
+    margin-top: 14px;
+    margin-bottom: 8px;
+    font-size: 1.05em;
+}
+
+/* ─── 본문 ─── */
+.help-container p {
+    line-height: 1.8;
+    color: var(--color-text, #34495E);
+    margin-bottom: 10px;
+}
+.help-container ul,
+.help-container ol {
+    margin-left: 20px;
+    margin-bottom: 15px;
+}
+.help-container li {
+    line-height: 1.8;
+    color: var(--color-text, #34495E);
+    margin-bottom: 5px;
+}
+
+/* ─── 인라인 코드 ─── */
+.help-container code {
+    background: #f0f0f0;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+}
+
+/* ─── 코드 블록 ─── */
+.help-container pre {
+    background: #f8f9fa;
+    border-left: 4px solid var(--color-action, #27AE60);
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    overflow-x: auto;
+}
+.help-container pre code {
+    background: none;
+    padding: 0;
+    font-size: 0.95em;
+}
+
+/* ─── 테이블 ─── */
+.help-container table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 15px 0;
+    font-size: 14px;
+}
+.help-container th,
+.help-container td {
+    border: 1px solid var(--color-border, #E8ECF0);
+    padding: 8px 12px;
+    text-align: left;
+}
+.help-container th {
+    background: var(--color-table-header, #E8ECF0);
+    color: var(--color-primary, #2C3E50);
+    font-weight: 700;
+}
+.help-container tr:nth-child(even) td {
+    background: var(--color-table-stripe, #F8F9FA);
+}
+
+/* ─── 인용 (> 팁/주의) ─── */
+.help-container blockquote {
+    background: #FFF8E1;
+    border-left: 4px solid #FFC107;
+    padding: 14px 18px;
+    margin: 16px 0;
+    border-radius: 4px;
+    color: var(--color-text, #34495E);
+}
+.help-container blockquote p {
+    margin-bottom: 4px;
+}
+.help-container blockquote p:last-child {
+    margin-bottom: 0;
+}
+
+/* ─── 구분선 ─── */
+.help-container hr {
+    border: none;
+    border-top: 1px solid var(--color-border, #E8ECF0);
+    margin: 30px 0;
+}
+
+/* ─── 링크 ─── */
+.help-container a {
+    color: var(--color-action, #27AE60);
+    text-decoration: none;
+}
+.help-container a:hover {
+    text-decoration: underline;
+}
+
+/* ─── 강조 ─── */
+.help-container strong {
+    color: var(--color-primary, #2C3E50);
+}
+
+/* ─── 로딩 ─── */
+.help-loading {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--color-text-muted, #7F8C8D);
+    font-size: 1.1em;
+}
+.help-loading::after {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 32px;
+    margin: 16px auto 0;
+    border: 3px solid var(--color-border, #E8ECF0);
+    border-top-color: var(--color-action, #27AE60);
+    border-radius: 50%;
+    animation: help-spin 0.8s linear infinite;
+}
+@keyframes help-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ─── 반응형 ─── */
+@media (max-width: 768px) {
+    .help-container { padding: 20px; }
+    .help-container h1 { font-size: 1.5em; }
+    .help-container h2 { font-size: 1.3em; }
+    .help-container table { font-size: 12px; }
+}
+@media (max-width: 480px) {
+    .help-container { padding: 12px; }
+    .help-container h1 { font-size: 1.3em; }
+    .help-container h2 { font-size: 1.15em; }
+}

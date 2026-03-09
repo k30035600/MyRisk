@@ -4,17 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>초기화 페이지 - MyRisk</title>
+    <link rel="stylesheet" href="/static/common.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { overflow-x: hidden; }
-        body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background: #FFFFFF; color: #8E8E8E; min-height: 100vh; padding: 0; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; }
+        body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background: #F8F9FA; color: #34495E; min-height: 100vh; padding: 0; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; }
 
         .top-nav { background: #2C3E50; padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; }
         .top-nav .brand { font-size: 1.05em; font-weight: bold; color: #fff; }
         .top-nav .brand span { color: #27AE60; }
         .top-nav .nav-links { display: flex; gap: 18px; }
-        .top-nav .nav-links a { color: rgba(255,255,255,0.75); text-decoration: none; font-size: 0.88em; transition: color 0.2s; }
-        .top-nav .nav-links a:hover { color: #fff; }
+        .top-nav .nav-links a { color: rgba(255,255,255,0.75); text-decoration: none; font-size: 0.88em; transition: color 0.2s, border-color 0.2s; padding-bottom: 2px; border-bottom: 2px solid transparent; }
+        .top-nav .nav-links a:hover { color: #fff; border-bottom-color: #27AE60; }
 
         .page-wrap { display: flex; flex-direction: column; width: 100%; flex: 1; max-width: 1400px; margin: 0 auto; padding: 16px 24px 12px; }
         .panels-row { display: flex; flex: 1; width: 100%; gap: 16px; }
@@ -46,41 +47,41 @@
         .reset-table col.col-select-col { width: 6.25%; }
         .reset-table tr { line-height: 1; }
         .reset-table th, .reset-table td { border: 1px solid #E8ECF0; padding: 5px 7px; text-align: center; vertical-align: middle; overflow: hidden; text-overflow: ellipsis; line-height: 1.4; }
-        .reset-table th { background: #2C3E50; font-weight: 600; color: #FFFFFF; }
-        .reset-table tbody tr:nth-child(even) { background: #F8FAFB; }
-        .reset-table tbody tr:hover { background: #EBF5F0; }
+        .reset-table th { background: #E8ECF0; font-weight: 700; color: #2C3E50; }
+        .reset-table tbody tr:nth-child(even) { background: #F8F9FA; }
+        .reset-table tbody tr:hover { background: #E8F5E9; }
         .reset-table .col-task { text-align: left; }
         .reset-table .col-select input[type="checkbox"] { margin: 0; transform: scale(0.85); vertical-align: middle; accent-color: #27AE60; }
         .reset-table input[type="radio"] { margin: 0; vertical-align: middle; accent-color: #27AE60; }
         .reset-table input[type="radio"]:disabled { opacity: 0.4; cursor: not-allowed; }
         .reset-table input[type="checkbox"]:disabled { opacity: 0.4; cursor: not-allowed; }
         .reset-table button { margin: 0; padding: 4px 6px; line-height: 1.3; vertical-align: middle; }
-        .reset-table .col-size { font-variant-numeric: tabular-nums; text-align: right; color: #8E8E8E; }
+        .reset-table .col-size { font-variant-numeric: tabular-nums; text-align: right; color: #7F8C8D; }
         .reset-table thead th.col-size { text-align: center; }
-        .reset-table .title-cell { background: #34495E; font-weight: 600; color: #fff; }
+        .reset-table .title-cell { background: #E8ECF0; font-weight: 700; color: #2C3E50; }
         .reset-table .vertical-text { writing-mode: vertical-lr; text-orientation: mixed; white-space: nowrap; display: inline-block; padding: 0; font-size: 1.25em; font-weight: bold; }
-        .reset-table td[style*="background:#f9f9f9"] { background: #F4F6F8 !important; color: #2C3E50; }
-        .reset-table td[style*="background:#f0f0f0"] { background: #EBF5F0 !important; color: #2C3E50; }
+        .reset-table td[style*="background:#f9f9f9"] { background: #F8F9FA !important; color: #2C3E50; }
+        .reset-table td[style*="background:#f0f0f0"] { background: #E8ECF0 !important; color: #2C3E50; }
 
-        .btn-execute { padding: 8px 16px; font-size: 0.9em; cursor: pointer; background: #27AE60; color: #fff; border: none; border-radius: 6px; font-family: inherit; width: 100%; line-height: 1.2; min-height: 34px; box-sizing: border-box; transition: background 0.2s; }
+        .btn-execute { padding: 8px 16px; font-size: 0.9em; cursor: pointer; background: #27AE60; color: #fff; border: none; border-radius: 4px; font-family: inherit; width: 100%; line-height: 1.2; min-height: 34px; box-sizing: border-box; transition: background 0.2s; }
         .btn-execute:hover { background: #219A52; }
-        .btn-execute:disabled { background: #D5DAE0; color: #8E8E8E; cursor: not-allowed; }
+        .btn-execute:disabled { background: #D5DAE0; color: #95A5A6; cursor: not-allowed; }
         .reset-table input, .reset-table button { margin: 0; vertical-align: middle; line-height: 1.2; min-height: 0; }
 
         .reset-actions { margin-top: 4px; display: flex; gap: 6px; flex-wrap: wrap; justify-content: space-between; align-items: center; }
         .reset-actions .btn-end { margin-left: auto; }
-        .reset-actions .btn { padding: 10px 20px; font-size: 1em; cursor: pointer; border: none; border-radius: 8px; font-family: inherit; text-decoration: none; display: inline-block; }
+        .reset-actions .btn { padding: 10px 20px; font-size: 1em; cursor: pointer; border: none; border-radius: 4px; font-family: inherit; text-decoration: none; display: inline-block; }
         .btn-primary { background: #27AE60; color: white; }
         .btn-primary:hover { background: #219A52; }
         .btn-secondary { background: #fff; color: #2C3E50; border: 2px solid #2C3E50; }
         .btn-secondary:hover { background: #2C3E50; color: #fff; }
 
         .bottom-actions { display: flex; gap: 12px; padding-top: 12px; width: 100%; }
-        .bottom-actions .btn { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 2.5em; padding: 14px 24px; line-height: 1.2; box-sizing: border-box; border-radius: 8px; text-decoration: none; font-size: 1em; font-weight: bold; font-family: inherit; transition: background 0.2s, box-shadow 0.2s; }
-        .btn-home { background: #27AE60; color: #fff; }
-        .btn-home:hover { background: #219A52; box-shadow: 0 4px 12px rgba(39,174,96,0.2); }
+        .bottom-actions .btn { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 2.5em; padding: 14px 24px; line-height: 1.2; box-sizing: border-box; border-radius: 4px; text-decoration: none; font-size: 1em; font-weight: bold; font-family: inherit; transition: background 0.2s, box-shadow 0.2s, color 0.2s; }
+        .btn-home { background: #27AE60; color: #fff; border: 2px solid #27AE60; }
+        .btn-home:hover { background: #219A52; border-color: #219A52; box-shadow: 0 4px 12px rgba(39,174,96,0.18); }
         .btn-shutdown { background: #fff; color: #2C3E50; border: 2px solid #2C3E50; }
-        .btn-shutdown:hover { background: #2C3E50; color: #fff; box-shadow: 0 4px 12px rgba(44,62,80,0.15); }
+        .btn-shutdown:hover { background: #2C3E50; color: #fff; box-shadow: 0 4px 12px rgba(44,62,80,0.12); }
 
         @media (max-width: 1024px) {
             .panels-row { flex-direction: column; }

@@ -1,18 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-MyBank (은행거래) Flask 서브앱 (bank_app.py)
+은행거래 Flask 서브앱 (bank_app.py).
 
-[역할]
-- 전처리 페이지(/): 전처리전(.source/Bank 원본)·카테고리 적용(bank_after)·카테고리 조회·그래프.
-- 카테고리 페이지(/category): category_table + bank_after 테이블·필터·출력.
-- bank_after 생성: ensure 또는 API POST 시 process_bank_data에서 통합→전처리→분류·후처리 후 data/bank_after.json 저장.
-
-[데이터]
-- 원본: .source/Bank 의 .xls, .xlsx. 결과: data/bank_after.json. 카테고리: data/category_table.json(공통).
-- 캐시: _source_bank_cache(전처리전), _bank_after_cache_obj(카테고리 적용, lib.after_cache). 재생성·reintegrate 시 무효화.
-
-[유지보수]
-- ensure_working_directory로 API 호출 시 cwd를 MyBank로 고정. 라우트 prefix는 /bank.
+전처리 페이지·카테고리 페이지를 제공하고,
+process_bank_data로 bank_after 생성 및 data 저장을 수행한다.
 """
 from flask import Flask, render_template, jsonify, request, make_response
 import traceback

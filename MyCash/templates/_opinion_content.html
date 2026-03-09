@@ -62,17 +62,17 @@
             <p><strong>[위험도 종합 평가]</strong> 위험도 분석 공식 R = Σ(w<sub>i</sub> × log<sub>10</sub>(1 + f<sub>i</sub>×a<sub>i</sub>))에 따라 산출한 결과, 종합 위험점수(R)는 <strong>{{ "%.2f"|format(risk_total_score) }}</strong>이며 등급은 <strong>{{ risk_grade_label }}</strong>에 해당한다.</p>
             <table style="width:100%; border-collapse:collapse; font-size:12px; margin:8px 0;">
                 <thead>
-                    <tr style="background:#f5f5f5;">
-                        <th style="border:1px solid #ddd; padding:4px 8px; text-align:center;">등급</th>
-                        <th style="border:1px solid #ddd; padding:4px 8px; text-align:center;">R 범위</th>
-                        <th style="border:1px solid #ddd; padding:4px 8px; text-align:center;">판정</th>
+                    <tr style="background:#E8ECF0;">
+                        <th style="border:1px solid #E8ECF0; padding:4px 8px; text-align:center;">등급</th>
+                        <th style="border:1px solid #E8ECF0; padding:4px 8px; text-align:center;">R 범위</th>
+                        <th style="border:1px solid #E8ECF0; padding:4px 8px; text-align:center;">판정</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr{% if risk_grade_label == '안전 (Safe)' %} style="background:#e8f5e9; font-weight:bold;"{% endif %}><td style="border:1px solid #ddd; padding:4px 8px;">안전 (Safe)</td><td style="border:1px solid #ddd; padding:4px 8px; text-align:center;">50 미만</td><td style="border:1px solid #ddd; padding:4px 8px;">면책 가능성 높음</td></tr>
-                    <tr{% if risk_grade_label == '보통 (Normal)' %} style="background:#fff3e0; font-weight:bold;"{% endif %}><td style="border:1px solid #ddd; padding:4px 8px;">보통 (Normal)</td><td style="border:1px solid #ddd; padding:4px 8px; text-align:center;">50 ~ 100</td><td style="border:1px solid #ddd; padding:4px 8px;">일부 특이 항목 소명</td></tr>
-                    <tr{% if risk_grade_label == '주의 (Caution)' %} style="background:#fff8e1; font-weight:bold;"{% endif %}><td style="border:1px solid #ddd; padding:4px 8px;">주의 (Caution)</td><td style="border:1px solid #ddd; padding:4px 8px; text-align:center;">100 ~ 150</td><td style="border:1px solid #ddd; padding:4px 8px;">소명 자료 준비 필수</td></tr>
-                    <tr{% if risk_grade_label == '심각 (Critical)' %} style="background:#ffebee; font-weight:bold;"{% endif %}><td style="border:1px solid #ddd; padding:4px 8px;">심각 (Critical)</td><td style="border:1px solid #ddd; padding:4px 8px; text-align:center;">150 이상</td><td style="border:1px solid #ddd; padding:4px 8px;">상세 사유서 필수</td></tr>
+                    <tr{% if risk_grade_label == '안전 (Safe)' %} style="background:#e8f5e9; font-weight:bold;"{% endif %}><td style="border:1px solid #E8ECF0; padding:4px 8px;">안전 (Safe)</td><td style="border:1px solid #E8ECF0; padding:4px 8px; text-align:center;">50 미만</td><td style="border:1px solid #E8ECF0; padding:4px 8px;">면책 가능성 높음</td></tr>
+                    <tr{% if risk_grade_label == '보통 (Normal)' %} style="background:#fff3e0; font-weight:bold;"{% endif %}><td style="border:1px solid #E8ECF0; padding:4px 8px;">보통 (Normal)</td><td style="border:1px solid #E8ECF0; padding:4px 8px; text-align:center;">50 ~ 100</td><td style="border:1px solid #E8ECF0; padding:4px 8px;">일부 특이 항목 소명</td></tr>
+                    <tr{% if risk_grade_label == '주의 (Caution)' %} style="background:#fff8e1; font-weight:bold;"{% endif %}><td style="border:1px solid #E8ECF0; padding:4px 8px;">주의 (Caution)</td><td style="border:1px solid #E8ECF0; padding:4px 8px; text-align:center;">100 ~ 150</td><td style="border:1px solid #E8ECF0; padding:4px 8px;">소명 자료 준비 필수</td></tr>
+                    <tr{% if risk_grade_label == '심각 (Critical)' %} style="background:#ffebee; font-weight:bold;"{% endif %}><td style="border:1px solid #E8ECF0; padding:4px 8px;">심각 (Critical)</td><td style="border:1px solid #E8ECF0; padding:4px 8px; text-align:center;">150 이상</td><td style="border:1px solid #E8ECF0; padding:4px 8px;">상세 사유서 필수</td></tr>
                 </tbody>
             </table>
 
@@ -81,21 +81,21 @@
             <table class="risk-notable-table" style="width:100%; border-collapse:collapse; font-size:9pt; margin-top:6px; margin-bottom:8px; table-layout:fixed;">
                 <thead>
                     <tr style="background:rgba(245,245,245,0.8);">
-                        <th scope="col" style="border:1px solid #ddd; padding:3px 4px; text-align:center; width:6%;">호수</th>
-                        <th scope="col" style="border:1px solid #ddd; padding:3px 4px; text-align:center; width:20%;">위험도</th>
-                        <th scope="col" style="border:1px solid #ddd; padding:3px 4px; text-align:center; width:46%;">조건 (한도금액·횟수)</th>
-                        <th scope="col" style="border:1px solid #ddd; padding:3px 4px; text-align:center; width:10%;">건수</th>
-                        <th scope="col" style="border:1px solid #ddd; padding:3px 4px; text-align:center; width:18%;">출금액</th>
+                        <th scope="col" style="border:1px solid #E8ECF0; padding:3px 4px; text-align:center; width:6%;">호수</th>
+                        <th scope="col" style="border:1px solid #E8ECF0; padding:3px 4px; text-align:center; width:20%;">위험도</th>
+                        <th scope="col" style="border:1px solid #E8ECF0; padding:3px 4px; text-align:center; width:46%;">조건 (한도금액·횟수)</th>
+                        <th scope="col" style="border:1px solid #E8ECF0; padding:3px 4px; text-align:center; width:10%;">건수</th>
+                        <th scope="col" style="border:1px solid #E8ECF0; padding:3px 4px; text-align:center; width:18%;">출금액</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for item in risk_notable_items %}
                     <tr style="white-space:nowrap;">
-                        <td style="border:1px solid #ddd; padding:3px 4px; text-align:center; overflow:hidden; text-overflow:ellipsis;">{{ item.classification_ho }}</td>
-                        <td style="border:1px solid #ddd; padding:3px 4px;">{{ item.classification_name }}{% if item.risk is defined %} ({{ item.risk }}){% endif %}</td>
-                        <td style="border:1px solid #ddd; padding:3px 4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="{{ item.condition|default('') }}">{{ item.condition|default('') }}</td>
-                        <td style="border:1px solid #ddd; padding:3px 4px; text-align:center;">{{ item.count }}건</td>
-                        <td style="border:1px solid #ddd; padding:3px 4px; text-align:right;">{{ '{:,}'.format(item.withdraw) }}원</td>
+                        <td style="border:1px solid #E8ECF0; padding:3px 4px; text-align:center; overflow:hidden; text-overflow:ellipsis;">{{ item.classification_ho }}</td>
+                        <td style="border:1px solid #E8ECF0; padding:3px 4px;">{{ item.classification_name }}{% if item.risk is defined %} ({{ item.risk }}){% endif %}</td>
+                        <td style="border:1px solid #E8ECF0; padding:3px 4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="{{ item.condition|default('') }}">{{ item.condition|default('') }}</td>
+                        <td style="border:1px solid #E8ECF0; padding:3px 4px; text-align:center;">{{ item.count }}건</td>
+                        <td style="border:1px solid #E8ECF0; padding:3px 4px; text-align:right;">{{ '{:,}'.format(item.withdraw) }}원</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -121,19 +121,19 @@
             <p>{{ monthly_trend_comment }}</p>
             {% if monthly_data is defined and monthly_data|length > 0 %}
             <table style="width:100%; border-collapse:collapse; font-size:11px; margin:6px 0;">
-                <thead><tr style="background:#f5f5f5;">
-                    <th style="border:1px solid #ddd; padding:3px 6px; text-align:center;">월</th>
-                    <th style="border:1px solid #ddd; padding:3px 6px; text-align:center;">입금</th>
-                    <th style="border:1px solid #ddd; padding:3px 6px; text-align:center;">출금</th>
-                    <th style="border:1px solid #ddd; padding:3px 6px; text-align:center;">잔액</th>
+                <thead><tr style="background:#E8ECF0;">
+                    <th style="border:1px solid #E8ECF0; padding:3px 6px; text-align:center;">월</th>
+                    <th style="border:1px solid #E8ECF0; padding:3px 6px; text-align:center;">입금</th>
+                    <th style="border:1px solid #E8ECF0; padding:3px 6px; text-align:center;">출금</th>
+                    <th style="border:1px solid #E8ECF0; padding:3px 6px; text-align:center;">잔액</th>
                 </tr></thead>
                 <tbody>
                 {% for m in monthly_data[-6:] %}
                 <tr>
-                    <td style="border:1px solid #ddd; padding:3px 6px;">{{ m.month }}</td>
-                    <td style="border:1px solid #ddd; padding:3px 6px; text-align:right;">{{ '{:,}'.format(m.deposit) }}원</td>
-                    <td style="border:1px solid #ddd; padding:3px 6px; text-align:right;">{{ '{:,}'.format(m.withdraw) }}원</td>
-                    <td style="border:1px solid #ddd; padding:3px 6px; text-align:right;">{{ '{:,}'.format(m.deposit - m.withdraw) }}원</td>
+                    <td style="border:1px solid #E8ECF0; padding:3px 6px;">{{ m.month }}</td>
+                    <td style="border:1px solid #E8ECF0; padding:3px 6px; text-align:right;">{{ '{:,}'.format(m.deposit) }}원</td>
+                    <td style="border:1px solid #E8ECF0; padding:3px 6px; text-align:right;">{{ '{:,}'.format(m.withdraw) }}원</td>
+                    <td style="border:1px solid #E8ECF0; padding:3px 6px; text-align:right;">{{ '{:,}'.format(m.deposit - m.withdraw) }}원</td>
                 </tr>
                 {% endfor %}
                 </tbody>
@@ -147,7 +147,7 @@
             {% if income_expense_comment is defined and income_expense_comment %}
             <p>{{ income_expense_comment }}</p>
             {% elif omit_section6_reason is defined and omit_section6_reason %}
-            <p style="color:#666; font-size:9pt;">{{ omit_section6_reason }}</p>
+            <p style="color:#34495E; font-size:9pt;">{{ omit_section6_reason }}</p>
             {% endif %}
         </div>
 
@@ -156,7 +156,7 @@
             {% if cash_advance_comment is defined and cash_advance_comment %}
             <p>{{ cash_advance_comment }} 현금서비스·카드론은 높은 이자율로 인해 채무 확대의 주요 원인이 되며, 면책 심사 시 '채무를 갚기 위한 추가 차입' 여부의 판단 근거가 될 수 있다.</p>
             {% elif omit_section7_reason is defined and omit_section7_reason %}
-            <p style="color:#666; font-size:9pt;">{{ omit_section7_reason }}</p>
+            <p style="color:#34495E; font-size:9pt;">{{ omit_section7_reason }}</p>
             {% endif %}
         </div>
 
@@ -177,26 +177,26 @@
             <p>위험도 2.0 이상(5호~10호)으로 분류된 개별 거래 내역은 다음과 같다. 각 거래에 대한 개별적 소명이 권고된다.</p>
             <table style="width:100%; border-collapse:collapse; font-size:11px; margin:6px 0;">
                 <thead><tr style="background:#fff3e0;">
-                    <th style="border:1px solid #ddd; padding:3px 5px; text-align:center;">일자</th>
-                    <th style="border:1px solid #ddd; padding:3px 5px; text-align:center;">금융사</th>
-                    <th style="border:1px solid #ddd; padding:3px 5px; text-align:center;">입금액</th>
-                    <th style="border:1px solid #ddd; padding:3px 5px; text-align:center;">출금액</th>
-                    <th style="border:1px solid #ddd; padding:3px 5px; text-align:center;">분류</th>
-                    <th style="border:1px solid #ddd; padding:3px 5px; text-align:center; min-width:18%;">키워드</th>
+                    <th style="border:1px solid #E8ECF0; padding:3px 5px; text-align:center;">일자</th>
+                    <th style="border:1px solid #E8ECF0; padding:3px 5px; text-align:center;">금융사</th>
+                    <th style="border:1px solid #E8ECF0; padding:3px 5px; text-align:center;">입금액</th>
+                    <th style="border:1px solid #E8ECF0; padding:3px 5px; text-align:center;">출금액</th>
+                    <th style="border:1px solid #E8ECF0; padding:3px 5px; text-align:center;">분류</th>
+                    <th style="border:1px solid #E8ECF0; padding:3px 5px; text-align:center; min-width:18%;">키워드</th>
                 </tr></thead>
                 <tbody>
                 {% for d in high_risk_details[:10] %}
                 <tr>
-                    <td style="border:1px solid #ddd; padding:3px 5px; white-space:nowrap;">{{ d.date }}</td>
-                    <td style="border:1px solid #ddd; padding:3px 5px;">{{ d.bank }}</td>
-                    <td style="border:1px solid #ddd; padding:3px 5px; text-align:right;">{{ d.deposit_fmt|default('0') }}원</td>
-                    <td style="border:1px solid #ddd; padding:3px 5px; text-align:right;">{{ d.withdraw_fmt }}원</td>
-                    <td style="border:1px solid #ddd; padding:3px 5px;">{{ d.classification }}</td>
-                    <td style="border:1px solid #ddd; padding:3px 5px;">{{ d.keyword }}</td>
+                    <td style="border:1px solid #E8ECF0; padding:3px 5px; white-space:nowrap;">{{ d.date }}</td>
+                    <td style="border:1px solid #E8ECF0; padding:3px 5px;">{{ d.bank }}</td>
+                    <td style="border:1px solid #E8ECF0; padding:3px 5px; text-align:right;">{{ d.deposit_fmt|default('0') }}원</td>
+                    <td style="border:1px solid #E8ECF0; padding:3px 5px; text-align:right;">{{ d.withdraw_fmt }}원</td>
+                    <td style="border:1px solid #E8ECF0; padding:3px 5px;">{{ d.classification }}</td>
+                    <td style="border:1px solid #E8ECF0; padding:3px 5px;">{{ d.keyword }}</td>
                 </tr>
                 {% endfor %}
                 {% if high_risk_details|length > 10 %}
-                <tr><td colspan="6" style="border:1px solid #ddd; padding:3px 5px; text-align:center; color:#999;">외 {{ high_risk_details|length - 10 }}건</td></tr>
+                <tr><td colspan="6" style="border:1px solid #E8ECF0; padding:3px 5px; text-align:center; color:#999;">외 {{ high_risk_details|length - 10 }}건</td></tr>
                 {% endif %}
                 </tbody>
             </table>
@@ -209,27 +209,27 @@
             <p>{{ period_comment }}</p>
             {% if period_comparison is defined and period_comparison %}
             <table style="width:100%; border-collapse:collapse; font-size:11px; margin:6px 0;">
-                <thead><tr style="background:#f5f5f5;">
-                    <th style="border:1px solid #ddd; padding:3px 6px; text-align:center;">구분</th>
-                    <th style="border:1px solid #ddd; padding:3px 6px; text-align:center;">건수</th>
-                    <th style="border:1px solid #ddd; padding:3px 6px; text-align:center;">입금</th>
-                    <th style="border:1px solid #ddd; padding:3px 6px; text-align:center;">출금</th>
-                    <th style="border:1px solid #ddd; padding:3px 6px; text-align:center;">잔액</th>
+                <thead><tr style="background:#E8ECF0;">
+                    <th style="border:1px solid #E8ECF0; padding:3px 6px; text-align:center;">구분</th>
+                    <th style="border:1px solid #E8ECF0; padding:3px 6px; text-align:center;">건수</th>
+                    <th style="border:1px solid #E8ECF0; padding:3px 6px; text-align:center;">입금</th>
+                    <th style="border:1px solid #E8ECF0; padding:3px 6px; text-align:center;">출금</th>
+                    <th style="border:1px solid #E8ECF0; padding:3px 6px; text-align:center;">잔액</th>
                 </tr></thead>
                 <tbody>
                 <tr>
-                    <td style="border:1px solid #ddd; padding:3px 6px;">전반기 (~{{ period_comparison.mid_date }})</td>
-                    <td style="border:1px solid #ddd; padding:3px 6px; text-align:right;">{{ '{:,}'.format(period_comparison.first_count) }}건</td>
-                    <td style="border:1px solid #ddd; padding:3px 6px; text-align:right;">{{ '{:,}'.format(period_comparison.first_deposit) }}원</td>
-                    <td style="border:1px solid #ddd; padding:3px 6px; text-align:right;">{{ '{:,}'.format(period_comparison.first_withdraw) }}원</td>
-                    <td style="border:1px solid #ddd; padding:3px 6px; text-align:right;">{{ '{:,}'.format(period_comparison.first_deposit - period_comparison.first_withdraw) }}원</td>
+                    <td style="border:1px solid #E8ECF0; padding:3px 6px;">전반기 (~{{ period_comparison.mid_date }})</td>
+                    <td style="border:1px solid #E8ECF0; padding:3px 6px; text-align:right;">{{ '{:,}'.format(period_comparison.first_count) }}건</td>
+                    <td style="border:1px solid #E8ECF0; padding:3px 6px; text-align:right;">{{ '{:,}'.format(period_comparison.first_deposit) }}원</td>
+                    <td style="border:1px solid #E8ECF0; padding:3px 6px; text-align:right;">{{ '{:,}'.format(period_comparison.first_withdraw) }}원</td>
+                    <td style="border:1px solid #E8ECF0; padding:3px 6px; text-align:right;">{{ '{:,}'.format(period_comparison.first_deposit - period_comparison.first_withdraw) }}원</td>
                 </tr>
                 <tr>
-                    <td style="border:1px solid #ddd; padding:3px 6px;">후반기 ({{ period_comparison.mid_date }}~)</td>
-                    <td style="border:1px solid #ddd; padding:3px 6px; text-align:right;">{{ '{:,}'.format(period_comparison.second_count) }}건</td>
-                    <td style="border:1px solid #ddd; padding:3px 6px; text-align:right;">{{ '{:,}'.format(period_comparison.second_deposit) }}원</td>
-                    <td style="border:1px solid #ddd; padding:3px 6px; text-align:right;">{{ '{:,}'.format(period_comparison.second_withdraw) }}원</td>
-                    <td style="border:1px solid #ddd; padding:3px 6px; text-align:right;">{{ '{:,}'.format(period_comparison.second_deposit - period_comparison.second_withdraw) }}원</td>
+                    <td style="border:1px solid #E8ECF0; padding:3px 6px;">후반기 ({{ period_comparison.mid_date }}~)</td>
+                    <td style="border:1px solid #E8ECF0; padding:3px 6px; text-align:right;">{{ '{:,}'.format(period_comparison.second_count) }}건</td>
+                    <td style="border:1px solid #E8ECF0; padding:3px 6px; text-align:right;">{{ '{:,}'.format(period_comparison.second_deposit) }}원</td>
+                    <td style="border:1px solid #E8ECF0; padding:3px 6px; text-align:right;">{{ '{:,}'.format(period_comparison.second_withdraw) }}원</td>
+                    <td style="border:1px solid #E8ECF0; padding:3px 6px; text-align:right;">{{ '{:,}'.format(period_comparison.second_deposit - period_comparison.second_withdraw) }}원</td>
                 </tr>
                 </tbody>
             </table>

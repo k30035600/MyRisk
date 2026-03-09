@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
-"""Excel 파일 안전 쓰기 공통 모듈. process_bank_data, process_card_data, process_cash_data, card_app에서 사용."""
+"""
+Excel 파일 안전 쓰기 공통 모듈.
+
+권한 오류 방지를 위해 재시도 로직이 포함된 Excel 저장을 제공한다.
+process_bank_data, process_card_data, process_cash_data, card_app에서 사용한다.
+
+주요 함수: safe_write_excel
+"""
 import os
 import time
 

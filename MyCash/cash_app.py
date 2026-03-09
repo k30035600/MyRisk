@@ -1,20 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-MyCash (금융정보) Flask 서브앱 (cash_app.py)
+금융정보 Flask 서브앱 (cash_app.py).
 
-[역할]
-- 병합작업 페이지(/): 은행(bank_after)·신용카드(card_after) 표시, cash_after 생성(병합)·그래프.
-- 업종분류 페이지(/category): category_table 기반 업종분류 + cash_after 테이블·필터·출력.
-- cash_after 생성: bank_after + card_after 병합 후 업종분류·위험도(1~10호) 적용. "병합작업 다시 실행" 또는 POST /api/generate-category.
-
-[데이터]
-- 입력: data/bank_after.json, data/card_after.json. 출력: data/cash_after.json. 카테고리·업종: data/category_table.json(공통).
-- 병합작업에서는 bank/card after를 다시 만들지 않고, 이미 있는 JSON만 읽어 사용.
-- 금융정보는 .source/Cash 미사용. 전처리/후처리는 은행·카드에서 완료된 after만 사용.
-- 캐시: _cash_after_cache_obj(lib.after_cache). category_table은 캐시 없이 매번 로드.
-
-[유지보수]
-- ensure_working_directory로 API 시 cwd를 MyCash로 고정. 라우트 prefix: /cash.
+병합작업·업종분류 페이지를 제공하고,
+bank_after와 card_after를 병합해 cash_after를 생성한다.
 """
 from flask import Flask, render_template, jsonify, request, make_response
 import traceback

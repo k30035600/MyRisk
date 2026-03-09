@@ -1,20 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-MyRisk 통합 서버 (app.py)
+통합 Flask 서버 (app.py).
 
-[역할]
-- MyBank(은행거래), MyCard(신용카드), MyCash(금융정보) 서브앱을 하나의 Flask 앱으로 제공.
-- 공통 템플릿: 프로젝트 루트 templates/ (index.html, help.html, 404.html 등).
-
-[실행 흐름] (유지보수 시 참고)
-  1. 환경·인코딩(LANG, UTF-8) 설정 → Flask 앱 생성 → after_request(charset, gzip)
-  2. lib 로드 후 path_config로 data/temp 경로 확보, 필수 디렉터리 생성(.source, .source/Bank, .source/Card, data, temp, readme)
-  3. SUBAPP_CONFIG 순서대로 MyBank → MyCard → MyCash 서브앱 소스 읽기 → UTF-8 블록 패치 → 메모리 로드 → prefix 라우트 등록
-  4. 메인 라우트: /, /help, /bank, /card, /cash, /reset, /shutdown, /health
-  5. __main__ 시: waitress 서버 기동
-
-[서브앱 요청 처리]
-- create_proxy_view()가 요청 시 해당 앱 디렉터리로 chdir 후 뷰 실행. 서브앱은 ensure_working_directory로 cwd 고정.
+MyBank, MyCard, MyCash 서브앱을 마운트하고,
+홈페이지·초기화·도움말·백업/복원 API를 제공한다.
 """
 import os
 import sys

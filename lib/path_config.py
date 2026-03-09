@@ -1,8 +1,14 @@
 # -*- coding: utf-8 -*-
-"""프로젝트 데이터/임시/원본 경로 설정. data/, temp/, .source/ 기준.
-배포 서버에서 경로를 바꾸려면 환경변수 사용:
-- DATA_DIR: data 폴더 경로 (미설정 시 프로젝트 루트/data)
-- CATEGORY_TABLE_JSON_PATH: category_table.json 절대 경로 (미설정 시 DATA_DIR/category_table.json)
+"""
+프로젝트 경로 설정 (data, temp, .source).
+
+DATA_DIR, TEMP_DIR, SOURCE_DIR 상수와 get_category_table_json_path, get_bank_after_path 등
+주요 파일 경로 함수를 제공한다. 배포 시 DATA_DIR, CATEGORY_TABLE_JSON_PATH 환경변수로 오버라이드 가능.
+
+주요 상수: DATA_DIR, TEMP_DIR, SOURCE_DIR
+주요 함수: get_data_dir, get_temp_dir, get_category_table_json_path, get_category_table_xlsx_path,
+  get_bank_after_path, get_card_after_path, get_cash_after_path, delete_all_after_files,
+  get_source_bank_dir, get_source_card_dir
 """
 import os
 

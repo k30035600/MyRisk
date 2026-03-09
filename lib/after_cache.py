@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 """
 after JSON 캐시 공통 모듈.
-- get(path, read_fn): 파일 경로와 읽기 함수로 캐시 get. mtime 기반 재읽기.
-- invalidate(): 캐시·mtime 초기화.
-은행/카드/금융정보 앱의 _*_after_cache 패턴을 통일해 사용.
+
+은행·카드·금융정보 앱의 bank_after, card_after, cash_after 파일을 mtime 기반으로 메모리 캐싱한다.
+파일 수정 시 자동 재읽기, invalidate로 수동 무효화 가능.
+
+주요 클래스: AfterCache (get, invalidate, current)
 """
 from pathlib import Path
 import pandas as pd

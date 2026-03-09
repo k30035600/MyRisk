@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>은행거래 기본분석 보고서</title>
+    <link rel="stylesheet" href="/static/common.css">
     <style>
         @media print {
             @page { size: A4; margin: 15mm 10mm 10mm 10mm; }
@@ -65,13 +66,13 @@
         }
         .header .date {
             font-size: 10pt;
-            color: #666;
+            color: #34495E;
             flex: 0 0 auto;
             text-align: left;
         }
         .header .bank-info {
             font-size: 10pt;
-            color: #666;
+            color: #34495E;
             flex: 0 0 auto;
             text-align: right;
         }
@@ -84,7 +85,7 @@
             background: #f0f0f0;
             padding: 4px 6px;
             margin-bottom: 4px;
-            border-left: 4px solid #FF9800;
+            border-left: 4px solid #27AE60;
         }
         table {
             width: 100%;
@@ -93,15 +94,16 @@
             margin-bottom: 6px;
         }
         table th {
-            background: #f5f5f5;
+            background: #E8ECF0;
+            color: #2C3E50;
             padding: 4px 5px;
-            border: 1px solid #ddd;
+            border: 1px solid #E8ECF0;
             text-align: left;
             font-weight: bold;
         }
         table td {
             padding: 3px 5px;
-            border: 1px solid #ddd;
+            border: 1px solid #E8ECF0;
         }
         table tr:nth-child(even) {
             background: #f9f9f9;
@@ -121,7 +123,7 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 8px 12px;
-            border: 1px solid #ddd;
+            border: 1px solid #E8ECF0;
             padding: 8px 12px;
             background: #f9f9f9;
             font-size: 9pt;
@@ -135,7 +137,7 @@
             background: #fff;
         }
         .stats-grid .stat-item .label {
-            color: #333;
+            color: #2C3E50;
             font-weight: bold;
         }
         .stats-grid .stat-item .value {
@@ -143,10 +145,10 @@
             font-weight: bold;
         }
         .stats-grid .stat-item.deposit .value {
-            color: #0000FF;
+            color: #27AE60;
         }
         .stats-grid .stat-item.withdraw .value {
-            color: #FF0000;
+            color: #2C3E50;
         }
         table.transaction-detail,
         table.transaction-detail th,
@@ -271,10 +273,10 @@
             print-color-adjust: exact;
         }
         .bar-v.bar-deposit {
-            background: #0000FF;
+            background: #27AE60;
         }
         .bar-v.bar-withdraw {
-            background: #FF0000;
+            background: #2C3E50;
         }
         .bar-v-label {
             font-size: 7pt;
@@ -286,7 +288,7 @@
             max-width: 100%;
         }
         .monthly-vertical-wrap {
-            border: 1px solid #ddd;
+            border: 1px solid #E8ECF0;
             background: #fafafa;
             padding: 10px;
             margin-top: 8px;
@@ -303,7 +305,7 @@
         }
         .monthly-vertical-legend {
             font-size: 8pt;
-            color: #666;
+            color: #34495E;
             padding-top: 0;
         }
         .monthly-vertical-legend .legend-item {
@@ -342,7 +344,7 @@
             padding-right: 6px;
             text-align: right;
             font-size: 7pt;
-            color: #333;
+            color: #2C3E50;
             border-right: 1px solid #eee;
             white-space: nowrap;
             overflow: visible;
@@ -503,16 +505,16 @@
                         {% for item in category_stats[:15] %}
                         <tr>
                             <td>{{ item['카테고리'] }}</td>
-                            <td class="text-right" style="color: #0000FF;">{{ "{:,}".format(item['입금액']|int) }}</td>
-                            <td class="text-right" style="color: #FF0000;">{{ "{:,}".format(item['출금액']|int) }}</td>
+                            <td class="text-right" style="color: #27AE60;">{{ "{:,}".format(item['입금액']|int) }}</td>
+                            <td class="text-right" style="color: #2C3E50;">{{ "{:,}".format(item['출금액']|int) }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                     <tfoot>
                         <tr style="font-weight: bold; background: #f0f0f0;">
                             <td>합계</td>
-                            <td class="text-right" style="color: #0000FF;">{{ "{:,}".format(category_stats|sum(attribute='입금액')|int) }}</td>
-                            <td class="text-right" style="color: #FF0000;">{{ "{:,}".format(category_stats|sum(attribute='출금액')|int) }}</td>
+                            <td class="text-right" style="color: #27AE60;">{{ "{:,}".format(category_stats|sum(attribute='입금액')|int) }}</td>
+                            <td class="text-right" style="color: #2C3E50;">{{ "{:,}".format(category_stats|sum(attribute='출금액')|int) }}</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -540,19 +542,19 @@
                             <td>{{ item.get('은행명', '') }}</td>
                             <td class="text-center">{{ date_yy }}</td>
                             <td class="merchant-cell" title="{{ item.get('내용', '') or item.get('적요', '') }}">{{ item.get('내용', '') or item.get('적요', '') }}</td>
-                            <td class="text-right" style="color: #0000FF;">{{ "{:,}".format(item.get('입금액', 0)|int) }}</td>
-                            <td class="text-right" style="color: #FF0000;">{{ "{:,}".format(item.get('출금액', 0)|int) }}</td>
+                            <td class="text-right" style="color: #27AE60;">{{ "{:,}".format(item.get('입금액', 0)|int) }}</td>
+                            <td class="text-right" style="color: #2C3E50;">{{ "{:,}".format(item.get('출금액', 0)|int) }}</td>
                         </tr>
                         {% endfor %}
                         {% if transaction_total_count > 15 %}
-                        <tr><td colspan="3" class="text-center" style="color: #666; font-style: italic;">외 {{ transaction_total_count - 15 }}건</td><td colspan="2"></td></tr>
+                        <tr><td colspan="3" class="text-center" style="color: #34495E; font-style: italic;">외 {{ transaction_total_count - 15 }}건</td><td colspan="2"></td></tr>
                         {% endif %}
                     </tbody>
                     <tfoot>
                         <tr style="font-weight: bold; background: #f0f0f0;">
                             <td colspan="3">합계</td>
-                            <td class="text-right" style="color: #0000FF;">{{ "{:,}".format(transaction_deposit_total) }}</td>
-                            <td class="text-right" style="color: #FF0000;">{{ "{:,}".format(transaction_withdraw_total) }}</td>
+                            <td class="text-right" style="color: #27AE60;">{{ "{:,}".format(transaction_deposit_total) }}</td>
+                            <td class="text-right" style="color: #2C3E50;">{{ "{:,}".format(transaction_withdraw_total) }}</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -573,16 +575,16 @@
                         {% for item in bank_stats %}
                         <tr>
                             <td>{{ item[bank_col] }}</td>
-                            <td class="text-right" style="color: #0000FF;">{{ "{:,}".format(item['입금액']|int) }}</td>
-                            <td class="text-right" style="color: #FF0000;">{{ "{:,}".format(item['출금액']|int) }}</td>
+                            <td class="text-right" style="color: #27AE60;">{{ "{:,}".format(item['입금액']|int) }}</td>
+                            <td class="text-right" style="color: #2C3E50;">{{ "{:,}".format(item['출금액']|int) }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                     <tfoot>
                         <tr style="font-weight: bold; background: #f0f0f0;">
                             <td>합계</td>
-                            <td class="text-right" style="color: #0000FF;">{{ "{:,}".format(total_deposit) }}</td>
-                            <td class="text-right" style="color: #FF0000;">{{ "{:,}".format(total_withdraw) }}</td>
+                            <td class="text-right" style="color: #27AE60;">{{ "{:,}".format(total_deposit) }}</td>
+                            <td class="text-right" style="color: #2C3E50;">{{ "{:,}".format(total_withdraw) }}</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -603,16 +605,16 @@
                         <tr>
                             <td>{{ item[bank_col] }}</td>
                             <td>{{ item[account_col] }}</td>
-                            <td class="text-right" style="color: #0000FF;">{{ "{:,}".format(item['입금액']|int) }}</td>
-                            <td class="text-right" style="color: #FF0000;">{{ "{:,}".format(item['출금액']|int) }}</td>
+                            <td class="text-right" style="color: #27AE60;">{{ "{:,}".format(item['입금액']|int) }}</td>
+                            <td class="text-right" style="color: #2C3E50;">{{ "{:,}".format(item['출금액']|int) }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                     <tfoot>
                         <tr style="font-weight: bold; background: #f0f0f0;">
                             <td colspan="2">합계</td>
-                            <td class="text-right" style="color: #0000FF;">{{ "{:,}".format(total_account_deposit) }}</td>
-                            <td class="text-right" style="color: #FF0000;">{{ "{:,}".format(total_account_withdraw) }}</td>
+                            <td class="text-right" style="color: #27AE60;">{{ "{:,}".format(total_account_deposit) }}</td>
+                            <td class="text-right" style="color: #2C3E50;">{{ "{:,}".format(total_account_withdraw) }}</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -679,7 +681,7 @@
         <div class="section section-pie-wrap section-category-pie">
             <div class="section-title">은행거래 원그래프</div>
             {% set category_total_amount = category_stats|sum(attribute='입금액')|int + category_stats|sum(attribute='출금액')|int %}
-            {% set cat_pie_colors = ['#0000FF', '#00AA00', '#FF8000', '#9C27B0', '#00BCD4', '#E91E63', '#009688'] %}
+            {% set cat_pie_colors = ['#27AE60', '#00AA00', '#FF8000', '#9C27B0', '#00BCD4', '#E91E63', '#009688'] %}
             {% set ns_cat = namespace(cum=0, segs=[]) %}
             {% for item in category_stats[:15] %}
                 {% set cat_total = (item['입금액']|int) + (item['출금액']|int) %}
@@ -732,7 +734,7 @@
                         {% endfor %}
                     </tbody>
                 </table>
-                {% set bank_pie_colors = ['#0000FF', '#00FF00', '#FF8000', '#9C27B0', '#00BCD4'] %}
+                {% set bank_pie_colors = ['#27AE60', '#00FF00', '#FF8000', '#9C27B0', '#00BCD4'] %}
                 {% set ns_bank = namespace(cum=0, segs=[]) %}
                 {% for item in bank_stats %}
                     {% set b_total = item['입금액'] + item['출금액'] %}
@@ -778,16 +780,16 @@
                         <tr>
                             <td>{{ item[bank_col] }}</td>
                             <td>{{ item[account_col] }}</td>
-                            <td class="text-right" style="color: #0000FF;">{{ "{:,}".format(item['입금액']|int) }}</td>
-                            <td class="text-right" style="color: #FF0000;">{{ "{:,}".format(item['출금액']|int) }}</td>
+                            <td class="text-right" style="color: #27AE60;">{{ "{:,}".format(item['입금액']|int) }}</td>
+                            <td class="text-right" style="color: #2C3E50;">{{ "{:,}".format(item['출금액']|int) }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                     <tfoot>
                         <tr style="font-weight: bold; background: #f0f0f0;">
                             <td colspan="2">합계</td>
-                            <td class="text-right" style="color: #0000FF;">{{ "{:,}".format(total_account_deposit) }}</td>
-                            <td class="text-right" style="color: #FF0000;">{{ "{:,}".format(total_account_withdraw) }}</td>
+                            <td class="text-right" style="color: #27AE60;">{{ "{:,}".format(total_account_deposit) }}</td>
+                            <td class="text-right" style="color: #2C3E50;">{{ "{:,}".format(total_account_withdraw) }}</td>
                         </tr>
                     </tfoot>
                 </table>

@@ -1,5 +1,15 @@
 # -*- coding: utf-8 -*-
-"""category_table.json 읽기/쓰기·정규화·액션. 은행/신용카드/금융정보 공통."""
+"""
+category_table.json 읽기·쓰기·정규화·액션 (은행/신용카드/금융정보 공통).
+
+카테고리 테이블 로드/저장, add·replace·update·delete 액션, 위험도분류 데이터 조회·내보내기를 제공한다.
+
+주요 상수: CATEGORY_TABLE_COLUMNS, CATEGORY_TABLE_EXTENDED_COLUMNS, RISK_CLASS_TO_VALUE
+주요 함수: load_category_table, normalize_category_df, safe_write_category_table,
+  create_empty_category_table, apply_category_action, get_category_table,
+  get_risk_class_table_data, get_risk_class_map_for_apply,
+  export_category_table_to_xlsx, export_risk_class_table_to_xlsx
+"""
 import json
 import os
 import re

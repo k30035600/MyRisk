@@ -1,8 +1,14 @@
 # -*- coding: utf-8 -*-
-"""bank_app / card_app 분석 API 공통 로직.
+"""
+bank_app / card_app 분석 API 공통 로직.
 
-각 compute_* 함수는 Flask에 의존하지 않으며, DataFrame과 파라미터를 받아 dict/list를 반환합니다.
-라우트 함수에서 request.args 파싱 → compute_* 호출 → jsonify 반환 순서로 사용합니다.
+DataFrame을 받아 분석 결과 dict/list를 반환한다. Flask에 의존하지 않으며,
+라우트에서 request.args 파싱 → compute_* 호출 → jsonify 순서로 사용한다.
+
+주요 함수: apply_bank_filter, apply_category_filters, compute_summary, compute_by_category,
+  compute_by_category_group, compute_by_month, compute_by_category_monthly, compute_by_content,
+  compute_by_division, compute_by_bank, compute_transactions_by_content, compute_transactions,
+  compute_content_by_category, compute_date_range
 """
 from __future__ import annotations
 

@@ -4,31 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>금융정보 분석 시스템 (MyRisk)</title>
+    <link rel="stylesheet" href="/static/common.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { height: 100%; overflow-x: hidden; }
-        body { margin: 0; padding: 0; min-height: 100vh; font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background: #FFFFFF; color: #8E8E8E; display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden; }
+        body { margin: 0; padding: 0; min-height: 100vh; font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background: #F8F9FA; color: #34495E; display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden; }
 
         /* --- Top Navigation Bar --- */
         .top-nav { background: #2C3E50; padding: 14px 40px; display: flex; align-items: center; justify-content: space-between; }
         .top-nav .brand { font-size: 1.15em; font-weight: bold; color: #FFFFFF; letter-spacing: 0.03em; }
         .top-nav .brand span { color: #27AE60; }
         .top-nav .nav-links { display: flex; gap: 24px; }
-        .top-nav .nav-links a { color: rgba(255,255,255,0.75); text-decoration: none; font-size: 0.9em; transition: color 0.2s; }
-        .top-nav .nav-links a:hover { color: #FFFFFF; }
+        .top-nav .nav-links a { color: rgba(255,255,255,0.75); text-decoration: none; font-size: 0.9em; transition: color 0.2s, border-color 0.2s; padding-bottom: 2px; border-bottom: 2px solid transparent; }
+        .top-nav .nav-links a:hover { color: #FFFFFF; border-bottom-color: #27AE60; }
 
         /* --- Hero Section --- */
         .hero { text-align: center; padding: 56px 40px 40px; }
         .hero h1 { font-size: 2.6em; color: #2C3E50; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.02em; }
         .hero h1 .accent { color: #27AE60; }
-        .hero .subtitle { font-size: 1.15em; color: #8E8E8E; line-height: 1.6; }
+        .hero .subtitle { font-size: 1.15em; color: #7F8C8D; line-height: 1.6; }
 
         /* --- Container --- */
         .container { max-width: 1200px; width: 100%; margin: 0 auto; padding: 0 40px; }
 
         /* --- Service Cards --- */
         .services { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 8px; }
-        .service-card { background: #FFFFFF; border: 1px solid #E8ECF0; border-radius: 14px; padding: 36px 28px 32px; text-decoration: none; color: inherit; transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; overflow: hidden; }
+        .service-card { background: #FFFFFF; border: 1px solid #E0E0E0; border-radius: 14px; padding: 36px 28px 32px; text-decoration: none; color: inherit; transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; overflow: hidden; }
         .service-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; border-radius: 14px 14px 0 0; transition: height 0.25s ease; }
         .service-card:hover { transform: translateY(-6px); box-shadow: 0 12px 36px rgba(44,62,80,0.10); border-color: transparent; }
         .service-card:hover::before { height: 6px; }
@@ -44,12 +45,9 @@
         .service-card.bank .badge { background: #2C3E50; }
         .service-card.card .badge { background: #27AE60; }
         .service-card.cash .badge { background: #F39C12; }
-        .service-card .desc { font-size: 0.88em; line-height: 1.7; color: #8E8E8E; max-width: 280px; word-break: keep-all; overflow-wrap: break-word; }
+        .service-card .desc { font-size: 0.88em; line-height: 1.7; color: #7F8C8D; max-width: 280px; word-break: keep-all; overflow-wrap: break-word; }
 
         /* --- Access Notice --- */
-        .access-notice { text-align: center; font-size: 0.92rem; color: #8E8E8E; margin-top: 28px; padding: 12px 0; }
-        .access-notice a { color: #27AE60; text-decoration: none; font-weight: 600; }
-        .access-notice a:hover { text-decoration: underline; }
 
         /* --- Features Section --- */
         .features { margin-top: 40px; padding: 40px 0 48px; border-top: 1px solid #EAEDF0; }
@@ -64,9 +62,9 @@
         .feature-item.help-item { cursor: pointer; }
         .feature-item.help-item:hover { background: #EBF5F0; border-left-color: #27AE60; box-shadow: 0 2px 8px rgba(39,174,96,0.08); }
         .feature-item.help-item:focus { outline: 2px solid #27AE60; outline-offset: 2px; }
-        .feature-item.shutdown-item { cursor: pointer; border-left-color: #E8DAEF; }
-        .feature-item.shutdown-item:hover { background: #F5EEF8; border-left-color: #8E44AD; box-shadow: 0 2px 8px rgba(142,68,173,0.08); }
-        .feature-item.shutdown-item:focus { outline: 2px solid #8E44AD; outline-offset: 2px; }
+        .feature-item.shutdown-item { cursor: pointer; border-left-color: #F5D6C0; }
+        .feature-item.shutdown-item:hover { background: #FFF3E8; border-left-color: #E67E22; box-shadow: 0 2px 8px rgba(230,126,34,0.10); }
+        .feature-item.shutdown-item:focus { outline: 2px solid #E67E22; outline-offset: 2px; }
         .feature-item-wrap { position: relative; min-width: 0; }
         .feature-item-wrap > a.feature-item.reset-item { display: block; width: 100%; box-sizing: border-box; text-decoration: none; color: inherit; }
         .feature-help-popover { position: absolute; left: 50%; transform: translateX(-50%); top: 100%; margin-top: 8px; width: 300px; max-width: 95vw; padding: 14px 16px; background: #2C3E50; color: #E8ECF0; font-size: 13px; line-height: 1.6; border-radius: 10px; box-shadow: 0 8px 24px rgba(44,62,80,0.18); z-index: 20; opacity: 0; visibility: hidden; transition: opacity 0.2s, visibility 0.2s; text-align: left; }
@@ -150,8 +148,6 @@
                 <p class="desc">은행·신용카드 거래를 하나로 모아 전처리, 카테고리, 기본 분석, 고급 분석으로 통합 관리합니다.</p>
             </a>
         </div>
-
-        <p class="access-notice">환경변수(신청인·이메일·심야구분)는 <a href="/reset">초기화 &rarr; 환경변수</a>에서 관리할 수 있습니다.</p>
 
         <div class="features">
             <div class="features-header">

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>금융정보 종합분석 보고서</title>
+    <link rel="stylesheet" href="/static/common.css">
     <style>
         @media print {
             @page { size: A4; margin: 15mm 10mm 10mm 10mm; }
@@ -55,7 +56,7 @@
                 print-color-adjust: exact;
             }
         }
-        .applicant-values { font-size: 9pt; color: #333; text-align: right; line-height: 1.35; }
+        .applicant-values { font-size: 9pt; color: #2C3E50; text-align: right; line-height: 1.35; }
         .section-opinion .opinion-title-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 6px; }
         .section-opinion .opinion-title-row .applicant-values { flex-shrink: 0; }
         @media screen and (max-width: 768px) {
@@ -75,10 +76,10 @@
         }
         .header .header-title-wrap { flex: 1; }
         .header h1 { font-size: 16pt; margin: 0; text-align: center; }
-        .header .date { font-size: 9pt; color: #666; }
-        .header-right { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; font-size: 9pt; color: #333; text-align: right; }
+        .header .date { font-size: 9pt; color: #34495E; }
+        .header-right { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; font-size: 9pt; color: #2C3E50; text-align: right; }
         .header .bank-info { margin-bottom: 2px; }
-        .header .applicant-one-line { font-size: 9pt; color: #333; }
+        .header .applicant-one-line { font-size: 9pt; color: #2C3E50; }
 
         .section { margin-bottom: 14px; }
         .section-title {
@@ -102,23 +103,23 @@
             flex: 1;
             min-width: 120px;
             padding: 6px 10px;
-            border: 1px solid #ddd;
+            border: 1px solid #E8ECF0;
             border-radius: 4px;
             background: rgba(255, 255, 255, 0.5);
         }
         .summary-item.withdraw { background: rgba(255, 245, 245, 0.5); border-color: #e0c0c0; }
-        .summary-item .label { display: block; font-size: 8pt; color: #666; margin-bottom: 2px; text-align: left; }
+        .summary-item .label { display: block; font-size: 8pt; color: #34495E; margin-bottom: 2px; text-align: left; }
         .summary-item .value { font-weight: bold; text-align: right !important; display: block; }
         .summary-item .value.col-withdraw { color: #c00; }
 
         table { width: 100%; border-collapse: collapse; font-size: 9pt; margin-bottom: 8px; }
-        table th, table td { padding: 4px 6px; border: 1px solid #ddd; }
+        table th, table td { padding: 4px 6px; border: 1px solid #E8ECF0; }
         table th { background: rgba(245, 245, 245, 0.6); font-weight: bold; }
         table tr:nth-child(even) { background: rgba(249, 249, 249, 0.5); }
         .text-right { text-align: right; }
         .text-center { text-align: center; }
-        .col-deposit { color: #0000FF; }
-        .col-withdraw { color: #FF0000; }
+        .col-deposit { color: #27AE60; }
+        .col-withdraw { color: #2C3E50; }
 
         /* 위험도 원그래프: 우측 정렬, 범례는 원그래프 높이에 맞춰 균등 배치 */
         .risk-pie-section { display: flex; align-items: stretch; gap: 12px; margin: 10px 0; flex-wrap: nowrap; justify-content: flex-end; }
@@ -148,7 +149,7 @@
         }
         .opinion-box h2 { margin: 0 0 10px 0; padding-bottom: 6px; border-bottom: 2px solid #333; font-size: 12pt; }
         .opinion-box h3 { margin: 12px 0 4px 0; font-size: 11pt; color: #1565c0; }
-        .opinion-box p, .opinion-box li { line-height: 1.6; color: #333; margin-bottom: 6px; font-size: 10pt; text-align: justify; }
+        .opinion-box p, .opinion-box li { line-height: 1.6; color: #2C3E50; margin-bottom: 6px; font-size: 10pt; text-align: justify; }
         .opinion-box ul { margin-left: 18px; margin-bottom: 8px; }
 
         .section-opinion { margin-top: 6px; margin-bottom: 10px; }
@@ -165,7 +166,7 @@
             flex-wrap: wrap;
             gap: 6px;
             font-size: 9pt;
-            color: #444;
+            color: #2C3E50;
             margin-bottom: 10px;
             padding: 6px 0;
             border-bottom: 2px solid #333;
@@ -186,7 +187,7 @@
         .risk-formula sub, .risk-formula sup { font-size: 8pt; }
         .risk-var-table th, .risk-grade-table th { background: rgba(240, 240, 240, 0.6) !important; }
         .risk-process-title { font-size: 10.5pt; font-weight: bold; margin: 10px 0 4px 0; padding-bottom: 4px; }
-        .risk-step { line-height: 1.5; margin-bottom: 6px; color: #333; text-align: justify; }
+        .risk-step { line-height: 1.5; margin-bottom: 6px; color: #2C3E50; text-align: justify; }
     </style>
 </head>
 <body>
@@ -372,7 +373,7 @@
             </ul>
         </div>
         {% else %}
-        <p style="color:#666;">출금액 데이터 없음</p>
+        <p style="color:#34495E;">출금액 데이터 없음</p>
         {% endif %}
     </div>
     </div><!-- .report-wrap -->
@@ -398,7 +399,7 @@
             <p class="somyeong-heading" style="font-weight: bold; margin-bottom: 6px; font-size: 12px;">1. 소명 대상</p>
             <p style="margin-left: 12px; margin-bottom: 24px;">(금융정보 종합분석 보고서 상 위험도 분류·거래 항목 중 소명이 필요한 대상만 간략히 기재)</p>
             <p class="somyeong-heading" style="font-weight: bold; margin-bottom: 6px; font-size: 12px;">2. 소명 내용</p>
-            <p class="somyeong-content-box" style="margin-left: 12px; margin-bottom: 24px; flex: 1; min-height: 140px; border: 1px solid #ddd; padding: 12px;">거래 경위, 용도, 관계 등을 구체적으로 작성해 주세요.</p>
+            <p class="somyeong-content-box" style="margin-left: 12px; margin-bottom: 24px; flex: 1; min-height: 140px; border: 1px solid #E8ECF0; padding: 12px;">거래 경위, 용도, 관계 등을 구체적으로 작성해 주세요.</p>
             <p class="somyeong-heading" style="font-weight: bold; margin-bottom: 6px; font-size: 12px;">3. 첨부 자료 (해당 시)</p>
             <p style="margin-left: 12px; margin-bottom: 24px;"></p>
             <div class="somyeong-sign" style="margin-top: auto; padding-top: 16px; text-align: right;">
