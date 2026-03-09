@@ -12,7 +12,7 @@
 | **한글 커밋** | `git commit -m "한글"` 은 깨질 수 있음 → **UTF-8 파일 + `-F`** 사용. 예: `git commit -F commit_msg_utf8.txt` |
 | **GitHub 한글 깨짐** | 과거 커밋 메시지가 CP949 등으로 저장되면 GitHub에서 `?꾩껜` 처럼 보임. 새 커밋부터 `-F` + UTF-8 파일 사용하면 깨짐 없음. (`.cursor/rules/git-commit-encoding.mdc` 참고) |
 | **인코딩 설정** | 최초 1회: `setup-git-utf8.ps1` 실행 또는 `git config --global i18n.commitEncoding utf-8` 등 (`.cursor/rules/git-commit-encoding.mdc` 참고) |
-| **제외 경로** | `.gitignore`에 `.source/`, `venv/`, `.env`, `*.log` 등 포함. `.source/`는 클라이언트용 원본 데이터라 GitHub에 올리지 않음. |
+| **제외 경로** | `.gitignore`에 `data/`, `venv/`, `.env`, `*.log` 등 포함. **.source/는 올리므로 제외하지 않음.** data/는 앱이 생성하므로 제외. |
 
 **자주 쓰는 명령**
 ```powershell
@@ -63,7 +63,7 @@ git push origin main
 
 | 파일 | 용도 |
 |------|------|
-| `.gitignore` | Git 제외 목록 (.source/, venv/, .env, 로그 등) |
+| `.gitignore` | Git 제외 목록 (data/, venv/, .env, 로그 등). .source/는 제외하지 않음(매번 올림). |
 | `.gitattributes` | 줄바꿈·인코딩 등 (있는 경우) |
 | `Procfile` | Railway 등에서 웹 프로세스: `web: python start_web.py` |
 | `nixpacks.toml` | Nixpacks 빌드 시 apt 패키지(gcc, libffi-dev, libssl-dev) |

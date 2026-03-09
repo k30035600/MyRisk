@@ -204,6 +204,13 @@ try:
         os.makedirs(dir_path, exist_ok=True)
 except OSError:
     pass
+# Railway 등: data/ 가 Git 제외라 배포 시 비어 있음. category_table.json 없으면 빈 파일 생성
+try:
+    if CATEGORY_TABLE_PATH and not os.path.exists(CATEGORY_TABLE_PATH):
+        from lib.category_table_io import create_empty_category_table
+        create_empty_category_table(CATEGORY_TABLE_PATH)
+except (ImportError, OSError):
+    pass
 
 
 # ----- 4. 기동 시 캐시·임시파일 정리 (다음 실행 시 깨끗한 상태) -----

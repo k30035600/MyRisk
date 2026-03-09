@@ -17,7 +17,7 @@
 - **MyBank**: 은행 거래 전처리·분석  
 - **MyCard**: 카드 거래 전처리·분석  
 - **MyCash**: 금융정보 종합분석  
-- **.source/** xls/xlsx: 클라이언트용 원본. Git 제외.  
+- **.source/** xls/xlsx: 원본. **Git에 올림**(앱 기동·분류에 필수). data/는 앱이 생성하므로 Git 제외.  
 - **category_table.json**: 은행·카드·금융정보 공통. before→after 시 전처리/후처리 적용.  
 - **파일 구조·일회성 정리·유틸 스크립트**: [readme/파일_정리_가이드.md](readme/파일_정리_가이드.md) 참고.
 

@@ -85,9 +85,5 @@ temp/
 # docker-compose.override.yml
 .vercel
 
-# 데이터·저장소 정책: .source 는 모두 올림, data 는 제외
+# 데이터·저장소 정책: .source 는 올림(앱 기동 필수), data 는 앱이 생성하므로 제외
 data/
-
-# .source: Git/GitHub에 포함 (추적·푸시함)
-# .source/Bank/
-# .source/Card/

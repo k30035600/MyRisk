@@ -1093,12 +1093,13 @@ def _fill_거래시간(v):
 
 
 def get_category_tables():
-    """category_table.json 로드 및 category_tables 구성 (구분 없음, 거래방법/거래지점 미사용). 전처리/후처리 없으면 기본 규칙 보강."""
+    """category_table.json 로드 및 category_tables 구성 (구분 없음, 거래방법/거래지점 미사용). 전처리/후처리 없으면 기본 규칙 보강.
+    파일 없으면 None, 파일 있으나 비어 있으면 {} 반환(Railway 등에서 source→JSON 생성 가능하도록)."""
     if not CATEGORY_TABLE_FILE or not os.path.exists(CATEGORY_TABLE_FILE):
         return None
     category_df = ensure_prepost_in_table(CATEGORY_TABLE_FILE)
     if category_df is None or category_df.empty:
-        return None
+        return {}  # 빈 테이블이면 빈 dict로 진행 가능(분류 규칙 없이 source→after 생성)
     category_df = category_df.fillna('')
     # 컬럼명 앞뒤 공백 제거 (Excel 등에서 올 수 있음)
     category_df.columns = [str(c).strip() for c in category_df.columns]
