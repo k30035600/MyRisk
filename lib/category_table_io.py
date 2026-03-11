@@ -163,6 +163,8 @@ def apply_category_action(path, action, data):
     rows = data.get('rows') if isinstance(data, dict) else []
     if not isinstance(rows, list):
         rows = []
+    if not rows and isinstance(data, dict) and any(data.get(c) for c in CATEGORY_TABLE_COLUMNS):
+        rows = [{c: data.get(c, '') for c in CATEGORY_TABLE_EXTENDED_COLUMNS}]
     cols = CATEGORY_TABLE_EXTENDED_COLUMNS
     try:
         if action == 'update' or action == 'delete':

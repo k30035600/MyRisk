@@ -15,27 +15,27 @@
 
 /* ─── 타이포그래피 ─── */
 .help-container h1 {
-    color: var(--color-primary, #2C3E50);
+    color: var(--color-text, #1A1A1A);
     margin-bottom: 30px;
     font-size: 2em;
     font-weight: 700;
 }
 .help-container h2 {
-    color: var(--color-primary, #2C3E50);
+    color: var(--color-text, #1A1A1A);
     margin-top: 36px;
     margin-bottom: 15px;
     font-size: 1.5em;
-    border-bottom: 2px solid var(--color-action, #27AE60);
+    border-bottom: 2px solid #546E7A;
     padding-bottom: 10px;
 }
 .help-container h3 {
-    color: var(--color-primary, #2C3E50);
+    color: var(--color-text, #1A1A1A);
     margin-top: 22px;
     margin-bottom: 10px;
     font-size: 1.2em;
 }
 .help-container h4 {
-    color: var(--color-primary, #2C3E50);
+    color: var(--color-text, #1A1A1A);
     margin-top: 14px;
     margin-bottom: 8px;
     font-size: 1.05em;
@@ -44,7 +44,7 @@
 /* ─── 본문 ─── */
 .help-container p {
     line-height: 1.8;
-    color: var(--color-text, #34495E);
+    color: var(--color-text, #1A1A1A);
     margin-bottom: 10px;
 }
 .help-container ul,
@@ -54,13 +54,13 @@
 }
 .help-container li {
     line-height: 1.8;
-    color: var(--color-text, #34495E);
+    color: var(--color-text, #1A1A1A);
     margin-bottom: 5px;
 }
 
 /* ─── 인라인 코드 ─── */
 .help-container code {
-    background: #f0f0f0;
+    background: #E8ECF0;
     padding: 2px 6px;
     border-radius: 4px;
     font-family: 'Courier New', monospace;
@@ -69,8 +69,8 @@
 
 /* ─── 코드 블록 ─── */
 .help-container pre {
-    background: #f8f9fa;
-    border-left: 4px solid var(--color-action, #27AE60);
+    background: #F0F2F5;
+    border-left: 4px solid #546E7A;
     padding: 15px;
     margin: 15px 0;
     border-radius: 4px;
@@ -92,27 +92,31 @@
 }
 .help-container th,
 .help-container td {
-    border: 1px solid var(--color-border, #E8ECF0);
+    border: 1px solid #B0BEC5;
     padding: 8px 12px;
     text-align: left;
 }
 .help-container th {
-    background: var(--color-table-header, #E8ECF0);
-    color: var(--color-primary, #2C3E50);
+    background: #CFD8DC !important;
+    color: #263238 !important;
     font-weight: 700;
+    border-color: #B0BEC5;
 }
 .help-container tr:nth-child(even) td {
-    background: var(--color-table-stripe, #F8F9FA);
+    background: #F7F8FA !important;
+}
+.help-container tr:nth-child(odd) td {
+    background: #FFFFFF !important;
 }
 
 /* ─── 인용 (> 팁/주의) ─── */
 .help-container blockquote {
-    background: #FFF8E1;
-    border-left: 4px solid #FFC107;
+    background: #FFFDE7;
+    border-left: 4px solid #F9A825;
     padding: 14px 18px;
     margin: 16px 0;
     border-radius: 4px;
-    color: var(--color-text, #34495E);
+    color: var(--color-text, #1A1A1A);
 }
 .help-container blockquote p {
     margin-bottom: 4px;
@@ -130,7 +134,7 @@
 
 /* ─── 링크 ─── */
 .help-container a {
-    color: var(--color-action, #27AE60);
+    color: #37474F;
     text-decoration: none;
 }
 .help-container a:hover {
@@ -139,14 +143,14 @@
 
 /* ─── 강조 ─── */
 .help-container strong {
-    color: var(--color-primary, #2C3E50);
+    color: var(--color-text, #1A1A1A);
 }
 
 /* ─── 로딩 ─── */
 .help-loading {
     text-align: center;
     padding: 60px 20px;
-    color: var(--color-text-muted, #7F8C8D);
+    color: var(--color-text-muted, #5A6872);
     font-size: 1.1em;
 }
 .help-loading::after {
@@ -156,7 +160,7 @@
     height: 32px;
     margin: 16px auto 0;
     border: 3px solid var(--color-border, #E8ECF0);
-    border-top-color: var(--color-action, #27AE60);
+    border-top-color: #546E7A;
     border-radius: 50%;
     animation: help-spin 0.8s linear infinite;
 }

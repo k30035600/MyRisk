@@ -10,41 +10,41 @@
 {% set checklist_items = report.get('checklist_items', []) %}
 
 {% if filter_institution is defined and filter_institution %}
-<div style="margin-bottom:8px; padding:4px 8px; background:#e3f2fd; border-radius:4px; font-size:9pt; color:#1565c0; font-weight:bold;">※ 본 리포트는 「{{ filter_institution }}」 거래에 한정한 분석이다.</div>
+<div style="margin-bottom:8px; padding:4px 8px; background:#FBE9E7; border-radius:4px; font-size:9pt; color:#E65100; font-weight:bold;">※ 본 리포트는 「{{ filter_institution }}」 거래에 한정한 분석이다.</div>
 {% endif %}
 <div class="risk-report-result-section" style="margin-bottom:12px;">
-    <h4 style="font-size:10.5pt; font-weight:bold; margin:8px 0 4px 0; padding-bottom:4px; color:#1565c0;">1. 위험도 분석 결과</h4>
+    <h4 style="font-size:10.5pt; font-weight:bold; margin:8px 0 4px 0; padding-bottom:4px; color:#E65100;">1. 위험도 분석 결과</h4>
     <table class="risk-report-table" style="width:100%; border-collapse:collapse; font-size:9pt;">
         <thead>
             <tr>
-                <th style="border:1px solid #E8ECF0; padding:4px; background:#f0f0f0; text-align:center;">항목</th>
-                <th style="border:1px solid #E8ECF0; padding:4px; background:#f0f0f0; text-align:center;">가중치</th>
-                <th style="border:1px solid #E8ECF0; padding:4px; background:#f0f0f0; text-align:center;">건수</th>
-                <th style="border:1px solid #E8ECF0; padding:4px; background:#f0f0f0; text-align:center;">금액</th>
-                <th style="border:1px solid #E8ECF0; padding:4px; background:#f0f0f0; text-align:center;">항목별 R(점수)</th>
-                <th style="border:1px solid #E8ECF0; padding:4px; background:#f0f0f0; text-align:center;">위험등급</th>
+                <th style="border:1px solid #FFDBC8; padding:4px; background:#FFCCBC; color:#E65100; text-align:center;">항목</th>
+                <th style="border:1px solid #FFDBC8; padding:4px; background:#FFCCBC; color:#E65100; text-align:center;">가중치</th>
+                <th style="border:1px solid #FFDBC8; padding:4px; background:#FFCCBC; color:#E65100; text-align:center;">건수</th>
+                <th style="border:1px solid #FFDBC8; padding:4px; background:#FFCCBC; color:#E65100; text-align:center;">금액</th>
+                <th style="border:1px solid #FFDBC8; padding:4px; background:#FFCCBC; color:#E65100; text-align:center;">항목별 R(점수)</th>
+                <th style="border:1px solid #FFDBC8; padding:4px; background:#FFCCBC; color:#E65100; text-align:center;">위험등급</th>
             </tr>
         </thead>
         <tbody>
             {% for row in data %}
             <tr>
-                <td style="border:1px solid #E8ECF0; padding:4px;">{{ row.항목 }}</td>
-                <td style="border:1px solid #E8ECF0; padding:4px; text-align:center;">{{ row.가중치 }}</td>
-                <td style="border:1px solid #E8ECF0; padding:4px; text-align:right;">{{ row.건수 }}</td>
-                <td style="border:1px solid #E8ECF0; padding:4px; text-align:right;">{{ row.금액 }}</td>
-                <td style="border:1px solid #E8ECF0; padding:4px; text-align:right;">{{ row.종합R }}</td>
-                <td style="border:1px solid #E8ECF0; padding:4px; text-align:left;">{{ row.위험등급 }}</td>
+                <td style="border:1px solid #FFDBC8; padding:4px;">{{ row.항목 }}</td>
+                <td style="border:1px solid #FFDBC8; padding:4px; text-align:center;">{{ row.가중치 }}</td>
+                <td style="border:1px solid #FFDBC8; padding:4px; text-align:right;">{{ row.건수 }}</td>
+                <td style="border:1px solid #FFDBC8; padding:4px; text-align:right;">{{ row.금액 }}</td>
+                <td style="border:1px solid #FFDBC8; padding:4px; text-align:right;">{{ row.종합R }}</td>
+                <td style="border:1px solid #FFDBC8; padding:4px; text-align:left;">{{ row.위험등급 }}</td>
             </tr>
             {% endfor %}
         </tbody>
         <tfoot>
-            <tr style="font-weight:bold; background:#E8ECF0;">
-                <td style="border:1px solid #E8ECF0; padding:4px;">합계</td>
-                <td style="border:1px solid #E8ECF0; padding:4px;"></td>
-                <td style="border:1px solid #E8ECF0; padding:4px; text-align:right;">{{ total_count }}</td>
-                <td style="border:1px solid #E8ECF0; padding:4px; text-align:right;">{{ total_amount }}</td>
-                <td style="border:1px solid #E8ECF0; padding:4px; text-align:right;">{{ total_score }}</td>
-                <td style="border:1px solid #E8ECF0; padding:4px; text-align:left;">{{ grade_label }}</td>
+            <tr style="font-weight:bold; background:#FFD9CC; border-top:2px solid #263238;">
+                <td style="border:1px solid #FFDBC8; border-top:2px solid #263238; padding:4px;">합계</td>
+                <td style="border:1px solid #FFDBC8; border-top:2px solid #263238; padding:4px;"></td>
+                <td style="border:1px solid #FFDBC8; border-top:2px solid #263238; padding:4px; text-align:right;">{{ total_count }}</td>
+                <td style="border:1px solid #FFDBC8; border-top:2px solid #263238; padding:4px; text-align:right;">{{ total_amount }}</td>
+                <td style="border:1px solid #FFDBC8; border-top:2px solid #263238; padding:4px; text-align:right;">{{ total_score }}</td>
+                <td style="border:1px solid #FFDBC8; border-top:2px solid #263238; padding:4px; text-align:left;">{{ grade_label }}</td>
             </tr>
         </tfoot>
     </table>
@@ -52,37 +52,37 @@
 
 <div class="risk-report-grade-section" style="margin-bottom:12px;">
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px; margin:8px 0 4px 0; padding-bottom:4px;">
-        <h4 style="font-size:10.5pt; font-weight:bold; margin:0; color:#1565c0;">2. 위험 등급 판정</h4>
+        <h4 style="font-size:10.5pt; font-weight:bold; margin:0; color:#E65100;">2. 위험 등급 판정</h4>
         <span class="risk-report-r-value" style="font-size:16px; font-weight:bold; margin-left:auto;">R = {{ total_score }} → {{ grade_label }}</span>
     </div>
-    <p style="margin:4px 0; font-size:9pt; color:#2C3E50;">{{ grade_desc }}</p>
+    <p style="margin:4px 0; font-size:9pt; color:#1A1A1A;">{{ grade_desc }}</p>
     <h4 style="font-size:10pt; font-weight:bold; margin:10px 0 4px 0; padding-bottom:4px;">위험등급 판정 기준</h4>
     <table class="risk-grade-criteria-table" style="width:100%; border-collapse:collapse; font-size:9pt; margin-top:4px;">
         <thead>
             <tr>
-                <th style="border:1px solid #E8ECF0; padding:4px; background:#f0f0f0; text-align:center;">총합 R</th>
-                <th style="border:1px solid #E8ECF0; padding:4px; background:#f0f0f0; text-align:center;">위험 등급</th>
-                <th style="border:1px solid #E8ECF0; padding:4px; background:#f0f0f0; text-align:center;">판정 설명</th>
+                <th style="border:1px solid #FFDBC8; padding:4px; background:#FFCCBC; color:#E65100; text-align:center;">총합 R</th>
+                <th style="border:1px solid #FFDBC8; padding:4px; background:#FFCCBC; color:#E65100; text-align:center;">위험 등급</th>
+                <th style="border:1px solid #FFDBC8; padding:4px; background:#FFCCBC; color:#E65100; text-align:center;">판정 설명</th>
             </tr>
         </thead>
         <tbody>
-            <tr><td style="border:1px solid #E8ECF0; padding:4px; text-align:center;">150 이상</td><td style="border:1px solid #E8ECF0; padding:4px; text-align:center;">심각 (Critical)</td><td style="border:1px solid #E8ECF0; padding:4px;">상세 사유서 필수 작성.</td></tr>
-            <tr><td style="border:1px solid #E8ECF0; padding:4px; text-align:center;">100 ~ 150</td><td style="border:1px solid #E8ECF0; padding:4px; text-align:center;">주의 (Caution)</td><td style="border:1px solid #E8ECF0; padding:4px;">소명 자료 준비 필수. 과소비·사행성 의심 항목에 대한 소명 필요.</td></tr>
-            <tr><td style="border:1px solid #E8ECF0; padding:4px; text-align:center;">50 ~ 100</td><td style="border:1px solid #E8ECF0; padding:4px; text-align:center;">보통 (Normal)</td><td style="border:1px solid #E8ECF0; padding:4px;">일부 특이 지출 소명 필요. 한도 초과 항목만 선별적 소명.</td></tr>
-            <tr><td style="border:1px solid #E8ECF0; padding:4px; text-align:center;">50 미만</td><td style="border:1px solid #E8ECF0; padding:4px; text-align:center;">안전 (Safe)</td><td style="border:1px solid #E8ECF0; padding:4px;">면책 허가 가능성 높음. 자동 생성 보고서로 충분.</td></tr>
+            <tr><td style="border:1px solid #FFDBC8; padding:4px; text-align:center;">150 이상</td><td style="border:1px solid #FFDBC8; padding:4px; text-align:center;">심각 (Critical)</td><td style="border:1px solid #FFDBC8; padding:4px;">상세 사유서 필수 작성.</td></tr>
+            <tr><td style="border:1px solid #FFDBC8; padding:4px; text-align:center;">100 ~ 150</td><td style="border:1px solid #FFDBC8; padding:4px; text-align:center;">주의 (Caution)</td><td style="border:1px solid #FFDBC8; padding:4px;">소명 자료 준비 필수. 과소비·사행성 의심 항목에 대한 소명 필요.</td></tr>
+            <tr><td style="border:1px solid #FFDBC8; padding:4px; text-align:center;">50 ~ 100</td><td style="border:1px solid #FFDBC8; padding:4px; text-align:center;">보통 (Normal)</td><td style="border:1px solid #FFDBC8; padding:4px;">일부 특이 지출 소명 필요. 한도 초과 항목만 선별적 소명.</td></tr>
+            <tr><td style="border:1px solid #FFDBC8; padding:4px; text-align:center;">50 미만</td><td style="border:1px solid #FFDBC8; padding:4px; text-align:center;">안전 (Safe)</td><td style="border:1px solid #FFDBC8; padding:4px;">면책 허가 가능성 높음. 자동 생성 보고서로 충분.</td></tr>
         </tbody>
     </table>
 </div>
 
 {% if suggestion_items %}
 <div class="risk-report-suggestion-section" style="margin-bottom:12px;">
-    <h4 style="font-size:10.5pt; font-weight:bold; margin:8px 0 4px 0; padding-bottom:4px; color:#1565c0;">3. 항목별 소명 전략 (상위 항목)</h4>
+    <h4 style="font-size:10.5pt; font-weight:bold; margin:8px 0 4px 0; padding-bottom:4px; color:#E65100;">3. 항목별 소명 전략 (상위 항목)</h4>
     {% for item in suggestion_items %}
-    <div style="margin-bottom:8px; padding:6px 8px; background:#fafafa; border-left:3px solid #1565c0; font-size:9pt;">
+    <div style="margin-bottom:8px; padding:6px 8px; background:#FBE9E7; border-left:3px solid #E65100; font-size:9pt;">
         <div style="margin-bottom:3px;"><strong>{{ item.항목 }}</strong> (R 기여 {{ item.점수 }}점){% if item.법조항 is defined and item.법조항 %} <span style="color:#c62828; font-size:8pt;">— {{ item.법조항 }}</span>{% endif %}</div>
-        <div style="color:#2C3E50; margin-bottom:2px;"><strong>소명 방향:</strong> {{ item.소명전략 if item.소명전략 is defined else '' }}</div>
+        <div style="color:#1A1A1A; margin-bottom:2px;"><strong>소명 방향:</strong> {{ item.소명전략 if item.소명전략 is defined else '' }}</div>
         {% if item.소명서초안 is defined and item.소명서초안 %}
-        <div style="color:#34495E; font-size:8.5pt; margin-top:3px; padding:4px 6px; background:#E8ECF0; border-radius:3px;"><strong>[소명서 초안]</strong> {{ item.소명서초안 }}</div>
+        <div style="color:#334155; font-size:8.5pt; margin-top:3px; padding:4px 6px; background:#FFD9CC; border-radius:3px;"><strong>[소명서 초안]</strong> {{ item.소명서초안 }}</div>
         {% endif %}
     </div>
     {% endfor %}
@@ -91,26 +91,26 @@
 
 {% if data %}
 <div style="margin-bottom:12px;">
-    <h4 style="font-size:10.5pt; font-weight:bold; margin:8px 0 4px 0; padding-bottom:4px; color:#1565c0;">4. 면책 불허가 사유 관련 참고</h4>
-    <p style="font-size:9pt; color:#2C3E50; margin-bottom:4px;">채무자 회생 및 파산에 관한 법률 제564조에 따른 면책 불허가 사유와의 관련성을 아래에 정리한다.</p>
+    <h4 style="font-size:10.5pt; font-weight:bold; margin:8px 0 4px 0; padding-bottom:4px; color:#E65100;">4. 면책 불허가 사유 관련 참고</h4>
+    <p style="font-size:9pt; color:#1A1A1A; margin-bottom:4px;">채무자 회생 및 파산에 관한 법률 제564조에 따른 면책 불허가 사유와의 관련성을 아래에 정리한다.</p>
     <table style="width:100%; border-collapse:collapse; font-size:8.5pt; margin-top:4px;">
         <thead><tr>
-            <th style="border:1px solid #E8ECF0; padding:3px 5px; background:#f0f0f0; text-align:center;">항목</th>
-            <th style="border:1px solid #E8ECF0; padding:3px 5px; background:#f0f0f0; text-align:center;">건수</th>
-            <th style="border:1px solid #E8ECF0; padding:3px 5px; background:#f0f0f0; text-align:center;">관련 법조항</th>
+            <th style="border:1px solid #FFDBC8; padding:3px 5px; background:#FFCCBC; color:#E65100; text-align:center;">항목</th>
+            <th style="border:1px solid #FFDBC8; padding:3px 5px; background:#FFCCBC; color:#E65100; text-align:center;">건수</th>
+            <th style="border:1px solid #FFDBC8; padding:3px 5px; background:#FFCCBC; color:#E65100; text-align:center;">관련 법조항</th>
         </tr></thead>
         <tbody>
         {% for row in data %}
         {% if row.법조항 is defined and row.법조항 %}
         <tr>
-            <td style="border:1px solid #E8ECF0; padding:3px 5px;">{{ row.항목 }}</td>
-            <td style="border:1px solid #E8ECF0; padding:3px 5px; text-align:center;">{{ row.건수 }}건</td>
-            <td style="border:1px solid #E8ECF0; padding:3px 5px; color:#c62828;">{{ row.법조항 }}</td>
+            <td style="border:1px solid #FFDBC8; padding:3px 5px;">{{ row.항목 }}</td>
+            <td style="border:1px solid #FFDBC8; padding:3px 5px; text-align:center;">{{ row.건수 }}건</td>
+            <td style="border:1px solid #FFDBC8; padding:3px 5px; color:#c62828;">{{ row.법조항 }}</td>
         </tr>
         {% endif %}
         {% endfor %}
         </tbody>
     </table>
-    <p style="font-size:8pt; color:#888; margin-top:4px;">* 상기 법조항은 참고 사항이며, 실제 면책 불허가 여부는 법원의 종합적 판단에 따릅니다.</p>
+    <p style="font-size:8pt; color:#5A6872; margin-top:4px;">* 상기 법조항은 참고 사항이며, 실제 면책 불허가 여부는 법원의 종합적 판단에 따릅니다.</p>
 </div>
 {% endif %}

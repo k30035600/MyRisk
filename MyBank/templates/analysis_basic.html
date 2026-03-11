@@ -9,8 +9,8 @@
     <script src="/static/common.js"></script>
     <style>
         /* 은행거래기본분석: 입출금내역/세부내역/은행별집계/계좌별집계 합계 행·푸터 */
-        #transaction-table tfoot tr, #transaction-table tfoot td { background-color: #E8EDF3 !important; }
-        #category-table-foot, #category-table tfoot tr td, #bank-table-footer, #account-table-footer { background-color: #E8EDF3 !important; }
+        #transaction-table tfoot tr, #transaction-table tfoot td { background-color: #C8DFFE !important; }
+        #category-table-foot, #category-table tfoot tr td, #bank-table-footer, #account-table-footer { background-color: #C8DFFE !important; }
         * {
             margin: 0;
             padding: 0;
@@ -29,7 +29,7 @@
             padding: 10px;
             height: 100vh;
             font-family: 'Malgun Gothic', sans-serif;
-            background-color: #F8F9FA;
+            background-color: #F0F2F5;
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -62,7 +62,9 @@
         }
 
         .header h1 {
-            color: #2C3E50;
+            color: #1565C0;
+            border-left: 4px solid #1565C0;
+            padding-left: 10px;
             margin: 0;
             text-align: left;
             flex: 0 0 auto;
@@ -76,13 +78,13 @@
             margin-left: auto;
         }
 
-        /* 통합 네비게이터 스타일 */
+        /* 통합 네비게이터 스타일 — 은행 고유색 */
         .main-nav {
             display: flex;
             flex-wrap: wrap;
             gap: 4px;
             padding: 6px;
-            background: #2C3E50;
+            background: #0D47A1;
             border-radius: 8px;
             margin-bottom: 0;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
@@ -91,8 +93,8 @@
 
         .nav-item {
             padding: 6px 10px;
-            background: rgba(255, 255, 255, 0.9);
-            color: #2C3E50;
+            background: rgba(255, 255, 255, 0.15);
+            color: #FFFFFF;
             text-decoration: none;
             border-radius: 5px;
             font-weight: bold;
@@ -105,14 +107,15 @@
         }
 
         .nav-item:hover {
-            background: rgba(255, 255, 255, 1);
+            background: rgba(255, 255, 255, 0.35);
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
 
         .nav-item.active {
-            background: #27AE60;
-            color: white;
+            background: #FFFFFF;
+            color: #0D47A1;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
         }
 
         .stats-grid {
@@ -131,7 +134,7 @@
         }
 
         .stat-card h3 {
-            color: #2C3E50;
+            color: #1A1A1A;
             font-size: clamp(9px, calc(0.45vw + 2px), 12px);
             white-space: nowrap;
             margin-bottom: 2px;
@@ -149,7 +152,7 @@
         .stat-card .value {
             font-size: clamp(12px, calc(0.8vw + 2px), 20px);
             font-weight: bold;
-            color: #2C3E50;
+            color: #1A1A1A;
             text-align: right;
             line-height: 1.2;
             white-space: nowrap;
@@ -164,7 +167,7 @@
         }
 
         .stat-card.balance .value {
-            color: #2C3E50;
+            color: #1A1A1A;
         }
 
         /* 통일된 필터 스타일 */
@@ -178,20 +181,20 @@
 
         .filter-group label {
             font-weight: bold;
-            color: #2C3E50;
+            color: #1A1A1A;
         }
 
         .filter-group select,
         .filter-group input {
             padding: 8px 12px;
-            border: 1px solid #E8ECF0;
+            border: 1px solid #BBDEFB;
             border-radius: 4px;
             font-size: 14px;
         }
 
         #bank-filter {
             padding: 8px 12px;
-            border: 1px solid #E8ECF0;
+            border: 1px solid #BBDEFB;
             border-radius: 4px;
             font-size: 14px;
             text-align: center;
@@ -202,7 +205,7 @@
         }
 
         #print-btn:hover:not(:disabled) {
-            background: #219A52;
+            background: #37474F;
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
@@ -217,7 +220,7 @@
         }
 
         .category-row:hover {
-            background-color: #f0f8ff !important;
+            background-color: #DBEAFE !important;
         }
 
         /* 행 클릭 시 말풍선(전체 컬럼 표시) */
@@ -228,13 +231,13 @@
             max-width: 480px;
             max-height: 70vh;
             overflow: auto;
-            background: rgb(255, 204, 128);
-            border: 1px solid #E8ECF0;
+            background: #DBEAFE;
+            border: 1px solid #BBDEFB;
             border-radius: 12px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-            padding: 10px;
-            font-size: 11px;
-            line-height: 1.2;
+            padding: 12px 14px;
+            font-size: 12.5px;
+            line-height: 1.5;
             font-family: 'Malgun Gothic', sans-serif;
             pointer-events: auto;
         }
@@ -245,7 +248,7 @@
             left: 20px;
             border-left: 8px solid transparent;
             border-right: 8px solid transparent;
-            border-bottom: 8px solid #E8ECF0;
+            border-bottom: 8px solid #BBDEFB;
         }
         .row-tooltip-bubble::after {
             content: '';
@@ -254,46 +257,47 @@
             left: 22px;
             border-left: 6px solid transparent;
             border-right: 6px solid transparent;
-            border-bottom: 6px solid rgb(255, 152, 0);
+            border-bottom: 6px solid #1565C0;
         }
         .row-tooltip-bubble.visible {
             display: block;
         }
         .row-tooltip-bubble .tooltip-title {
             font-weight: bold;
-            color: #2C3E50;
+            font-size: 13px;
+            color: #0D47A1;
             margin-bottom: 8px;
             padding-bottom: 6px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1.5px solid #90CAF9;
         }
         .row-tooltip-bubble .tooltip-row {
             display: flex;
             gap: 8px;
-            padding: 3px 0;
-            border-bottom: 1px solid #F8F9FA;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
         }
         .row-tooltip-bubble .tooltip-row:last-child {
             border-bottom: none;
         }
         .row-tooltip-bubble .tooltip-key {
             flex: 0 0 100px;
-            color: #34495E;
-            opacity: 0.8;
+            color: #1565C0;
+            font-weight: 600;
         }
         .row-tooltip-bubble .tooltip-val {
             flex: 1;
             word-break: break-all;
-            opacity: 1;
+            color: #334155;
         }
-        .row-tooltip-selected { background-color: #bbb !important; }
+        .row-tooltip-selected { background-color: #BBDEFB !important; }
         /* 입출금내역 행 클릭 시 세부내역 조회 중 선택 행 회색 표시, 끝나면 원위치 */
         #transaction-table tbody tr.row-tooltip-selected,
-        #transaction-table tbody tr.row-tooltip-selected td { background-color: #bbb !important; }
+        #transaction-table tbody tr.row-tooltip-selected td { background-color: #BBDEFB !important; }
         .transaction-row-clickable {
             cursor: pointer;
         }
         .transaction-row-clickable:hover {
-            background-color: #f0f8ff !important;
+            background-color: #DBEAFE !important;
         }
 
         .charts-grid {
@@ -323,7 +327,7 @@
         }
 
         .chart-card h2 {
-            color: #2C3E50;
+            color: #1A1A1A;
             font-size: 18px;
             margin-bottom: 20px;
             border-bottom: 2px solid #f0f0f0;
@@ -337,7 +341,7 @@
             padding-bottom: 3px;
             border-bottom: none;
             font-size: 18px;
-            color: #2C3E50;
+            color: #1A1A1A;
         }
         .chart-container {
             position: relative;
@@ -361,7 +365,7 @@
         }
 
         .table-card h2 {
-            color: #2C3E50;
+            color: #1A1A1A;
             font-size: 18px;
             font-weight: bold;
             margin-bottom: 20px;
@@ -437,8 +441,8 @@
             scrollbar-gutter: stable;
         }
         .category-table-scroll::-webkit-scrollbar { width: 10px; }
-        .category-table-scroll::-webkit-scrollbar-track { background: #e8e8e8; border-radius: 5px; }
-        .category-table-scroll::-webkit-scrollbar-thumb { background: #888; border-radius: 5px; }
+        .category-table-scroll::-webkit-scrollbar-track { background: #BBDEFB; border-radius: 5px; }
+        .category-table-scroll::-webkit-scrollbar-thumb { background: #A0A8B0; border-radius: 5px; }
         .transaction-table-container {
             flex: 1;
             min-height: 0;
@@ -447,13 +451,13 @@
             scrollbar-gutter: stable;
         }
         .transaction-table-container::-webkit-scrollbar { width: 10px; }
-        .transaction-table-container::-webkit-scrollbar-track { background: #e8e8e8; border-radius: 5px; }
-        .transaction-table-container::-webkit-scrollbar-thumb { background: #888; border-radius: 5px; }
+        .transaction-table-container::-webkit-scrollbar-track { background: #BBDEFB; border-radius: 5px; }
+        .transaction-table-container::-webkit-scrollbar-thumb { background: #A0A8B0; border-radius: 5px; }
         /* 카테고리별 입출금 내역 합계: 카드사별 집계 합계와 동일한 스타일 (grid + span) */
         .category-table-footer-wrap {
             flex-shrink: 0;
-            background-color: #E8EDF3;
-            border-top: 2px solid #E8ECF0;
+            background-color: #C8DFFE;
+            border-top: 2px solid #263238;
             padding: 3px;
             font-weight: bold;
             display: grid;
@@ -471,21 +475,21 @@
         }
         #category-table thead tr {
             height: 25px;
-            background-color: #34495E;
-            color: #FFFFFF;
+            background-color: #B3D4FC;
+            color: #1565C0;
         }
         #category-table thead th {
-            border-bottom: 2px solid #E8ECF0;
+            border-bottom: 2px solid #BBDEFB;
         }
         #category-table tbody tr {
             min-height: 25px;
             height: 25px;
         }
         #category-table tbody tr:not(.total-row):nth-child(even) {
-            background-color: #f9f9f9;
+            background-color: #F7F8FA;
         }
         #category-table tbody tr:not(.total-row):hover {
-            background-color: #f0f8ff !important;
+            background-color: #DBEAFE !important;
         }
         #category-table th,
         #category-table td {
@@ -510,23 +514,23 @@
         }
         #transaction-table thead tr {
             height: 25px;
-            background-color: #34495E;
-            color: #FFFFFF;
+            background-color: #B3D4FC;
+            color: #1565C0;
         }
         #transaction-table thead th {
-            border-bottom: 2px solid #E8ECF0;
-            background-color: #34495E !important;
-            color: #FFFFFF !important;
+            border-bottom: 2px solid #BBDEFB;
+            background-color: #B3D4FC !important;
+            color: #1565C0 !important;
         }
         #transaction-table tbody tr {
             min-height: 25px;
             height: 25px;
         }
         #transaction-table tbody tr:not(.total-row):nth-child(even) {
-            background-color: #f9f9f9;
+            background-color: #F7F8FA;
         }
         #transaction-table tbody tr:not(.total-row):hover {
-            background-color: #f0f8ff !important;
+            background-color: #DBEAFE !important;
         }
         #transaction-table tfoot tr {
             height: 25px;
@@ -578,14 +582,14 @@
         #bank-table thead tr,
         #account-table thead tr {
             height: 25px;
-            background-color: #34495E;
-            color: #FFFFFF;
+            background-color: #B3D4FC;
+            color: #1565C0;
         }
         #bank-table thead th,
         #account-table thead th {
-            border-bottom: 2px solid #E8ECF0;
-            background-color: #34495E !important;
-            color: #FFFFFF !important;
+            border-bottom: 2px solid #BBDEFB;
+            background-color: #B3D4FC !important;
+            color: #1565C0 !important;
         }
         #bank-table tbody tr,
         #account-table tbody tr {
@@ -594,11 +598,11 @@
         }
         #bank-table tbody tr:not(.total-row):nth-child(even),
         #account-table tbody tr:not(.total-row):nth-child(even) {
-            background-color: #f9f9f9;
+            background-color: #F7F8FA;
         }
         #bank-table tbody tr:not(.total-row):hover,
         #account-table tbody tr:not(.total-row):hover {
-            background-color: #f0f8ff !important;
+            background-color: #DBEAFE !important;
         }
         #bank-table tfoot tr,
         #account-table tfoot tr {
@@ -695,14 +699,14 @@
         .loading {
             text-align: center;
             padding: 40px;
-            color: #2C3E50;
+            color: #1A1A1A;
         }
 
         .error {
             text-align: center;
             padding: 20px;
-            color: #2C3E50;
-            background: #ffebee;
+            color: #1A1A1A;
+            background: #FFF0F0;
             border-radius: 4px;
             margin: 10px 0;
         }
@@ -924,6 +928,41 @@
                 padding: 4px 2px;
             }
         }
+        /* ═══════════════════════════════════════════════════════════
+           은행 고유색 시스템 (Bank Identity Color System)
+           고유색: #1565C0 | 본문: #334155 | 헤더: #B3D4FC | 구분선: #BBDEFB
+           ═══════════════════════════════════════════════════════════ */
+        .header h1 { color: #1565C0 !important; border-left: 4px solid #1565C0; padding-left: 10px; }
+        h2, h3 { color: #1565C0 !important; }
+        .section-title { color: #1565C0 !important; border-left-color: #1565C0 !important; }
+        table thead th {
+            background-color: #B3D4FC !important;
+            color: #1565C0 !important;
+            border-color: #BBDEFB !important;
+        }
+        table tbody td { color: #334155; border-color: #BBDEFB !important; }
+        table td[style*="color: #1565C0"], table td[style*="color:#1565C0"] { color: #1565C0 !important; }
+        table td[style*="color: #C62828"], table td[style*="color:#C62828"] { color: #C62828 !important; }
+        table tbody tr:hover {
+            background-color: #DBEAFE !important;
+            box-shadow: inset 3px 0 0 #1565C0;
+        }
+        table tfoot tr, table tr.total-row { background-color: #C8DFFE !important; }
+        table tfoot td, table tr.total-row td { font-weight: 800 !important; color: #0F172A !important; }
+        select, select option { color: #334155 !important; font-weight: normal !important; }
+        select option { background-color: #FFFFFF !important; }
+        .header-stats-text, .header-stats-text .stat-item, .header-stats-text .label, .header-stats-text span { color: #1565C0; }
+        .stats-value { color: #1565C0 !important; }
+
+        /* --- 은행 필터·라벨 = 은행 고유색 --- */
+        .filter-group label { color: #1565C0 !important; font-weight: bold; }
+        #bank-filter {
+            background-color: #FFFFFF !important;
+            color: #334155 !important;
+            border: 1px solid #BBDEFB !important;
+            font-weight: normal !important;
+        }
+        #bank-filter option { color: #334155 !important; background-color: #FFFFFF !important; }
     </style>
 </head>
 <body>
@@ -939,7 +978,7 @@
                         <option value="">은행전체</option>
                     </select>
                 </div>
-                <button id="print-btn" type="button" style="padding: 8px 16px; background: #27AE60; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 14px;">
+                <button id="print-btn" type="button" style="padding: 8px 16px; background: #455A64; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 14px;">
                     📄 출력
                 </button>
             </div>
@@ -963,20 +1002,20 @@
             <div class="category-table-container">
                 <div class="category-table-scroll">
                     <table id="category-table" style="width: 100%; border-collapse: collapse; font-size: 11px; table-layout: fixed;">
-                        <thead style="position: sticky; top: 0; background-color: #34495E; color: #FFFFFF;">
+                        <thead style="position: sticky; top: 0; background-color: #B3D4FC; color: #1565C0;">
                             <tr>
-                                <th style="width: 50%; text-align: left; border-bottom: 2px solid #E8ECF0; color: #FFFFFF;">카테고리</th>
-                                <th style="width: 10%; text-align: right; border-bottom: 2px solid #E8ECF0; color: #FFFFFF;">건수</th>
-                                <th style="width: 20%; text-align: right; border-bottom: 2px solid #E8ECF0; color: #90CAF9;">입금액</th>
-                                <th style="width: 20%; text-align: right; border-bottom: 2px solid #E8ECF0; color: #EF9A9A;">출금액</th>
+                                <th style="width: 50%; text-align: left; border-bottom: 2px solid #BBDEFB; color: #1565C0;">카테고리</th>
+                                <th style="width: 10%; text-align: right; border-bottom: 2px solid #BBDEFB; color: #1565C0;">건수</th>
+                                <th style="width: 20%; text-align: right; border-bottom: 2px solid #BBDEFB; color: #1565C0;">입금액</th>
+                                <th style="width: 20%; text-align: right; border-bottom: 2px solid #BBDEFB; color: #C62828;">출금액</th>
                             </tr>
                         </thead>
                         <tbody id="category-table-body">
                             <tr>
-                                <td colspan="4" style="padding: 20px; text-align: center; color: #34495E;">데이터 로딩중 ... (0건)</td>
+                                <td colspan="4" style="padding: 20px; text-align: center; color: #1A1A1A;">데이터 로딩중 ... (0건)</td>
                             </tr>
                         </tbody>
-                        <tfoot id="category-table-foot" style="background-color: #E8EDF3; border-top: 2px solid #E8ECF0;">
+                        <tfoot id="category-table-foot" style="background-color: #C8DFFE; border-top: 2px solid #263238;">
                             <tr class="total-row">
                                 <td style="font-weight: bold; padding: 3px; text-align: left;">합계</td>
                                 <td id="total-count-category" style="font-weight: bold; padding: 3px; text-align: right;">0</td>
@@ -993,20 +1032,20 @@
             <div class="transaction-table-container" style="min-width: 0;">
                 <table id="transaction-table" style="width: 100%; border-collapse: collapse; font-size: 11px; table-layout: fixed;">
                     <thead>
-                        <tr id="transaction-table-header" style="background-color: #34495E; color: #FFFFFF; position: sticky; top: 0;">
-                            <th style="width: 12%; text-align: left; border-bottom: 2px solid #E8ECF0; color: #FFFFFF;">은행명</th>
-                            <th style="width: 12%; text-align: center; border-bottom: 2px solid #E8ECF0; color: #FFFFFF;">거래일</th>
-                            <th style="width: 40%; text-align: left; border-bottom: 2px solid #E8ECF0; color: #FFFFFF;">기타거래</th>
-                            <th style="width: 18%; text-align: right; border-bottom: 2px solid #E8ECF0; color: #90CAF9;">입금액</th>
-                            <th style="width: 18%; text-align: right; border-bottom: 2px solid #E8ECF0; color: #EF9A9A;">출금액</th>
+                        <tr id="transaction-table-header" style="background-color: #B3D4FC; color: #1565C0; position: sticky; top: 0;">
+                            <th style="width: 12%; text-align: left; border-bottom: 2px solid #BBDEFB; color: #1565C0;">은행명</th>
+                            <th style="width: 12%; text-align: center; border-bottom: 2px solid #BBDEFB; color: #1565C0;">거래일</th>
+                            <th style="width: 40%; text-align: left; border-bottom: 2px solid #BBDEFB; color: #1565C0;">기타거래</th>
+                            <th style="width: 18%; text-align: right; border-bottom: 2px solid #BBDEFB; color: #1565C0;">입금액</th>
+                            <th style="width: 18%; text-align: right; border-bottom: 2px solid #BBDEFB; color: #C62828;">출금액</th>
                         </tr>
                     </thead>
                     <tbody id="transaction-table-body">
                         <tr>
-                            <td colspan="5" style="padding: 20px; text-align: center; color: #34495E;">은행거래 입출금내역에서 카테고리를 선택하면 거래 내역이 표시됩니다.</td>
+                            <td colspan="5" style="padding: 20px; text-align: center; color: #1A1A1A;">은행거래 입출금내역에서 카테고리를 선택하면 거래 내역이 표시됩니다.</td>
                         </tr>
                     </tbody>
-                    <tfoot id="transaction-table-footer" style="position: sticky; bottom: 0; background-color: #E8EDF3; border-top: 2px solid #E8ECF0;">
+                    <tfoot id="transaction-table-footer" style="position: sticky; bottom: 0; background-color: #C8DFFE; border-top: 2px solid #263238;">
                         <tr>
                             <td style="font-weight: bold; padding: 3px; text-align: left;">합계</td>
                             <td style="font-weight: bold; padding: 3px; text-align: center;"></td>
@@ -1029,7 +1068,7 @@
         </div>
     </div>
 
-    <div class="stats-section" style="margin-top: 5px; margin-bottom: 10px; background-color: #e0e0e0; padding: 10px; border-radius: 8px;">
+    <div class="stats-section" style="margin-top: 5px; margin-bottom: 10px; background-color: #C8DFFE; padding: 10px; border-radius: 8px;">
         <div class="stats-grid" id="stats-grid" style="display: flex; gap: 8px; margin: 0;">
             <div class="stat-card" style="flex: 1;">
                 <div class="stat-content">
@@ -1080,8 +1119,8 @@
                             <tr>
                                 <th>은행명</th>
                                 <th class="text-right">건수</th>
-                                <th class="text-right" style="color: #90CAF9;">입금액</th>
-                                <th class="text-right" style="color: #EF9A9A;">출금액</th>
+                                <th class="text-right" style="color: #1565C0;">입금액</th>
+                                <th class="text-right" style="color: #C62828;">출금액</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1091,7 +1130,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div id="bank-table-footer" class="bank-stats-footer" style="flex-shrink: 0; background-color: #E8EDF3; border-top: 2px solid #E8ECF0; padding: 3px; font-weight: bold; display: grid; grid-template-columns: 35% 18% 23% 23%; gap: 0; font-size: 11px;">
+                <div id="bank-table-footer" class="bank-stats-footer" style="flex-shrink: 0; background-color: #C8DFFE; border-top: 2px solid #263238; padding: 3px; font-weight: bold; display: grid; grid-template-columns: 35% 18% 23% 23%; gap: 0; font-size: 11px;">
                     <span>합계</span><span class="text-right"></span><span style="text-align:right;color:#1565C0;">0</span><span style="text-align:right;color:#C62828;">0</span>
                 </div>
             </div>
@@ -1106,8 +1145,8 @@
                                 <th>은행명</th>
                                 <th>계좌번호</th>
                                 <th class="text-right">건수</th>
-                                <th class="text-right" style="color: #90CAF9;">입금액</th>
-                                <th class="text-right" style="color: #EF9A9A;">출금액</th>
+                                <th class="text-right" style="color: #1565C0;">입금액</th>
+                                <th class="text-right" style="color: #C62828;">출금액</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1117,7 +1156,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div id="account-table-footer" class="bank-stats-footer" style="flex-shrink: 0; background-color: #E8EDF3; border-top: 2px solid #E8ECF0; padding: 3px; font-weight: bold; display: grid; grid-template-columns: 17% 28% 15% 20% 20%; gap: 0; font-size: 11px;">
+                <div id="account-table-footer" class="bank-stats-footer" style="flex-shrink: 0; background-color: #C8DFFE; border-top: 2px solid #263238; padding: 3px; font-weight: bold; display: grid; grid-template-columns: 17% 28% 15% 20% 20%; gap: 0; font-size: 11px;">
                     <span>합계</span><span></span><span id="account-table-total-count" class="text-right"></span><span id="account-table-total-deposit" style="text-align:right;color:#1565C0;">0</span><span id="account-table-total-withdraw" style="text-align:right;color:#C62828;">0</span>
                 </div>
             </div>
@@ -1190,9 +1229,9 @@
                         chart.update();
                     };
                     const boxSpan = document.createElement('span');
-                    boxSpan.style.cssText = 'background:' + item.fillStyle + ';border:1px solid ' + (item.strokeStyle || '#ccc') + ';flex-shrink:0;height:10px;width:10px;border-radius:2px;';
+                    boxSpan.style.cssText = 'background:' + item.fillStyle + ';border:1px solid ' + (item.strokeStyle || '#BBDEFB') + ';flex-shrink:0;height:10px;width:10px;border-radius:2px;';
                     const textSpan = document.createElement('span');
-                    textSpan.style.color = item.fontColor || '#333';
+                    textSpan.style.color = item.fontColor || '#334155';
                     textSpan.style.textDecoration = item.hidden ? 'line-through' : '';
                     textSpan.style.overflow = 'hidden';
                     textSpan.style.textOverflow = 'ellipsis';
@@ -1224,9 +1263,9 @@
                         chart.update();
                     };
                     const boxSpan = document.createElement('span');
-                    boxSpan.style.cssText = 'background:' + item.fillStyle + ';border:1px solid ' + (item.strokeStyle || '#ccc') + ';display:inline-block;height:10px;width:10px;border-radius:2px;';
+                    boxSpan.style.cssText = 'background:' + item.fillStyle + ';border:1px solid ' + (item.strokeStyle || '#BBDEFB') + ';display:inline-block;height:10px;width:10px;border-radius:2px;';
                     const textSpan = document.createElement('span');
-                    textSpan.style.color = item.fontColor || '#333';
+                    textSpan.style.color = item.fontColor || '#334155';
                     textSpan.style.textDecoration = item.hidden ? 'line-through' : '';
                     textSpan.textContent = item.text;
                     li.appendChild(boxSpan);
@@ -1297,6 +1336,7 @@
                                 display: true,
                                 position: 'top',
                                 align: 'end',
+                                labels: { color: '#334155' },
                                 padding: { top: 0 }
                             },
                             tooltip: {
@@ -1346,7 +1386,7 @@
                         labels: bankLabels,
                         datasets: [{
                             data: banks.map(item => item.deposit + item.withdraw),
-                            backgroundColor: ['rgba(0, 0, 255, 0.5)', 'rgba(0, 255, 0, 0.5)', 'rgba(255, 128, 0, 0.5)', 'rgba(255, 99, 132, 0.5)', 'rgba(153, 102, 255, 0.5)', 'rgba(75, 192, 192, 0.5)']
+                            backgroundColor: ['rgba(21, 101, 192, 0.6)', 'rgba(25, 118, 210, 0.5)', 'rgba(66, 165, 245, 0.5)', 'rgba(100, 181, 246, 0.5)', 'rgba(13, 71, 161, 0.5)', 'rgba(30, 136, 229, 0.5)']
                         }]
                     },
                     options: {
@@ -1422,10 +1462,10 @@
 
         // 카테고리별 원그래프 (차액 절대값 기준)
         const PIE_COLORS = [
-            'rgba(255, 99, 132, 0.8)', 'rgba(54, 162, 235, 0.8)', 'rgba(255, 206, 86, 0.8)',
-            'rgba(75, 192, 192, 0.8)', 'rgba(153, 102, 255, 0.8)', 'rgba(255, 159, 64, 0.8)',
-            'rgba(199, 199, 199, 0.8)', 'rgba(83, 102, 255, 0.8)', 'rgba(255, 99, 255, 0.8)',
-            'rgba(99, 255, 132, 0.8)', 'rgba(255, 205, 86, 0.8)', 'rgba(86, 205, 255, 0.8)'
+            'rgba(13, 71, 161, 0.8)', 'rgba(21, 101, 192, 0.8)', 'rgba(25, 118, 210, 0.8)',
+            'rgba(30, 136, 229, 0.8)', 'rgba(66, 165, 245, 0.8)', 'rgba(100, 181, 246, 0.8)',
+            'rgba(144, 202, 249, 0.8)', 'rgba(3, 155, 229, 0.8)', 'rgba(0, 131, 143, 0.8)',
+            'rgba(38, 50, 56, 0.8)', 'rgba(69, 90, 100, 0.8)', 'rgba(120, 144, 156, 0.8)'
         ];
         function updateCategoryChart(chartData) {
             if (!chartData || chartData.length === 0) return;
@@ -1474,10 +1514,10 @@
                             ctx.textAlign = 'center';
                             ctx.textBaseline = 'middle';
                             ctx.font = 'bold 16px Malgun Gothic';
-                            ctx.fillStyle = '#333';
+                            ctx.fillStyle = '#1A1A1A';
                             ctx.fillText(formatNumber(netBalance), centerX, centerY - 10);
                             ctx.font = '12px Malgun Gothic';
-                            ctx.fillStyle = '#666';
+                            ctx.fillStyle = '#5A6872';
                             ctx.fillText('순잔액', centerX, centerY + 12);
                             ctx.restore();
                         }
@@ -1537,18 +1577,18 @@
                 if (!response.ok) {
                     const msg = (data.error || `서버 오류 ${response.status}`).replace(/</g, '&lt;').replace(/>/g, '&gt;');
                     document.getElementById('category-table-body').innerHTML = 
-                        `<tr><td colspan="3" style="padding: 20px; text-align: center; color: #F44336;">데이터 로딩 오류: ${msg}</td></tr>`;
+                        `<tr><td colspan="3" style="padding: 20px; text-align: center; color: #C62828;">데이터 로딩 오류: ${msg}</td></tr>`;
                     return;
                 }
                 if (data.error) {
                     const errEsc = String(data.error).replace(/</g, '&lt;').replace(/>/g, '&gt;');
                     document.getElementById('category-table-body').innerHTML = 
-                        `<tr><td colspan="3" style="padding: 20px; text-align: center; color: #F44336;">데이터 로딩 오류: ${errEsc}</td></tr>`;
+                        `<tr><td colspan="3" style="padding: 20px; text-align: center; color: #C62828;">데이터 로딩 오류: ${errEsc}</td></tr>`;
                     return;
                 }
                 if (!data.data || data.data.length === 0) {
                     document.getElementById('category-table-body').innerHTML = 
-                        '<tr><td colspan="4" style="padding: 20px; text-align: center; color: #34495E;">데이터가 없습니다.</td></tr>';
+                        '<tr><td colspan="4" style="padding: 20px; text-align: center; color: #1A1A1A;">데이터가 없습니다.</td></tr>';
                     return;
                 }
                 
@@ -1572,10 +1612,10 @@
                     const catVal = (item.category || '(빈값)').replace(/"/g, '&quot;');
                     const cnt = item.count != null ? item.count : 0;
                     tableHtml += `<tr class="category-row" data-category="${catVal}" data-index="${index}" data-deposit="${item.deposit || 0}" data-withdraw="${item.withdraw || 0}" style="cursor: pointer;">
-                        <td style="width: 50%; border-bottom: 1px solid #eee;">${item.category || '(빈값)'}</td>
-                        <td style="width: 10%; text-align: right; border-bottom: 1px solid #eee;">${formatNumber(cnt)}</td>
-                        <td style="width: 20%; text-align: right; border-bottom: 1px solid #eee; color: #1565C0;">${formatAmount(item.deposit || 0)}</td>
-                        <td style="width: 20%; text-align: right; border-bottom: 1px solid #eee; color: #C62828;">${formatAmount(item.withdraw || 0)}</td>
+                        <td style="width: 50%; border-bottom: 1px solid #BBDEFB;">${item.category || '(빈값)'}</td>
+                        <td style="width: 10%; text-align: right; border-bottom: 1px solid #BBDEFB;">${formatNumber(cnt)}</td>
+                        <td style="width: 20%; text-align: right; border-bottom: 1px solid #BBDEFB; color: #1565C0;">${formatAmount(item.deposit || 0)}</td>
+                        <td style="width: 20%; text-align: right; border-bottom: 1px solid #BBDEFB; color: #C62828;">${formatAmount(item.withdraw || 0)}</td>
                     </tr>`;
                 });
                 
@@ -1607,7 +1647,7 @@
                 console.error('Error loading category analysis:', error);
                 const errMsg = (error && error.message) ? String(error.message).replace(/</g, '&lt;').replace(/>/g, '&gt;') : '알 수 없음';
                 document.getElementById('category-table-body').innerHTML = 
-                    `<tr><td colspan="4" style="padding: 20px; text-align: center; color: #F44336;">데이터 로딩 오류: ${errMsg}</td></tr>`;
+                    `<tr><td colspan="4" style="padding: 20px; text-align: center; color: #C62828;">데이터 로딩 오류: ${errMsg}</td></tr>`;
             }
         }
 
@@ -1621,13 +1661,13 @@
             const titleEl = document.getElementById('transaction-section-title');
             if (!selectedCategory) {
                 allTransactionData = [];
-                tableBody.innerHTML = '<tr><td colspan="5" style="padding: 20px; text-align: center; color: #34495E;">카테고리를 선택하세요.</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="5" style="padding: 20px; text-align: center; color: #1A1A1A;">카테고리를 선택하세요.</td></tr>';
                 setFooterSums(0, 0);
                 if (titleEl) titleEl.textContent = '은행거래 세부내역';
                 return;
             }
             if (titleEl) titleEl.textContent = '은행거래 세부내역 (' + selectedCategory + ')';
-            tableBody.innerHTML = '<tr><td colspan="5" style="padding: 20px; text-align: center; color: #34495E;">데이터 로딩중 ... (0건)</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="5" style="padding: 20px; text-align: center; color: #1A1A1A;">데이터 로딩중 ... (0건)</td></tr>';
             try {
                 const bankFilter = document.getElementById('bank-filter').value;
                 const urlParams = new URLSearchParams({ type: 'detail', category: selectedCategory });
@@ -1643,12 +1683,12 @@
                         const merch = row['기타거래'] != null && row['기타거래'] !== '' ? String(row['기타거래']) : '';
                         const bankName = row['카드사'] || row['은행명'] || '';
                         const dateVal = row['이용일'] || row['거래일'] || '';
-                        html += `<tr class="transaction-row-clickable" data-index="${idx}" style="cursor: pointer; border-bottom: 1px solid #eee;">
-                            <td style="border-bottom: 1px solid #eee;">${bankName}</td>
-                            <td style="text-align: center; border-bottom: 1px solid #eee;">${formatDate(dateVal)}</td>
-                            <td style="border-bottom: 1px solid #eee;">${merch}</td>
-                            <td style="text-align: right; border-bottom: 1px solid #eee; color: #1565C0;">${formatAmount(dep)}</td>
-                            <td style="text-align: right; border-bottom: 1px solid #eee; color: #C62828;">${formatAmount(withAmt)}</td>
+                        html += `<tr class="transaction-row-clickable" data-index="${idx}" style="cursor: pointer; border-bottom: 1px solid #BBDEFB;">
+                            <td style="border-bottom: 1px solid #BBDEFB;">${bankName}</td>
+                            <td style="text-align: center; border-bottom: 1px solid #BBDEFB;">${formatDate(dateVal)}</td>
+                            <td style="border-bottom: 1px solid #BBDEFB;">${merch}</td>
+                            <td style="text-align: right; border-bottom: 1px solid #BBDEFB; color: #1565C0;">${formatAmount(dep)}</td>
+                            <td style="text-align: right; border-bottom: 1px solid #BBDEFB; color: #C62828;">${formatAmount(withAmt)}</td>
                         </tr>`;
                     });
                     const depSum = (categoryTotalDeposit !== undefined && categoryTotalWithdraw !== undefined)
@@ -1658,7 +1698,7 @@
                     setFooterSums(depSum, withSum);
                 } else {
                     allTransactionData = [];
-                    html = '<tr><td colspan="5" style="padding: 20px; text-align: center; color: #34495E;">거래 내역이 없습니다.</td></tr>';
+                    html = '<tr><td colspan="5" style="padding: 20px; text-align: center; color: #1A1A1A;">거래 내역이 없습니다.</td></tr>';
                     setFooterSums(
                         (categoryTotalDeposit !== undefined ? categoryTotalDeposit : 0),
                         (categoryTotalWithdraw !== undefined ? categoryTotalWithdraw : 0)
@@ -1668,7 +1708,7 @@
             } catch (error) {
                 console.error('Error loading transactions by category:', error);
                 allTransactionData = [];
-                tableBody.innerHTML = '<tr><td colspan="5" style="padding: 20px; text-align: center; color: #F44336;">거래 내역 로딩 오류가 발생했습니다.</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="5" style="padding: 20px; text-align: center; color: #C62828;">거래 내역 로딩 오류가 발생했습니다.</td></tr>';
                 setFooterSums(
                     (categoryTotalDeposit !== undefined ? categoryTotalDeposit : 0),
                     (categoryTotalWithdraw !== undefined ? categoryTotalWithdraw : 0)

@@ -1060,10 +1060,10 @@ def save_category_table():
         if not success:
             return jsonify({'success': False, 'error': error_msg}), 400
         try:
-            from lib.category_table_defaults import sync_category_create_from_xlsx
-            sync_category_create_from_xlsx(path)
+            from lib.category_table_io import export_category_table_to_xlsx
+            export_category_table_to_xlsx(path)
         except Exception:
-            pass  # md 동기화 실패 시에도 API 성공 응답 유지
+            pass
         try:
             from lib.path_config import delete_all_after_files
             delete_all_after_files()

@@ -833,7 +833,7 @@ def _apply_전처리_only(df):
 
 
 def apply_후처리_bank(df, category_tables):
-    """은행거래 후처리: category_table 후처리 규칙으로 적요/내용/송금메모 컬럼의 키워드 → 카테고리 치환."""
+    """은행거래 후처리: category_table 후처리 규칙으로 적요/내용/송금메모/기타거래 컬럼의 키워드 → 카테고리 치환."""
     if df is None or df.empty or "후처리" not in category_tables:
         return df
     category_table = category_tables["후처리"]
@@ -851,7 +851,7 @@ def apply_후처리_bank(df, category_tables):
     if not rules:
         return df
     df = df.copy()
-    for col in ['적요', '내용', '송금메모']:
+    for col in ['적요', '내용', '송금메모', '기타거래']:
         if col not in df.columns:
             continue
         for kw_norm, cat in rules:

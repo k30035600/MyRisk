@@ -193,27 +193,32 @@ try:
         os.makedirs(dir_path, exist_ok=True)
 except OSError:
     pass
-# 앱 로드 시: .source/category_table.xlsx가 있으면 data/category_table.json 생성·갱신. 없으면 json만 없을 때 빈 파일 생성
-try:
-    from lib.path_config import get_category_table_xlsx_path
-    _xlsx_path = get_category_table_xlsx_path()
-    if _xlsx_path and os.path.isfile(_xlsx_path):
-        import pandas as pd
-        from lib.category_table_io import (
-            safe_write_category_table,
-            normalize_category_df,
-            CATEGORY_TABLE_EXTENDED_COLUMNS,
-        )
-        _df = pd.read_excel(_xlsx_path, engine='openpyxl')
-        _df = normalize_category_df(_df, extended=True)
-        if CATEGORY_TABLE_PATH:
+def _ensure_category_table_json():
+    """category_table.json이 없으면 xlsx에서 생성, xlsx도 없으면 빈 파일 생성."""
+    if CATEGORY_TABLE_PATH and os.path.isfile(CATEGORY_TABLE_PATH):
+        return
+    try:
+        from lib.path_config import get_category_table_xlsx_path
+        xlsx_path = get_category_table_xlsx_path()
+        if xlsx_path and os.path.isfile(xlsx_path):
+            import pandas as pd
+            from lib.category_table_io import (
+                safe_write_category_table,
+                normalize_category_df,
+            )
+            df = pd.read_excel(xlsx_path, engine='openpyxl')
+            df = normalize_category_df(df, extended=True)
+            if CATEGORY_TABLE_PATH:
+                os.makedirs(os.path.dirname(CATEGORY_TABLE_PATH) or '.', exist_ok=True)
+                safe_write_category_table(CATEGORY_TABLE_PATH, df, extended=True)
+        elif CATEGORY_TABLE_PATH and not os.path.exists(CATEGORY_TABLE_PATH):
+            from lib.category_table_io import create_empty_category_table
             os.makedirs(os.path.dirname(CATEGORY_TABLE_PATH) or '.', exist_ok=True)
-            safe_write_category_table(CATEGORY_TABLE_PATH, _df, extended=True)
-    elif CATEGORY_TABLE_PATH and not os.path.exists(CATEGORY_TABLE_PATH):
-        from lib.category_table_io import create_empty_category_table
-        create_empty_category_table(CATEGORY_TABLE_PATH)
-except (ImportError, OSError, Exception):
-    pass
+            create_empty_category_table(CATEGORY_TABLE_PATH)
+    except (ImportError, OSError, Exception):
+        pass
+
+_ensure_category_table_json()
 
 
 # ----- 4. 기동 시 캐시·임시파일 정리 (다음 실행 시 깨끗한 상태) -----
@@ -613,7 +618,7 @@ def _no_cache_headers():
 @app.route('/')
 def index():
     """메인 홈페이지."""
-    # 기동 시간은 한국 표준시(KST)로 출력
+    _ensure_category_table_json()
     start_time_str = (SERVER_START_TIME.astimezone(KST).strftime('%H:%M:%S') if SERVER_START_TIME else '')
     resp = make_response(render_template(
         'index.html',

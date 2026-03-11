@@ -5,129 +5,254 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>금융정보 분석 시스템 (MyRisk)</title>
     <link rel="stylesheet" href="/static/common.css">
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { height: 100%; overflow-x: hidden; }
-        body { margin: 0; padding: 0; min-height: 100vh; font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background: #F8F9FA; color: #34495E; display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden; }
+        html { height: 100%; }
+        body {
+            margin: 0; padding: 0; height: 100vh;
+            font-family: 'Pretendard Variable', Pretendard, 'Malgun Gothic', '맑은 고딕', sans-serif;
+            background: #F4F5F7;
+            color: #263238;
+            display: flex; flex-direction: column;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
 
-        /* --- Top Navigation Bar --- */
-        .top-nav { background: #2C3E50; padding: 14px 40px; display: flex; align-items: center; justify-content: space-between; }
-        .top-nav .brand { font-size: 1.15em; font-weight: bold; color: #FFFFFF; letter-spacing: 0.03em; }
-        .top-nav .brand span { color: #27AE60; }
-        .top-nav .nav-links { display: flex; gap: 24px; }
-        .top-nav .nav-links a { color: rgba(255,255,255,0.75); text-decoration: none; font-size: 0.9em; transition: color 0.2s, border-color 0.2s; padding-bottom: 2px; border-bottom: 2px solid transparent; }
-        .top-nav .nav-links a:hover { color: #FFFFFF; border-bottom-color: #27AE60; }
+        /* ── Nav ── */
+        .top-nav {
+            background: #1B2631;
+            padding: 0 48px; height: 42px;
+            display: flex; align-items: center; justify-content: space-between;
+            flex-shrink: 0;
+        }
+        .top-nav .brand { font-size: 0.95em; font-weight: 700; color: #FFF; letter-spacing: 0.04em; }
+        .top-nav .brand span { color: #6C7A89; font-weight: 400; }
+        .top-nav .nav-links { display: flex; gap: 4px; align-items: center; }
+        .top-nav .nav-links a {
+            color: rgba(255,255,255,0.7); text-decoration: none;
+            font-size: 0.82em; font-weight: 500; padding: 4px 12px; border-radius: 4px;
+            transition: color 0.15s, background 0.15s;
+        }
+        .top-nav .nav-links a:hover { color: #FFF; background: rgba(255,255,255,0.08); }
+        .top-nav .nav-links a#fs-toggle { border: 1px solid rgba(255,255,255,0.15); margin-right: 2px; }
+        .top-nav .nav-links a#fs-toggle:hover { border-color: rgba(255,255,255,0.35); }
 
-        /* --- Hero Section --- */
-        .hero { text-align: center; padding: 56px 40px 40px; }
-        .hero h1 { font-size: 2.6em; color: #2C3E50; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.02em; }
-        .hero h1 .accent { color: #27AE60; }
-        .hero .subtitle { font-size: 1.15em; color: #7F8C8D; line-height: 1.6; }
+        /* ── Main (뷰포트 전체를 고르게 배분) ── */
+        .main-content {
+            flex: 1; display: flex; flex-direction: column;
+            justify-content: space-between;
+            max-width: 1360px; width: 100%;
+            margin: 0 auto; padding: 0 48px;
+        }
 
-        /* --- Container --- */
-        .container { max-width: 1200px; width: 100%; margin: 0 auto; padding: 0 40px; }
+        /* ── Title Block ── */
+        .title-block {
+            text-align: center;
+            padding: 48px 0 0;
+            flex-shrink: 0;
+        }
+        .title-block h1 {
+            font-size: 2.6em;
+            font-weight: 900;
+            color: #263238 !important;
+            letter-spacing: 0.02em;
+            margin-bottom: 4px;
+        }
+        .title-block .title-bar {
+            width: 64px; height: 3px;
+            background: #546E7A;
+            margin: 10px auto 8px;
+            border-radius: 2px;
+        }
+        .title-block .ver {
+            font-size: 0.85em; color: #546E7A; font-weight: 500;
+        }
 
-        /* --- Service Cards --- */
-        .services { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 8px; }
-        .service-card { background: #FFFFFF; border: 1px solid #E0E0E0; border-radius: 14px; padding: 36px 28px 32px; text-decoration: none; color: inherit; transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; overflow: hidden; }
-        .service-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; border-radius: 14px 14px 0 0; transition: height 0.25s ease; }
-        .service-card:hover { transform: translateY(-6px); box-shadow: 0 12px 36px rgba(44,62,80,0.10); border-color: transparent; }
+        /* ── Services ── */
+        .services {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 28px; width: 100%;
+            flex-shrink: 0;
+            padding: 8px 0;
+        }
+        .service-card {
+            border-radius: 14px;
+            padding: 40px 24px 36px;
+            text-decoration: none; color: inherit;
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+            position: relative; overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: none;
+        }
+        .service-card::before {
+            content: ''; position: absolute;
+            top: 0; left: 0; right: 0; height: 4px;
+            transition: height 0.15s;
+        }
+        .service-card:hover { transform: translateY(-5px); }
         .service-card:hover::before { height: 6px; }
-        .service-card.bank::before { background: #2C3E50; }
-        .service-card.card::before { background: #27AE60; }
-        .service-card.cash::before { background: #F39C12; }
-        .service-card .icon { font-size: 3em; margin-bottom: 16px; width: 72px; height: 72px; display: flex; align-items: center; justify-content: center; border-radius: 16px; background: #F4F6F8; }
-        .service-card.bank .icon { background: rgba(44,62,80,0.08); }
-        .service-card.card .icon { background: rgba(39,174,96,0.08); }
-        .service-card.cash .icon { background: rgba(243,156,18,0.08); }
-        .service-card h2 { font-size: 1.35em; color: #2C3E50; margin-bottom: 6px; font-weight: 700; }
-        .service-card .badge { font-size: 0.78em; font-weight: 600; color: #FFFFFF; padding: 3px 10px; border-radius: 20px; display: inline-block; margin-bottom: 12px; }
-        .service-card.bank .badge { background: #2C3E50; }
-        .service-card.card .badge { background: #27AE60; }
-        .service-card.cash .badge { background: #F39C12; }
-        .service-card .desc { font-size: 0.88em; line-height: 1.7; color: #7F8C8D; max-width: 280px; word-break: keep-all; overflow-wrap: break-word; }
+        .service-card .icon {
+            font-size: 2.8em;
+            width: 72px; height: 72px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 18px; margin-bottom: 18px;
+        }
+        .service-card h2 { font-size: 1.45em; font-weight: 900; margin-bottom: 8px; }
+        .service-card .badge {
+            font-size: 0.78em; font-weight: 700; color: #FFF;
+            padding: 4px 16px; border-radius: 20px;
+            display: inline-block; margin-bottom: 14px;
+        }
+        .service-card .desc {
+            font-size: 0.96em; line-height: 1.8; font-weight: 600;
+            color: #334155;
+            max-width: 340px;
+            word-break: keep-all; overflow-wrap: break-word;
+        }
 
-        /* --- Access Notice --- */
+        /* Bank — 파란 계열 */
+        .service-card.bank { background: #E8F0FE; }
+        .service-card.bank::before { background: #1565C0; }
+        .service-card.bank:hover { box-shadow: 0 14px 40px rgba(21,101,192,0.18); }
+        .service-card.bank .icon { background: rgba(21,101,192,0.12); }
+        .service-card.bank h2 { color: #0A3D91 !important; }
+        .service-card.bank .badge { background: #1565C0; }
 
-        /* --- Features Section --- */
-        .features { margin-top: 40px; padding: 40px 0 48px; border-top: 1px solid #EAEDF0; }
-        .features-header { margin-bottom: 24px; text-align: center; }
-        .features h3 { font-size: 1.4em; color: #2C3E50; font-weight: 700; }
-        .features-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
-        .feature-item { padding: 20px 16px; background: #FAFBFC; border-radius: 10px; border-left: 4px solid #A9DFBF; text-align: center; transition: background 0.2s, border-color 0.2s, box-shadow 0.2s; }
-        .feature-item h4 { color: #2C3E50; margin-bottom: 0; font-size: 1em; font-weight: 600; }
-        .feature-item.reset-item { cursor: pointer; }
-        .feature-item.reset-item:hover { background: #EBF5F0; border-left-color: #27AE60; box-shadow: 0 2px 8px rgba(39,174,96,0.08); }
-        .feature-item.reset-item:focus { outline: 2px solid #27AE60; outline-offset: 2px; }
-        .feature-item.help-item { cursor: pointer; }
-        .feature-item.help-item:hover { background: #EBF5F0; border-left-color: #27AE60; box-shadow: 0 2px 8px rgba(39,174,96,0.08); }
-        .feature-item.help-item:focus { outline: 2px solid #27AE60; outline-offset: 2px; }
-        .feature-item.shutdown-item { cursor: pointer; border-left-color: #F5D6C0; }
-        .feature-item.shutdown-item:hover { background: #FFF3E8; border-left-color: #E67E22; box-shadow: 0 2px 8px rgba(230,126,34,0.10); }
-        .feature-item.shutdown-item:focus { outline: 2px solid #E67E22; outline-offset: 2px; }
-        .feature-item-wrap { position: relative; min-width: 0; }
-        .feature-item-wrap > a.feature-item.reset-item { display: block; width: 100%; box-sizing: border-box; text-decoration: none; color: inherit; }
-        .feature-help-popover { position: absolute; left: 50%; transform: translateX(-50%); top: 100%; margin-top: 8px; width: 300px; max-width: 95vw; padding: 14px 16px; background: #2C3E50; color: #E8ECF0; font-size: 13px; line-height: 1.6; border-radius: 10px; box-shadow: 0 8px 24px rgba(44,62,80,0.18); z-index: 20; opacity: 0; visibility: hidden; transition: opacity 0.2s, visibility 0.2s; text-align: left; }
-        .feature-help-popover::before { content: ''; position: absolute; top: -6px; left: 50%; transform: translateX(-50%); border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 6px solid #2C3E50; }
-        .feature-help-popover a { color: #A9DFBF; text-decoration: underline; }
+        /* Card — 보라 계열 */
+        .service-card.card { background: #F3E5F5; }
+        .service-card.card::before { background: #6A1B9A; }
+        .service-card.card:hover { box-shadow: 0 14px 40px rgba(106,27,154,0.18); }
+        .service-card.card .icon { background: rgba(106,27,154,0.12); }
+        .service-card.card h2 { color: #38006B !important; }
+        .service-card.card .badge { background: #6A1B9A; }
+
+        /* Cash — 오렌지 계열 */
+        .service-card.cash { background: #FFF3E0; }
+        .service-card.cash::before { background: #E65100; }
+        .service-card.cash:hover { box-shadow: 0 14px 40px rgba(230,81,0,0.18); }
+        .service-card.cash .icon { background: rgba(230,81,0,0.12); }
+        .service-card.cash h2 { color: #A52A00 !important; }
+        .service-card.cash .badge { background: #E65100; }
+
+        /* ── Features ── */
+        .features {
+            display: flex; gap: 16px; width: 100%;
+            padding: 0 0 20px;
+            flex-shrink: 0;
+        }
+        .feature-item-wrap { flex: 1; position: relative; min-width: 0; }
+        .feature-item {
+            display: flex; align-items: center; justify-content: center;
+            padding: 18px 8px;
+            background: #FFFFFF;
+            border: 1px solid #E0E3E8;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.15s, box-shadow 0.15s, border-color 0.15s;
+            width: 100%; box-sizing: border-box;
+            text-decoration: none; color: inherit;
+        }
+        .feature-item h4 {
+            font-size: 1.1em; font-weight: 800;
+            color: #263238 !important;
+            margin: 0;
+        }
+        .feature-item:hover { background: #ECEFF1; border-color: #B0BEC5; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .feature-item.shutdown-item { border-color: #FFCCBC; }
+        .feature-item.shutdown-item h4 { color: #BF360C; }
+        .feature-item.shutdown-item:hover { background: #FFF3E0; border-color: #FFAB91; }
+        .feature-item-wrap > a.feature-item { display: flex; }
+
+        .feature-help-popover {
+            position: absolute; left: 50%; transform: translateX(-50%);
+            top: 100%; margin-top: 10px;
+            width: 280px; max-width: 90vw;
+            padding: 14px 16px;
+            background: #263238; color: #ECEFF1;
+            font-size: 0.82em; line-height: 1.6;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(38,50,56,0.25);
+            z-index: 20; opacity: 0; visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
+            text-align: left;
+        }
+        .feature-help-popover::before {
+            content: ''; position: absolute;
+            top: -6px; left: 50%; transform: translateX(-50%);
+            border-left: 6px solid transparent; border-right: 6px solid transparent;
+            border-bottom: 6px solid #263238;
+        }
+        .feature-help-popover a { color: #B0BEC5; text-decoration: underline; }
         .feature-item-wrap:hover .feature-help-popover,
         .feature-item-wrap:focus-within .feature-help-popover { opacity: 1; visibility: visible; }
 
-        /* --- Footer --- */
-        .site-footer { text-align: center; padding: 20px 40px; color: #B0B8C1; font-size: 0.82em; border-top: 1px solid #EAEDF0; margin-top: auto; }
+        /* ── Footer ── */
+        .site-footer {
+            text-align: center; padding: 10px 40px;
+            color: #546E7A; font-size: 0.76em;
+            flex-shrink: 0;
+        }
 
-        /* --- Responsive --- */
-        @media (max-height: 800px) {
-            .hero { padding-top: 32px; padding-bottom: 24px; }
+        /* ── Responsive ── */
+        @media (max-height: 720px) {
+            .title-block { padding-top: 24px; }
+            .title-block h1 { font-size: 2em; }
+            .service-card { padding: 28px 20px 24px; }
+            .service-card h2 { font-size: 1.2em; }
+            .service-card .desc { font-size: 0.85em; }
+            .feature-item { padding: 14px 8px; }
+            .feature-item h4 { font-size: 0.95em; }
         }
-        @media (max-width: 960px) {
-            .services { grid-template-columns: 1fr; gap: 20px; }
-            .features-grid { grid-template-columns: repeat(3, 1fr); }
-            .container { padding: 0 20px; }
-            .hero { padding: 32px 20px 24px; }
+        @media (max-width: 1024px) {
+            .main-content { padding: 0 32px; }
+            .services { gap: 16px; }
         }
-        @media (max-width: 640px) {
-            .top-nav { padding: 12px 16px; }
-            .top-nav .nav-links { gap: 14px; }
-            .hero h1 { font-size: 1.8em; }
-            .features-grid { grid-template-columns: 1fr 1fr; }
-            .service-card { padding: 24px 16px; }
+        @media (max-width: 768px) {
+            .services { grid-template-columns: 1fr; gap: 16px; }
+            .features { flex-wrap: wrap; }
+            .feature-item-wrap { flex: 0 0 calc(33.3% - 12px); }
+            .main-content { padding: 0 20px; }
+            .title-block h1 { font-size: 1.8em; }
         }
         @media (max-width: 480px) {
-            .hero h1 { font-size: 1.5em; }
-            .features-grid { grid-template-columns: 1fr; }
+            .title-block h1 { font-size: 1.4em; }
+            .feature-item-wrap { flex: 0 0 calc(50% - 8px); }
+            .top-nav { padding: 0 16px; }
         }
 
-        /* --- Fullscreen --- */
+        /* ── Fullscreen / Embed ── */
         .fullscreen-btn { display: none; }
-        @media (max-width: 2560px) and (max-height: 1440px) {
-            .fullscreen-btn { display: block !important; }
-        }
-        #embed-wrap { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 5000; background: #fff; flex-direction: column; }
+        @media (max-width: 2560px) and (max-height: 1440px) { .fullscreen-btn { display: block !important; } }
+        #embed-wrap { display: none; position: fixed; inset: 0; z-index: 5000; background: #fff; flex-direction: column; }
         #embed-wrap.active { display: flex; }
         body.embed-active .fullscreen-btn { display: none !important; }
         #embed-frame { flex: 1; width: 100%; border: none; min-height: 0; }
     </style>
 </head>
 <body>
-    <div id="embed-wrap" class="" aria-hidden="true">
+    <div id="embed-wrap" aria-hidden="true">
         <iframe id="embed-frame" title="서비스 화면"></iframe>
     </div>
 
     <nav class="top-nav">
         <div class="brand"><span>My</span>Risk</div>
         <div class="nav-links">
+            <a href="javascript:void(0)" id="fs-toggle" title="전체화면 전환">⛶ 전체화면</a>
             <a href="/reset">초기화</a>
             <a href="/help">도움말</a>
         </div>
     </nav>
 
-    <section class="hero">
-        <h1>금융정보 <span class="accent">분석 시스템</span></h1>
-        <p class="subtitle">MyRisk &mdash; Financial Analysis System Ver. {{ version }}{% if server_start_time %} &middot; 기동 {{ server_start_time }}{% endif %}</p>
-    </section>
+    <div class="main-content" id="home-container">
+        <div class="title-block">
+            <h1>금융정보 분석 시스템</h1>
+            <div class="title-bar"></div>
+            <p class="ver">MyRisk — Financial Analysis System Ver. {{ version }}{% if server_start_time %} · 기동 {{ server_start_time }}{% endif %}</p>
+        </div>
 
-    <div class="container" id="home-container">
         <div class="services">
             <a href="/bank/" class="service-card bank" data-embed="/bank/" data-title="은행거래 통합정보">
                 <div class="icon">🏦</div>
@@ -150,75 +275,95 @@
         </div>
 
         <div class="features">
-            <div class="features-header">
-                <h3>주요 기능</h3>
+            <div class="feature-item-wrap">
+                <a href="/reset" class="feature-item" title="호버 시 도움말 표시"><h4>🔄 초기화</h4></a>
+                <div class="feature-help-popover">환경변수(신청인명·이메일·심야구분) 관리, 백업(j2x)·복원(x2j), 전처리전·후 JSON(bank/card/cash) 초기화. <a href="/help#workflow">자세한 도움말</a></div>
             </div>
-            <div class="features-grid">
-                <div class="feature-item-wrap">
-                    <a href="/reset" class="feature-item reset-item" title="호버 시 도움말 표시"><h4>🔄 초기화</h4></a>
-                    <div class="feature-help-popover">환경변수(신청인명·이메일·심야구분) 관리, 백업(j2x)·복원(x2j), 전처리전·후 JSON(bank/card/cash) 초기화. <a href="/help#workflow">자세한 도움말</a></div>
-                </div>
-                <div class="feature-item-wrap">
-                    <div class="feature-item help-item" tabindex="0" title="호버 시 도움말 표시"><h4>📊 전처리</h4></div>
-                    <div class="feature-help-popover">.source/Bank·Card에 원본 xlsx를 넣고 「전처리 실행」으로 bank_before·card_before를 생성합니다. 금융정보는 bank_after+card_after 병합으로 cash_after를 만듭니다. <a href="/help#workflow">자세한 도움말</a></div>
-                </div>
-                <div class="feature-item-wrap">
-                    <div class="feature-item help-item" tabindex="0" title="호버 시 도움말 표시"><h4>🏷️ 카테고리</h4></div>
-                    <div class="feature-help-popover">category_table.json으로 분류·키워드·카테고리를 관리합니다. 「카테고리 적용」 시 전처리→계정과목→후처리 순으로 적용해 *_after를 생성합니다. <a href="/help#features">자세한 도움말</a></div>
-                </div>
-                <div class="feature-item-wrap">
-                    <div class="feature-item help-item" tabindex="0" title="호버 시 도움말 표시"><h4>📈 기본분석</h4></div>
-                    <div class="feature-help-popover">전체 통계, 월별·적요/가맹점별 집계, 차트를 제공합니다. 상단 필터와 「📄 출력」으로 인쇄용 뷰를 만들 수 있습니다. <a href="/help#pages">자세한 도움말</a></div>
-                </div>
-                <div class="feature-item-wrap">
-                    <div id="shutdown-area" class="feature-item shutdown-item" role="button" tabindex="0" title="호버 시 도움말 표시"><h4>🔒 작업종료</h4></div>
-                    <div class="feature-help-popover">클릭 시 서버 종료 및 캐시 초기화. 다음 기동 시 처음부터 시작됩니다. <a href="/help">전체 도움말</a></div>
-                </div>
+            <div class="feature-item-wrap">
+                <div class="feature-item" tabindex="0" title="호버 시 도움말 표시"><h4>📊 전처리</h4></div>
+                <div class="feature-help-popover">.source/Bank·Card에 원본 xlsx를 넣고 「전처리 실행」으로 bank_before·card_before를 생성합니다. 금융정보는 bank_after+card_after 병합으로 cash_after를 만듭니다. <a href="/help#workflow">자세한 도움말</a></div>
+            </div>
+            <div class="feature-item-wrap">
+                <div class="feature-item" tabindex="0" title="호버 시 도움말 표시"><h4>🏷️ 카테고리</h4></div>
+                <div class="feature-help-popover">category_table.json으로 분류·키워드·카테고리를 관리합니다. 「카테고리 적용」 시 전처리→계정과목→후처리 순으로 적용해 *_after를 생성합니다. <a href="/help#features">자세한 도움말</a></div>
+            </div>
+            <div class="feature-item-wrap">
+                <div class="feature-item" tabindex="0" title="호버 시 도움말 표시"><h4>📈 기본분석</h4></div>
+                <div class="feature-help-popover">전체 통계, 월별·적요/가맹점별 집계, 차트를 제공합니다. 상단 필터와 「📄 출력」으로 인쇄용 뷰를 만들 수 있습니다. <a href="/help#pages">자세한 도움말</a></div>
+            </div>
+            <div class="feature-item-wrap">
+                <div id="shutdown-area" class="feature-item shutdown-item" role="button" tabindex="0" title="호버 시 도움말 표시"><h4>🔒 작업종료</h4></div>
+                <div class="feature-help-popover">클릭 시 서버 종료 및 캐시 초기화. 다음 기동 시 처음부터 시작됩니다. <a href="/help">전체 도움말</a></div>
             </div>
         </div>
-
-    <script>
-        (function() {
-            var el = document.getElementById('shutdown-area');
-            function doShutdown() {
-                if (confirm('서버를 종료하고 캐시를 초기화합니다.\n다음 서버 기동 시 처음부터 시작됩니다.\n계속하시겠습니까?')) {
-                    window.location.href = '/shutdown';
-                }
-            }
-            if (el) {
-                el.addEventListener('click', doShutdown);
-                el.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); doShutdown(); } });
-            }
-            // iframe 임베드: 링크 클릭 시 같은 문서 안에서 열어 전체화면 유지 (우클릭·새 탭은 기존 href로)
-            var embedWrap = document.getElementById('embed-wrap');
-            var embedFrame = document.getElementById('embed-frame');
-            window.addEventListener('message', function(e) {
-                if (e.data === 'myrisk-close-embed' && embedWrap && embedFrame) {
-                    embedFrame.src = 'about:blank';
-                    embedWrap.classList.remove('active');
-                    embedWrap.setAttribute('aria-hidden', 'true');
-                    document.body.classList.remove('embed-active');
-                    document.body.focus();
-                }
-            });
-            document.querySelectorAll('.service-card[data-embed]').forEach(function(card) {
-                card.addEventListener('click', function(e) {
-                    if (e.ctrlKey || e.metaKey || e.button === 1) return;
-                    e.preventDefault();
-                    var url = card.getAttribute('data-embed');
-                    if (url && embedWrap && embedFrame) {
-                        embedFrame.src = url;
-                        embedWrap.classList.add('active');
-                        embedWrap.setAttribute('aria-hidden', 'false');
-                        document.body.classList.add('embed-active');
-                    }
-                });
-            });
-        })();
-        </script>
-        {% include '_fullscreen_persist.html' %}
     </div>
 
-    <footer class="site-footer">MyRisk &copy; {{ version }} &mdash; Financial Analysis System</footer>
+    <footer class="site-footer">MyRisk &copy; {{ version }} — Financial Analysis System</footer>
+
+    <script>
+    (function() {
+        var KEY = 'myrisk_fullscreen';
+        var fsBtn = document.getElementById('fs-toggle');
+        var isFs = function() { return !!(document.fullscreenElement || document.webkitFullscreenElement); };
+        function enterFs() {
+            var doc = document.documentElement;
+            if (doc.requestFullscreen) doc.requestFullscreen().catch(function(){});
+            else if (doc.webkitRequestFullscreen) doc.webkitRequestFullscreen();
+        }
+        function exitFs() {
+            if (document.exitFullscreen) document.exitFullscreen().catch(function(){});
+            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        }
+        function updateLabel() {
+            if (fsBtn) fsBtn.textContent = isFs() ? '⛶ 전체화면 해제' : '⛶ 전체화면';
+        }
+        if (fsBtn) {
+            fsBtn.addEventListener('click', function() {
+                if (isFs()) { exitFs(); try { localStorage.setItem(KEY, '0'); } catch(e){} }
+                else { enterFs(); try { localStorage.setItem(KEY, '1'); } catch(e){} }
+            });
+        }
+        document.addEventListener('fullscreenchange', updateLabel);
+        document.addEventListener('webkitfullscreenchange', updateLabel);
+        updateLabel();
+    })();
+    (function() {
+        var el = document.getElementById('shutdown-area');
+        function doShutdown() {
+            if (confirm('서버를 종료하고 캐시를 초기화합니다.\n다음 서버 기동 시 처음부터 시작됩니다.\n계속하시겠습니까?')) {
+                window.location.href = '/shutdown';
+            }
+        }
+        if (el) {
+            el.addEventListener('click', doShutdown);
+            el.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); doShutdown(); } });
+        }
+        var embedWrap = document.getElementById('embed-wrap');
+        var embedFrame = document.getElementById('embed-frame');
+        window.addEventListener('message', function(e) {
+            if (e.data === 'myrisk-close-embed' && embedWrap && embedFrame) {
+                embedFrame.src = 'about:blank';
+                embedWrap.classList.remove('active');
+                embedWrap.setAttribute('aria-hidden', 'true');
+                document.body.classList.remove('embed-active');
+                document.body.focus();
+            }
+        });
+        document.querySelectorAll('.service-card[data-embed]').forEach(function(card) {
+            card.addEventListener('click', function(e) {
+                if (e.ctrlKey || e.metaKey || e.button === 1) return;
+                e.preventDefault();
+                var url = card.getAttribute('data-embed');
+                if (url && embedWrap && embedFrame) {
+                    embedFrame.src = url;
+                    embedWrap.classList.add('active');
+                    embedWrap.setAttribute('aria-hidden', 'false');
+                    document.body.classList.add('embed-active');
+                }
+            });
+        });
+    })();
+    </script>
+    {% include '_fullscreen_persist.html' %}
 </body>
 </html>

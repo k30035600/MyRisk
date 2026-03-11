@@ -8,12 +8,12 @@
 
 /* ─── 1. Design Tokens (CSS Custom Properties) ─── */
 :root {
-    /* Brand */
-    --color-primary:      #2C3E50; /* Deep Navy   — 네비, 헤더, 타이틀 */
-    --color-primary-dark:  #1A252F;
-    --color-action:       #27AE60; /* Emerald Green — 실행 버튼, 성공 */
-    --color-action-dark:  #219A52;
-    --color-action-light: #A9DFBF; /* Soft Mint   — 보조 하이라이트 */
+    /* Brand — 공통 (각 모듈은 인라인 override로 고유색 사용) */
+    --color-primary:      #263238; /* Blue Grey 900 — 네비, 헤더, 타이틀 */
+    --color-primary-dark:  #1B2631;
+    --color-action:       #546E7A; /* Blue Grey 600 — 실행 버튼, 강조 */
+    --color-action-dark:  #37474F;
+    --color-action-light: #B0BEC5; /* Blue Grey 200 — 보조 하이라이트 */
 
     /* Income / Expense */
     --color-income:       #1565C0; /* 입금 파란색 */
@@ -21,40 +21,41 @@
     --color-income-light: #90CAF9; /* 어두운 배경 위 입금 */
     --color-expense-light:#EF9A9A; /* 어두운 배경 위 출금 */
 
-    /* Neutral */
-    --color-bg:           #F8F9FA; /* Off White   — 페이지 배경 */
+    /* Neutral — 가독성 우선 */
+    --color-bg:           #F0F2F5; /* 페이지 배경 — 카드/표와 명확 구분 */
     --color-surface:      #FFFFFF;
-    --color-text:         #34495E; /* Steel Gray  — 본문 텍스트 */
-    --color-text-muted:   #7F8C8D;
+    --color-text:         #1A1A1A; /* 본문·제목·라벨 전부 — 고대비 16:1 */
+    --color-text-muted:   #5A6872; /* 메타정보(파일크기·타임스탬프)만 */
     --color-disabled:     #95A5A6;
 
-    /* Table — 분류 전 (전처리전/전처리후/카테고리 조회) */
-    --color-table-header: #E8ECF0; /* 전처리 헤더 — 배경과 확실히 구분 */
-    --color-table-stripe: #F8F9FA;
-    --color-table-hover:  #E8F5E9; /* Very Pale Green */
-    --color-table-sum:    #E8ECF0; /* 분류 전 합계행 */
+    /* Table — 통합 헤더 (각 모듈은 고유색으로 override) */
+    --color-table-header:      #455A64; /* Blue Grey 700 — 행과 확실히 구분 */
+    --color-table-header-text: #FFFFFF; /* 헤더 텍스트 — 흰색 */
+    --color-table-stripe: #F7F8FA;      /* 짝수행 — 거의 흰색, 미세 구분 */
+    --color-table-hover:  #DBEAFE;      /* 호버 — 라이트 블루 (적녹색약 안전) */
+    --color-table-sum:    #E2E8F0;      /* 합계행 — 헤더보다 연하고 행보다 진함 */
 
-    /* Table — 분류 후 (카테고리적용후/업종분류/기본분석/종합분석) */
-    --color-post-header:      #34495E; /* Steel Navy — 네비(#2C3E50)와 미세 분리 */
+    /* Table — 분류 후 (각 모듈은 고유색으로 override) */
+    --color-post-header:      #455A64; /* Blue Grey 700 */
     --color-post-header-text: #FFFFFF;
-    --color-post-sum:         #E8EDF3; /* 밝은 네이비 합계행 */
+    --color-post-sum:         #CFD8DC; /* Blue Grey 100 — 합계행 */
 
-    /* 위험도 등급별 배경 (1호~10호) */
+    /* 위험도 등급별 배경 (1호~10호) — 텍스트 가독성 우선, 저채도·고명도 */
     --color-risk-1:  transparent;           /* 0.1 분류제외 */
-    --color-risk-2:  #FFF8E1;              /* 0.5 심야폐업 — 연한 노란 */
-    --color-risk-3:  #FFF3E0;              /* 1.0 자료소명 — 연한 노란 */
-    --color-risk-4:  #FFE0B2;              /* 1.5 비정형 — 연한 주황 */
-    --color-risk-5:  #FFCCBC;              /* 2.0 투기성 — 연한 주황 */
-    --color-risk-6:  #FFAB91;              /* 2.5 사기파산 — 주황 */
-    --color-risk-7:  #EF9A9A;              /* 3.0 가상자산 — 연한 빨강 */
-    --color-risk-8:  #E57373;              /* 3.5 자산은닉 — 빨강 */
-    --color-risk-9:  #EF5350;              /* 4.0 과소비 — 진한 빨강 */
-    --color-risk-10: #E53935;              /* 5.0 사행성 — 강한 빨강 */
+    --color-risk-2:  #FFFDE7;              /* 0.5 심야폐업 — 아주 연한 노란 */
+    --color-risk-3:  #FFF8E1;              /* 1.0 자료소명 — 연한 노란 */
+    --color-risk-4:  #FFECB3;              /* 1.5 비정형 — 연한 주황노란 */
+    --color-risk-5:  #FFE0B2;              /* 2.0 투기성 — 연한 주황 */
+    --color-risk-6:  #FFD6C9;              /* 2.5 사기파산 — 연한 살구 */
+    --color-risk-7:  #FFCDD2;              /* 3.0 가상자산 — 연한 분홍 */
+    --color-risk-8:  #F8BBD0;              /* 3.5 자산은닉 — 연한 핑크 */
+    --color-risk-9:  #F0B0B0;              /* 4.0 과소비 — 연한 로즈 */
+    --color-risk-10: #E8A0A0;              /* 5.0 사행성 — 연한 살몬 */
 
     /* Border */
-    --color-border:       #E8ECF0;
-    --color-border-light: #EAEDF0;
-    --color-border-card:  #E0E0E0;
+    --color-border:       #D5DAE0;
+    --color-border-light: #E2E6EA;
+    --color-border-card:  #D5DAE0;
 
     /* Status */
     --color-warning:      #E67E22; /* Muted Orange */
@@ -71,23 +72,20 @@
 }
 
 /* ─── 2. Font Hierarchy ─── */
-h1, h2, .header h1 {
-    color: var(--color-primary) !important;
+/* 금융 보고서 원칙: 크기·굵기로 계층, 색은 기능(입출금·오류)에만 */
+h1, h2, h3, h4, .header h1, .panel-title, .box-title {
+    color: var(--color-text) !important;
     font-weight: 700;
 }
-h3, h4, .panel-title {
-    color: var(--color-primary);
-    font-weight: 400;
-}
-body, td, th, p, span, label, input, select, textarea {
+body, td, p, span, label, input, select, textarea {
     color: var(--color-text);
 }
 
-/* ─── 3. Table Design ─── */
+/* ─── 3. Table Design (통합 헤더: 네이비 배경 + 흰 텍스트) ─── */
 table thead,
 table thead th {
     background-color: var(--color-table-header) !important;
-    color: var(--color-primary) !important;
+    color: var(--color-table-header-text) !important;
     font-weight: 700 !important;
 }
 table tr.sum-row,
@@ -111,7 +109,7 @@ table tbody tr:hover {
     color: var(--color-expense) !important;
 }
 
-/* ─── 4b. 분류 후 테이블 헤더 ─── */
+/* ─── 4b. 분류 후 테이블 헤더 (통합: 분류 전과 동일 스타일) ─── */
 .post-header thead,
 .post-header thead th {
     background-color: var(--color-post-header) !important;
@@ -131,6 +129,9 @@ table tbody tr:hover {
     background-color: var(--color-post-sum) !important;
     font-weight: bold;
 }
+/* 입출금 컬럼 헤더 — 네이비 배경 위에 밝은 색 */
+table thead th.col-income { color: var(--color-income-light) !important; }
+table thead th.col-expense { color: var(--color-expense-light) !important; }
 
 /* ─── 4c. 합계행 구분선 (전체 통일) ─── */
 table tr.sum-row,
@@ -169,8 +170,8 @@ tr[data-risk="10"], tr.risk-10 { background-color: var(--color-risk-10) !importa
 }
 .btn-outline, .btn-secondary-action {
     background: var(--color-surface);
-    color: var(--color-primary);
-    border: 2px solid var(--color-primary);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
     padding: 8px 16px;
     font-size: 0.9em;
@@ -179,8 +180,8 @@ tr[data-risk="10"], tr.risk-10 { background-color: var(--color-risk-10) !importa
     transition: background 0.2s, color 0.2s;
 }
 .btn-outline:hover, .btn-secondary-action:hover {
-    background: var(--color-primary);
-    color: #fff;
+    background: var(--color-bg);
+    color: var(--color-text);
 }
 
 /* ─── 6. Loading Spinner ─── */
@@ -215,7 +216,7 @@ tr[data-risk="10"], tr.risk-10 { background-color: var(--color-risk-10) !importa
 .nav-item {
     padding: 6px 10px;
     background: rgba(255,255,255,0.9);
-    color: var(--color-primary);
+    color: var(--color-text);
     text-decoration: none;
     border-radius: 5px;
     font-weight: bold;
@@ -236,52 +237,53 @@ tr[data-risk="10"], tr.risk-10 { background-color: var(--color-risk-10) !importa
     color: #fff;
 }
 
-/* ─── 9. Dark Mode ─── */
+/* ─── 9. Dark Mode — 라이트 테마 강제 (dark 시스템 설정 무시) ─── */
 @media (prefers-color-scheme: dark) {
     :root {
-        --color-primary:      #E8ECF0;
-        --color-primary-dark:  #B0B8C1;
-        --color-action:       #2ECC71;
-        --color-action-dark:  #27AE60;
-        --color-action-light: #1A3A2A;
+        --color-primary:      #263238;
+        --color-primary-dark:  #1B2631;
+        --color-action:       #546E7A;
+        --color-action-dark:  #37474F;
+        --color-action-light: #B0BEC5;
 
-        --color-bg:           #1A1A2E;
-        --color-surface:      #22223B;
-        --color-text:         #E0E0E0;
-        --color-text-muted:   #9E9E9E;
-        --color-disabled:     #616161;
+        --color-bg:           #F0F2F5;
+        --color-surface:      #FFFFFF;
+        --color-text:         #1A1A1A;
+        --color-text-muted:   #5A6872;
+        --color-disabled:     #95A5A6;
 
-        --color-income:       #42A5F5;
-        --color-expense:      #EF5350;
+        --color-income:       #1565C0;
+        --color-expense:      #C62828;
         --color-income-light: #90CAF9;
         --color-expense-light:#EF9A9A;
 
-        --color-table-header: #2A2A40;
-        --color-table-stripe: #1E1E32;
-        --color-table-hover:  #2A3A2E;
-        --color-table-sum:    #2A2A40;
+        --color-table-header:      #455A64;
+        --color-table-header-text: #FFFFFF;
+        --color-table-stripe: #F7F8FA;
+        --color-table-hover:  #DBEAFE;
+        --color-table-sum:    #E2E8F0;
 
-        --color-post-header:      #283848;
-        --color-post-header-text: #E0E0E0;
-        --color-post-sum:         #2A3040;
+        --color-post-header:      #455A64;
+        --color-post-header-text: #FFFFFF;
+        --color-post-sum:         #CFD8DC;
 
         --color-risk-1:  transparent;
-        --color-risk-2:  #3A3520;
-        --color-risk-3:  #3A3018;
-        --color-risk-4:  #3A2A15;
-        --color-risk-5:  #3A2518;
-        --color-risk-6:  #3A2020;
-        --color-risk-7:  #402020;
-        --color-risk-8:  #4A1A1A;
-        --color-risk-9:  #501515;
-        --color-risk-10: #5A1010;
+        --color-risk-2:  #FFFDE7;
+        --color-risk-3:  #FFF8E1;
+        --color-risk-4:  #FFECB3;
+        --color-risk-5:  #FFE0B2;
+        --color-risk-6:  #FFD6C9;
+        --color-risk-7:  #FFCDD2;
+        --color-risk-8:  #F8BBD0;
+        --color-risk-9:  #F0B0B0;
+        --color-risk-10: #E8A0A0;
 
-        --color-border:       #3A3A50;
-        --color-border-light: #2E2E44;
-        --color-border-card:  #3A3A50;
+        --color-border:       #D5DAE0;
+        --color-border-light: #E2E6EA;
+        --color-border-card:  #D5DAE0;
 
-        --color-warning:      #F39C12;
-        --color-gold:         #F1C40F;
+        --color-warning:      #E67E22;
+        --color-gold:         #F39C12;
     }
 
     body {
@@ -295,8 +297,8 @@ tr[data-risk="10"], tr.risk-10 { background-color: var(--color-risk-10) !importa
     }
 
     .main-nav {
-        background: var(--color-bg);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        background: var(--color-primary);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     .nav-item {
         background: var(--color-surface);
@@ -319,6 +321,6 @@ tr[data-risk="10"], tr.risk-10 { background-color: var(--color-risk-10) !importa
     a { color: var(--color-action); }
 
     .box-shadow, .card, .service-card {
-        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
 }

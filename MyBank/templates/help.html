@@ -9,7 +9,35 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { overflow-x: hidden; }
-        body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background-color: #F8F9FA; color: #34495E; padding: 20px; overflow-y: auto; overflow-x: hidden; }
+        body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background-color: #EDF2FA; color: #334155; padding: 20px; overflow-y: auto; overflow-x: hidden; }
+
+        /* 네비게이션 — 은행 고유색 */
+        .main-nav { background: #0D47A1 !important; }
+        .nav-item { background: rgba(255,255,255,0.15) !important; color: #FFFFFF !important; }
+        .nav-item:hover { background: rgba(255,255,255,0.35) !important; }
+        .nav-item.active { background: #FFFFFF !important; color: #0D47A1 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
+
+        /* 컨테이너 배경 = 아주 연한 블루 */
+        .help-container { background: #F8FAFF !important; }
+
+        /* 타이포그래피 — 제목 = 은행 블루, 본문 = 공통색 */
+        .help-container h1 { color: #1565C0 !important; border-left: 4px solid #1565C0; padding-left: 12px; }
+        .help-container h2 { color: #1565C0 !important; border-bottom-color: #1565C0 !important; }
+        .help-container h3, .help-container h4 { color: #1565C0 !important; }
+        .help-container p, .help-container li, .help-container strong { color: #334155 !important; }
+
+        /* 테이블 — 은행거래와 동일 */
+        .help-container table th { background-color: #B3D4FC !important; color: #1565C0 !important; border-color: #BBDEFB !important; }
+        .help-container table td { color: #334155 !important; border-color: #BBDEFB !important; }
+        .help-container table tr:nth-child(even) td { background-color: #F7F8FA !important; }
+        .help-container table tr:nth-child(odd) td { background-color: #FFFFFF !important; }
+        .help-container table tbody tr:hover td { background-color: #DBEAFE !important; }
+
+        /* 코드·인용 — 은행색 계열 */
+        .help-container code { background: #E3EDFC; color: #0D47A1; }
+        .help-container pre { background: #EDF2FA; border-left-color: #1565C0; }
+        .help-container blockquote { border-left-color: #1565C0; background: #F0F4FF; }
+        .help-container a { color: #1565C0 !important; }
     </style>
 </head>
 <body>

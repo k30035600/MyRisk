@@ -8,38 +8,38 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { overflow-x: hidden; }
-        body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background: #F8F9FA; color: #34495E; min-height: 100vh; padding: 0; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; }
+        body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background: #F0F2F5; color: #1A1A1A; min-height: 100vh; padding: 0; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; }
 
-        .top-nav { background: #2C3E50; padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; }
+        .top-nav { background: #263238; padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; }
         .top-nav .brand { font-size: 1.05em; font-weight: bold; color: #fff; }
-        .top-nav .brand span { color: #27AE60; }
+        .top-nav .brand span { color: #B0BEC5; }
         .top-nav .nav-links { display: flex; gap: 18px; }
         .top-nav .nav-links a { color: rgba(255,255,255,0.75); text-decoration: none; font-size: 0.88em; transition: color 0.2s, border-color 0.2s; padding-bottom: 2px; border-bottom: 2px solid transparent; }
-        .top-nav .nav-links a:hover { color: #fff; border-bottom-color: #27AE60; }
+        .top-nav .nav-links a:hover { color: #fff; border-bottom-color: #B0BEC5; }
 
         .page-wrap { display: flex; flex-direction: column; width: 100%; flex: 1; max-width: 1400px; margin: 0 auto; padding: 16px 24px 12px; }
         .panels-row { display: flex; flex: 1; width: 100%; gap: 16px; }
 
-        .left-panel { width: 50%; min-width: 0; padding: 20px; background: #FAFBFC; border-radius: 10px; border: 1px solid #EAEDF0; font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; text-align: left; display: flex; flex-direction: column; }
-        .left-panel .panel-header { font-size: 1.05em; font-weight: 700; color: #2C3E50; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px solid #A9DFBF; }
+        .left-panel { width: 50%; min-width: 0; padding: 20px; background: #F5F7FA; border-radius: 10px; border: 1px solid #D5DAE0; font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; text-align: left; display: flex; flex-direction: column; }
+        .left-panel .panel-header { font-size: 1.05em; font-weight: 700; color: #1A1A1A; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px solid #A9DFBF; }
         .left-panel .form-line { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
-        .left-panel .form-line label { font-size: 0.85em; color: #2C3E50; font-weight: 600; white-space: nowrap; }
+        .left-panel .form-line label { font-size: 0.85em; color: #1A1A1A; font-weight: 600; white-space: nowrap; }
         .left-panel .form-line .form-inline { display: flex; align-items: center; gap: 6px; }
         .left-panel .form-line.form-line-simya { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
         .left-panel .form-line .form-inline.simya { justify-content: center; text-align: center; }
         .left-panel input[type="text"], .left-panel input[type="email"] { padding: 7px 10px; font-size: 0.9em; border: 1px solid #D5DAE0; border-radius: 6px; width: 120px; transition: border-color 0.2s; background: #fff; }
-        .left-panel input[type="text"]:focus, .left-panel input[type="email"]:focus { outline: none; border-color: #27AE60; box-shadow: 0 0 0 2px rgba(39,174,96,0.12); }
+        .left-panel input[type="text"]:focus, .left-panel input[type="email"]:focus { outline: none; border-color: #546E7A; box-shadow: 0 0 0 2px rgba(84,110,122,0.15); }
         .left-panel .form-inline input { width: 90px; }
         .left-panel .form-line-applicant { display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; text-align: left; align-items: flex-start; }
         .left-panel .form-line-applicant .form-row { display: flex; align-items: center; justify-content: flex-start; gap: 10px; text-align: left; width: 100%; }
-        .left-panel .form-line-applicant .form-row label { font-size: 0.85em; color: #2C3E50; font-weight: 600; white-space: nowrap; min-width: 4.5em; text-align: left; }
+        .left-panel .form-line-applicant .form-row label { font-size: 0.85em; color: #1A1A1A; font-weight: 600; white-space: nowrap; min-width: 4.5em; text-align: left; }
         .left-panel .applicant-input { width: 100%; max-width: 480px; min-width: 320px; height: 36px; padding: 8px 12px; font-size: 0.95em; border: 1px solid #D5DAE0; border-radius: 6px; box-sizing: border-box; text-align: left; background: #fff; }
-        .left-panel .applicant-input:focus { outline: none; border-color: #27AE60; box-shadow: 0 0 0 2px rgba(39,174,96,0.12); }
+        .left-panel .applicant-input:focus { outline: none; border-color: #546E7A; box-shadow: 0 0 0 2px rgba(84,110,122,0.15); }
 
         .right-panel { width: 50%; min-width: 0; display: flex; flex-direction: column; }
-        .container { background: #fff; border-radius: 10px; border: 1px solid #EAEDF0; padding: 8px; width: 100%; max-width: 100%; overflow-x: auto; font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; display: flex; flex-direction: column; flex: 1; min-height: 0; }
+        .container { background: #fff; border-radius: 10px; border: 1px solid #D5DAE0; padding: 8px; width: 100%; max-width: 100%; overflow-x: auto; font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; display: flex; flex-direction: column; flex: 1; min-height: 0; }
 
-        h1 { font-size: 0.95em; color: #2C3E50; margin-bottom: 2px; line-height: 1.2; font-weight: 700; }
+        h1 { font-size: 0.95em; color: #1A1A1A; margin-bottom: 2px; line-height: 1.2; font-weight: 700; }
 
         .reset-table { width: 100%; max-width: 100%; border-collapse: collapse; font-size: 0.9em; line-height: 1; table-layout: fixed; font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; }
         .reset-table col { width: 12.5%; }
@@ -47,41 +47,41 @@
         .reset-table col.col-select-col { width: 6.25%; }
         .reset-table tr { line-height: 1; }
         .reset-table th, .reset-table td { border: 1px solid #E8ECF0; padding: 5px 7px; text-align: center; vertical-align: middle; overflow: hidden; text-overflow: ellipsis; line-height: 1.4; }
-        .reset-table th { background: #E8ECF0; font-weight: 700; color: #2C3E50; }
-        .reset-table tbody tr:nth-child(even) { background: #F8F9FA; }
+        .reset-table th { background: #455A64; font-weight: 700; color: #FFFFFF; }
+        .reset-table tbody tr:nth-child(even) { background: #F5F7FA; }
         .reset-table tbody tr:hover { background: #E8F5E9; }
         .reset-table .col-task { text-align: left; }
-        .reset-table .col-select input[type="checkbox"] { margin: 0; transform: scale(0.85); vertical-align: middle; accent-color: #27AE60; }
-        .reset-table input[type="radio"] { margin: 0; vertical-align: middle; accent-color: #27AE60; }
+        .reset-table .col-select input[type="checkbox"] { margin: 0; transform: scale(0.85); vertical-align: middle; accent-color: #546E7A; }
+        .reset-table input[type="radio"] { margin: 0; vertical-align: middle; accent-color: #546E7A; }
         .reset-table input[type="radio"]:disabled { opacity: 0.4; cursor: not-allowed; }
         .reset-table input[type="checkbox"]:disabled { opacity: 0.4; cursor: not-allowed; }
         .reset-table button { margin: 0; padding: 4px 6px; line-height: 1.3; vertical-align: middle; }
-        .reset-table .col-size { font-variant-numeric: tabular-nums; text-align: right; color: #7F8C8D; }
+        .reset-table .col-size { font-variant-numeric: tabular-nums; text-align: right; color: #5A6872; }
         .reset-table thead th.col-size { text-align: center; }
-        .reset-table .title-cell { background: #E8ECF0; font-weight: 700; color: #2C3E50; }
+        .reset-table .title-cell { background: #E2E8F0; font-weight: 700; color: #1A1A1A; }
         .reset-table .vertical-text { writing-mode: vertical-lr; text-orientation: mixed; white-space: nowrap; display: inline-block; padding: 0; font-size: 1.25em; font-weight: bold; }
-        .reset-table td[style*="background:#f9f9f9"] { background: #F8F9FA !important; color: #2C3E50; }
-        .reset-table td[style*="background:#f0f0f0"] { background: #E8ECF0 !important; color: #2C3E50; }
+        .reset-table td[style*="background:#f9f9f9"] { background: #F5F7FA !important; color: #1A1A1A; }
+        .reset-table td[style*="background:#f0f0f0"] { background: #E2E8F0 !important; color: #1A1A1A; }
 
-        .btn-execute { padding: 8px 16px; font-size: 0.9em; cursor: pointer; background: #27AE60; color: #fff; border: none; border-radius: 4px; font-family: inherit; width: 100%; line-height: 1.2; min-height: 34px; box-sizing: border-box; transition: background 0.2s; }
-        .btn-execute:hover { background: #219A52; }
+        .btn-execute { padding: 8px 16px; font-size: 0.9em; cursor: pointer; background: #546E7A; color: #fff; border: none; border-radius: 4px; font-family: inherit; width: 100%; line-height: 1.2; min-height: 34px; box-sizing: border-box; transition: background 0.2s; }
+        .btn-execute:hover { background: #37474F; }
         .btn-execute:disabled { background: #D5DAE0; color: #95A5A6; cursor: not-allowed; }
         .reset-table input, .reset-table button { margin: 0; vertical-align: middle; line-height: 1.2; min-height: 0; }
 
         .reset-actions { margin-top: 4px; display: flex; gap: 6px; flex-wrap: wrap; justify-content: space-between; align-items: center; }
         .reset-actions .btn-end { margin-left: auto; }
         .reset-actions .btn { padding: 10px 20px; font-size: 1em; cursor: pointer; border: none; border-radius: 4px; font-family: inherit; text-decoration: none; display: inline-block; }
-        .btn-primary { background: #27AE60; color: white; }
-        .btn-primary:hover { background: #219A52; }
-        .btn-secondary { background: #fff; color: #2C3E50; border: 2px solid #2C3E50; }
-        .btn-secondary:hover { background: #2C3E50; color: #fff; }
+        .btn-primary { background: #546E7A; color: white; }
+        .btn-primary:hover { background: #37474F; }
+        .btn-secondary { background: #fff; color: #1A1A1A; border: 2px solid #455A64; }
+        .btn-secondary:hover { background: #455A64; color: #fff; }
 
         .bottom-actions { display: flex; gap: 12px; padding-top: 12px; width: 100%; }
         .bottom-actions .btn { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 2.5em; padding: 14px 24px; line-height: 1.2; box-sizing: border-box; border-radius: 4px; text-decoration: none; font-size: 1em; font-weight: bold; font-family: inherit; transition: background 0.2s, box-shadow 0.2s, color 0.2s; }
-        .btn-home { background: #27AE60; color: #fff; border: 2px solid #27AE60; }
-        .btn-home:hover { background: #219A52; border-color: #219A52; box-shadow: 0 4px 12px rgba(39,174,96,0.18); }
-        .btn-shutdown { background: #fff; color: #2C3E50; border: 2px solid #2C3E50; }
-        .btn-shutdown:hover { background: #2C3E50; color: #fff; box-shadow: 0 4px 12px rgba(44,62,80,0.12); }
+        .btn-home { background: #546E7A; color: #fff; border: 2px solid #546E7A; }
+        .btn-home:hover { background: #37474F; border-color: #37474F; box-shadow: 0 4px 12px rgba(84,110,122,0.18); }
+        .btn-shutdown { background: #fff; color: #1A1A1A; border: 2px solid #455A64; }
+        .btn-shutdown:hover { background: #455A64; color: #fff; box-shadow: 0 4px 12px rgba(69,90,100,0.14); }
 
         @media (max-width: 1024px) {
             .panels-row { flex-direction: column; }
@@ -164,8 +164,8 @@
                 <!-- 공통사항: 신청인·연락처·이메일이 저장된 신청인과 모두 동일인일 때만 테이블 활성화 -->
                 <tr>
                     <td rowspan="8" class="title-cell" style="vertical-align: middle;"><span class="vertical-text">초기화 작업</span></td>
-                    <td rowspan="2" style="background:#f9f9f9; font-weight: bold;">공통사항</td>
-                    <td rowspan="2" style="background:#f9f9f9;">카테고리</td>
+                    <td rowspan="2" style="background:#F5F7FA; font-weight: bold;">공통사항</td>
+                    <td rowspan="2" style="background:#F5F7FA;">카테고리</td>
                     <td class="col-task">백업(j2x)</td>
                     <td class="col-size" id="size-json-xlsx-cache">0.0 kb</td>
                     <td class="col-size" id="size-json-xlsx-json">0.0 kb</td>
@@ -181,7 +181,7 @@
                 </tr>
                 <!-- 은행거래 -->
                 <tr>
-                    <td rowspan="2" style="background:#f9f9f9; font-weight: bold;">은행거래</td>
+                    <td rowspan="2" style="background:#F5F7FA; font-weight: bold;">은행거래</td>
                     <td>전처리전</td>
                     <td class="col-task">bank_before</td>
                     <td class="col-size" id="size-bank-before-cache">0.0 kb</td>
@@ -198,7 +198,7 @@
                 </tr>
                 <!-- 신용카드 -->
                 <tr>
-                    <td rowspan="2" style="background:#f9f9f9; font-weight: bold;">신용카드</td>
+                    <td rowspan="2" style="background:#F5F7FA; font-weight: bold;">신용카드</td>
                     <td>전처리전</td>
                     <td class="col-task">card_before</td>
                     <td class="col-size" id="size-card-before-cache">0.0 kb</td>
@@ -214,7 +214,7 @@
                 </tr>
                 <!-- 금융정보 -->
                 <tr>
-                    <td style="background:#f9f9f9; font-weight: bold;">금융정보</td>
+                    <td style="background:#F5F7FA; font-weight: bold;">금융정보</td>
                     <td>전처리후</td>
                     <td class="col-task">cash_after</td>
                     <td class="col-size" id="size-cash-after-cache">0.0 kb</td>
@@ -223,7 +223,7 @@
                 </tr>
                 <!-- 전체 초기화: 작업구분에 표시, 작업 공란, cache/json에 합계 -->
                 <tr>
-                    <td style="background:#f0f0f0; font-weight: bold;">전체 초기화</td>
+                    <td style="background:#E2E8F0; font-weight: bold;">전체 초기화</td>
                     <td></td>
                     <td class="col-task"></td>
                     <td class="col-size" id="size-total-cache">0 B</td>

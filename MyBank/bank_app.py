@@ -948,10 +948,10 @@ def save_category_table():
         if not success:
             return jsonify({'success': False, 'error': error_msg}), 400
         try:
-            from lib.category_table_defaults import sync_category_create_from_xlsx
-            sync_category_create_from_xlsx(path)
+            from lib.category_table_io import export_category_table_to_xlsx
+            export_category_table_to_xlsx(path)
         except Exception:
-            pass  # md 동기화 실패 시에도 API 성공 응답 유지
+            pass
         try:
             from lib.path_config import delete_all_after_files
             delete_all_after_files()
@@ -1016,24 +1016,27 @@ def print_analysis():
         category_stats = category_stats.sort_values('카테고리', ascending=True)
 
         top_category = category_stats.iloc[0]['카테고리'] if not category_stats.empty else ''
-        selected_category = category_filter if category_filter else top_category
+        selected_category = category_filter or ''
         if selected_category:
             trans_all = df[df[category_col] == selected_category]
             transaction_total_count = len(trans_all)
-            transactions = trans_all.head(15)
+            transactions = trans_all
             transaction_deposit_total = int(trans_all['입금액'].sum())
             transaction_withdraw_total = int(trans_all['출금액'].sum())
+            transaction_balance_total = transaction_deposit_total - transaction_withdraw_total
         else:
             transaction_total_count = 0
             transactions = pd.DataFrame()
             transaction_deposit_total = 0
             transaction_withdraw_total = 0
+            transaction_balance_total = 0
 
         bank_col = '은행명'
         bank_stats = df.groupby(bank_col).agg({
             '입금액': 'sum',
             '출금액': 'sum'
         }).reset_index()
+        bank_stats['차액'] = bank_stats['입금액'] - bank_stats['출금액']
 
         account_col = '계좌번호'
         if account_col in df.columns:
@@ -1041,6 +1044,7 @@ def print_analysis():
                 '입금액': 'sum',
                 '출금액': 'sum'
             }).reset_index()
+            account_stats['차액'] = account_stats['입금액'] - account_stats['출금액']
             # 출력용: 계좌번호 뒤 6자리 (그래픽 레이블/범례와 동일)
             acc_ser = account_stats[account_col].astype(str).str.strip()
             account_stats['account_short'] = acc_ser.apply(lambda x: x[-6:] if len(x) > 6 else x)
@@ -1101,6 +1105,7 @@ def print_analysis():
                              transaction_total_count=transaction_total_count,
                              transaction_deposit_total=transaction_deposit_total,
                              transaction_withdraw_total=transaction_withdraw_total,
+                             transaction_balance_total=transaction_balance_total,
                              months_list=months_list,
                              monthly_totals_list=monthly_totals_list,
                              max_monthly_withdraw=max_monthly_withdraw,
