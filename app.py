@@ -587,6 +587,12 @@ _clear_startup_caches()
 # 신청인 검증: 서버 메모리에 유지 (쿠키 사용 안 함). 앱 종료 시 자동 소멸.
 _APPLICANT_SESSION = {}  # {'verified': bool, 'name': str, 'email': str, 'contact': str}
 
+@app.before_request
+def _before_request_ensure_category():
+    """페이지 진입 시 category_table.json이 없으면 자동 생성."""
+    path = request.path
+    if path == '/' or path.startswith(('/bank', '/card', '/cash', '/reset')):
+        _ensure_category_table_json()
 
 
 @app.route('/bank')
@@ -618,7 +624,6 @@ def _no_cache_headers():
 @app.route('/')
 def index():
     """메인 홈페이지."""
-    _ensure_category_table_json()
     start_time_str = (SERVER_START_TIME.astimezone(KST).strftime('%H:%M:%S') if SERVER_START_TIME else '')
     resp = make_response(render_template(
         'index.html',

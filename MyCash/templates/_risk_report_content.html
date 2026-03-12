@@ -12,8 +12,11 @@
 {% if filter_institution is defined and filter_institution %}
 <div style="margin-bottom:8px; padding:4px 8px; background:#FBE9E7; border-radius:4px; font-size:9pt; color:#E65100; font-weight:bold;">※ 본 리포트는 「{{ filter_institution }}」 거래에 한정한 분석이다.</div>
 {% endif %}
+{% if daechae_excluded_count is defined and daechae_excluded_count > 0 %}
+<div style="margin-bottom:8px; padding:4px 8px; background:#FFF8E1; border-left:3px solid #F9A825; border-radius:4px; font-size:9pt; color:#1A1A1A; font-weight:bold;">※ 대체거래(계좌 간 이체·취소) <strong>{{ daechae_excluded_count }}건을 제외</strong>한 실질 거래 기준으로 위험도를 산출하였다. 대체거래는 단순 자금 이동에 해당하여 위험 행위로 보기 어렵다.</div>
+{% endif %}
 <div class="risk-report-result-section" style="margin-bottom:12px;">
-    <h4 style="font-size:10.5pt; font-weight:bold; margin:8px 0 4px 0; padding-bottom:4px; color:#E65100;">1. 위험도 분석 결과</h4>
+    <h4 style="font-size:10.5pt; font-weight:bold; margin:8px 0 4px 0; padding-bottom:4px; color:#E65100;">1. 위험도 분석 결과{% if daechae_excluded_count is defined and daechae_excluded_count > 0 %} (대체거래 제외){% endif %}</h4>
     <table class="risk-report-table" style="width:100%; border-collapse:collapse; font-size:9pt;">
         <thead>
             <tr>
@@ -52,10 +55,17 @@
 
 <div class="risk-report-grade-section" style="margin-bottom:12px;">
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px; margin:8px 0 4px 0; padding-bottom:4px;">
-        <h4 style="font-size:10.5pt; font-weight:bold; margin:0; color:#E65100;">2. 위험 등급 판정</h4>
+        <h4 style="font-size:10.5pt; font-weight:bold; margin:0; color:#E65100;">2. 위험 등급 판정{% if daechae_excluded_count is defined and daechae_excluded_count > 0 %} (대체거래 제외){% endif %}</h4>
         <span class="risk-report-r-value" style="font-size:16px; font-weight:bold; margin-left:auto;">R = {{ total_score }} → {{ grade_label }}</span>
     </div>
     <p style="margin:4px 0; font-size:9pt; color:#1A1A1A;">{{ grade_desc }}</p>
+    {% if risk_full_report is defined and risk_full_report %}
+    {% set full_score = risk_full_report.get('total_score', 0) %}
+    {% set full_label = risk_full_report.get('grade_label', '') %}
+    {% if full_score != total_score %}
+    <p style="background:#FFF8E1; padding:4px 8px; border-left:3px solid #F9A825; margin:4px 0; font-size:9pt;"><strong>[참고: 대체거래 포함 시]</strong> R = {{ full_score }} → {{ full_label }}{% if full_score > total_score %} (대체거래 제외 시 R이 {{ full_score }} → {{ total_score }}으로 {{ '%.2f'|format(full_score|float - total_score|float) }} 감소){% endif %}</p>
+    {% endif %}
+    {% endif %}
     <h4 style="font-size:10pt; font-weight:bold; margin:10px 0 4px 0; padding-bottom:4px;">위험등급 판정 기준</h4>
     <table class="risk-grade-criteria-table" style="width:100%; border-collapse:collapse; font-size:9pt; margin-top:4px;">
         <thead>
@@ -89,9 +99,69 @@
 </div>
 {% endif %}
 
+{% if daechae_total_count is defined and daechae_total_count > 0 %}
+<div style="margin-bottom:12px;">
+    <h4 style="font-size:10.5pt; font-weight:bold; margin:8px 0 4px 0; padding-bottom:4px; color:#E65100;">{% if suggestion_items %}4{% else %}3{% endif %}. 대체거래 현황</h4>
+    <p style="font-size:9pt; color:#1A1A1A; margin-bottom:6px;">대체거래(동일 금액의 계좌 간 이체·환불 등)로 분류된 거래가 총 <strong>{{ daechae_total_count }}건</strong>({{ '{:,}'.format(daechae_total_amount) }}원)으로 확인된다.</p>
+    <table style="width:100%; border-collapse:collapse; font-size:9pt; margin:4px 0 8px 0;">
+        <thead><tr>
+            <th style="border:1px solid #FFDBC8; padding:3px 6px; background:#FFCCBC; color:#E65100; text-align:center;">구분</th>
+            <th style="border:1px solid #FFDBC8; padding:3px 6px; background:#FFCCBC; color:#E65100; text-align:center;">건수</th>
+            <th style="border:1px solid #FFDBC8; padding:3px 6px; background:#FFCCBC; color:#E65100; text-align:center;">입금액</th>
+            <th style="border:1px solid #FFDBC8; padding:3px 6px; background:#FFCCBC; color:#E65100; text-align:center;">출금액</th>
+            <th style="border:1px solid #FFDBC8; padding:3px 6px; background:#FFCCBC; color:#E65100; text-align:center;">차액</th>
+        </tr></thead>
+        <tbody>
+            {% if daechae_bank_count|default(0) > 0 %}<tr><td style="border:1px solid #FFDBC8; padding:3px 6px;">은행대체</td><td style="border:1px solid #FFDBC8; padding:3px 6px; text-align:center;">{{ daechae_bank_count }}건</td><td style="border:1px solid #FFDBC8; padding:3px 6px; text-align:right; color:#1565C0;">{{ '{:,}'.format(daechae_bank_deposit) }}원</td><td style="border:1px solid #FFDBC8; padding:3px 6px; text-align:right; color:#C62828;">{{ '{:,}'.format(daechae_bank_withdraw) }}원</td><td style="border:1px solid #FFDBC8; padding:3px 6px; text-align:right;">{{ '{:,}'.format(daechae_bank_deposit - daechae_bank_withdraw) }}원</td></tr>{% endif %}
+            {% if daechae_card_count|default(0) > 0 %}<tr><td style="border:1px solid #FFDBC8; padding:3px 6px;">카드대체</td><td style="border:1px solid #FFDBC8; padding:3px 6px; text-align:center;">{{ daechae_card_count }}건</td><td style="border:1px solid #FFDBC8; padding:3px 6px; text-align:right; color:#1565C0;">{{ '{:,}'.format(daechae_card_deposit) }}원</td><td style="border:1px solid #FFDBC8; padding:3px 6px; text-align:right; color:#C62828;">{{ '{:,}'.format(daechae_card_withdraw) }}원</td><td style="border:1px solid #FFDBC8; padding:3px 6px; text-align:right;">{{ '{:,}'.format(daechae_card_deposit - daechae_card_withdraw) }}원</td></tr>{% endif %}
+            {% if daechae_cancel_count|default(0) > 0 %}<tr><td style="border:1px solid #FFDBC8; padding:3px 6px;">취소거래</td><td style="border:1px solid #FFDBC8; padding:3px 6px; text-align:center;">{{ daechae_cancel_count }}건</td><td style="border:1px solid #FFDBC8; padding:3px 6px; text-align:right; color:#1565C0;">{{ '{:,}'.format(daechae_cancel_deposit) }}원</td><td style="border:1px solid #FFDBC8; padding:3px 6px; text-align:right; color:#C62828;">{{ '{:,}'.format(daechae_cancel_withdraw) }}원</td><td style="border:1px solid #FFDBC8; padding:3px 6px; text-align:right;">{{ '{:,}'.format(daechae_cancel_deposit - daechae_cancel_withdraw) }}원</td></tr>{% endif %}
+            <tr style="background:#FFF5EE; font-weight:bold;"><td style="border:1px solid #FFDBC8; padding:3px 6px;">합계</td><td style="border:1px solid #FFDBC8; padding:3px 6px; text-align:center;">{{ daechae_total_count }}건</td><td style="border:1px solid #FFDBC8; padding:3px 6px; text-align:right; color:#1565C0;">{{ '{:,}'.format(daechae_total_deposit) }}원</td><td style="border:1px solid #FFDBC8; padding:3px 6px; text-align:right; color:#C62828;">{{ '{:,}'.format(daechae_total_withdraw) }}원</td><td style="border:1px solid #FFDBC8; padding:3px 6px; text-align:right;">{{ '{:,}'.format(daechae_total_deposit - daechae_total_withdraw) }}원</td></tr>
+        </tbody>
+    </table>
+    <p style="font-size:9pt; color:#1A1A1A;">대체거래는 동일인의 계좌 간 단순 자금 이동 또는 결제 취소·환불에 해당하므로, 위험도 분석에서 실질적인 위험 요인으로 보기 어렵다. {% if daechae_ratio_pct is defined and daechae_ratio_pct|float >= 10 %}대체거래 비중이 전체의 약 {{ daechae_ratio_pct }}%를 차지하여, 이를 제외할 경우 실질 위험도 지표가 변동될 수 있다.{% endif %} {% if daechae_net_deposit is defined %}대체거래를 제외한 실질 입금 {{ daechae_net_deposit_fmt }}원, 실질 출금 {{ daechae_net_withdraw_fmt }}원이며, 면책 심사 시에는 이 실질 금액을 기준으로 위험도를 평가하는 것이 합리적이다.{% endif %}</p>
+    {% if risk_full_report is defined and risk_full_report %}
+    {% set full_score2 = risk_full_report.get('total_score', 0) %}
+    {% set full_label2 = risk_full_report.get('grade_label', '') %}
+    {% if full_score2 != total_score %}
+    <div style="background:#E8F5E9; border-left:3px solid #43A047; padding:6px 10px; margin:8px 0; font-size:9pt; line-height:1.6;">
+        <strong>[대체거래 제외 영향 분석]</strong><br>
+        대체거래를 포함한 R = {{ full_score2 }}({{ full_label2 }})에서 대체거래 {{ daechae_total_count }}건을 제외하면 R = {{ total_score }}({{ grade_label }})로 <strong>{{ '%.2f'|format(full_score2|float - total_score|float) }}점 감소</strong>하였다.
+        {% if full_label2 != grade_label %}
+        이에 따라 위험 등급이 <strong>{{ full_label2 }} → {{ grade_label }}</strong>로 하향 조정되었으며, 이는 대체거래가 위험도 산출에 미치는 왜곡 효과가 유의미함을 의미한다.
+        {% else %}
+        위험 등급 자체의 변동은 없으나, R 점수 감소분은 대체거래의 영향을 반영한 것이다.
+        {% endif %}
+        면책 심사 시 대체거래를 포함한 R 기준으로 불이익한 판단을 받는 것은 부당하며, 대체거래 제외 후의 실질 R을 기준으로 위험 등급을 판정하는 것이 합리적이다.
+    </div>
+    {% endif %}
+    {% endif %}
+</div>
+{% endif %}
+
+{% if daechae_total_count is defined and daechae_total_count > 0 %}
+<div style="margin-bottom:12px;">
+    <h4 style="font-size:10.5pt; font-weight:bold; margin:8px 0 4px 0; padding-bottom:4px; color:#E65100;">{% if suggestion_items %}{% if daechae_total_count > 0 %}5{% else %}4{% endif %}{% else %}{% if daechae_total_count > 0 %}4{% else %}3{% endif %}{% endif %}. 대체거래 소명 전략</h4>
+    <div style="padding:8px 10px; background:#F3E5F5; border-left:3px solid #8E24AA; font-size:9pt; line-height:1.7; margin-bottom:8px;">
+        <p style="margin:0 0 6px 0;"><strong>[소명 핵심 논리]</strong> 대체거래는 채무자 회생 및 파산에 관한 법률 제564조(면책불허가 사유)에서 규정하는 '재산의 은닉·불이익처분'에 해당하지 않는 <strong>단순 자금 재배치</strong>에 해당한다. 따라서 면책불허가 사유의 금액 산정에서 대체거래를 제외하는 것이 법원 실무상 합리적이다.</p>
+        <ul style="margin:4px 0 4px 16px; padding:0;">
+            {% if daechae_bank_count|default(0) > 0 %}
+            <li><strong>은행대체({{ daechae_bank_count }}건)에 대한 소명:</strong> 동일인 소유의 서로 다른 은행 계좌 간 자금 이체로서, 자금 총량에 변동이 없는 단순 재배치에 해당한다. 이체 내역(송금 계좌 → 수취 계좌)을 통장 사본으로 증빙할 것을 권고한다.</li>
+            {% endif %}
+            {% if daechae_card_count|default(0) > 0 %}
+            <li><strong>카드대체({{ daechae_card_count }}건)에 대한 소명:</strong> 신용카드 결제 후 은행에서 동일 금액이 출금(카드 대금 자동이체)된 것으로, 은행·카드사 양측에 동일 거래가 이중 계상된 것이다. 카드 이용대금 결제 확인서를 증빙으로 준비할 것을 권고한다.</li>
+            {% endif %}
+            {% if daechae_cancel_count|default(0) > 0 %}
+            <li><strong>취소거래({{ daechae_cancel_count }}건)에 대한 소명:</strong> 결제 취소·환불로 원거래가 무효화된 건이다. 취소 사유(상품 반품, 서비스 취소 등)를 설명하고, 취소 확인 내역을 증빙으로 제출할 것을 권고한다.</li>
+            {% endif %}
+        </ul>
+        <p style="margin:4px 0 0 0; color:#6A1B9A;"><strong>※ 소명서 작성 시</strong> 위 대체거래 {{ daechae_total_count }}건(입금 {{ '{:,}'.format(daechae_total_deposit) }}원, 출금 {{ '{:,}'.format(daechae_total_withdraw) }}원)을 별도 목록으로 정리하고, 각 건별 거래 경위·증빙을 첨부하면 법원의 면책 판단에 유리하게 작용할 수 있다.</p>
+    </div>
+</div>
+{% endif %}
+
 {% if data %}
 <div style="margin-bottom:12px;">
-    <h4 style="font-size:10.5pt; font-weight:bold; margin:8px 0 4px 0; padding-bottom:4px; color:#E65100;">4. 면책 불허가 사유 관련 참고</h4>
+    <h4 style="font-size:10.5pt; font-weight:bold; margin:8px 0 4px 0; padding-bottom:4px; color:#E65100;">{% if daechae_total_count is defined and daechae_total_count > 0 %}{% if suggestion_items %}6{% else %}5{% endif %}{% else %}{% if suggestion_items %}4{% else %}3{% endif %}{% endif %}. 면책 불허가 사유 관련 참고</h4>
     <p style="font-size:9pt; color:#1A1A1A; margin-bottom:4px;">채무자 회생 및 파산에 관한 법률 제564조에 따른 면책 불허가 사유와의 관련성을 아래에 정리한다.</p>
     <table style="width:100%; border-collapse:collapse; font-size:8.5pt; margin-top:4px;">
         <thead><tr>

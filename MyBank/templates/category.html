@@ -598,7 +598,7 @@
 
         /* ═══════════════════════════════════════════════════════════
            은행 고유색 시스템 (Bank Identity Color System)
-           고유색: #1565C0 | 본문: #334155 | 헤더: #B3D4FC | 구분선: #BBDEFB
+           고유색: #1565C0 | 본문: #1A1A1A | 헤더: #B3D4FC | 구분선: #BBDEFB
            ═══════════════════════════════════════════════════════════ */
         .header h1 { color: #1565C0 !important; border-left: 4px solid #1565C0; padding-left: 10px; }
         .box-title { color: #1565C0 !important; }
@@ -608,7 +608,7 @@
             color: #1565C0 !important;
             border-color: #BBDEFB !important;
         }
-        table tbody td { color: #334155; border-color: #BBDEFB !important; }
+        table tbody td { color: #1A1A1A; border-color: #BBDEFB !important; }
         table td[style*="color: #1565C0"], table td[style*="color:#1565C0"] { color: #1565C0 !important; }
         table td[style*="color: #C62828"], table td[style*="color:#C62828"] { color: #C62828 !important; }
         table tbody tr:hover {
@@ -616,10 +616,10 @@
             box-shadow: inset 3px 0 0 #1565C0;
         }
         table tr.sum-row, table tr[data-sum-row="true"] { background-color: #C8DFFE !important; }
-        table tr.sum-row td, table tr[data-sum-row="true"] td { font-weight: 800 !important; color: #0F172A !important; }
+        table tr.sum-row td, table tr[data-sum-row="true"] td { font-weight: 800 !important; color: #1A1A1A !important; }
         table tr.sum-row td[data-sum-col="입금액"], table tr[data-sum-row="true"] td[data-sum-col="입금액"] { color: #1565C0 !important; }
         table tr.sum-row td[data-sum-col="출금액"], table tr[data-sum-row="true"] td[data-sum-col="출금액"] { color: #C62828 !important; }
-        select, select option { color: #334155 !important; font-weight: normal !important; }
+        select, select option { color: #1A1A1A !important; font-weight: normal !important; }
         select option { background-color: #FFFFFF !important; }
         .header-stats-text {
             font-size: clamp(10px, calc(0.45vw + 2px), 13px);
@@ -632,8 +632,8 @@
             display: flex; align-items: center; gap: 15px; white-space: nowrap; overflow: hidden;
         }
         .header-stats-text .stats-unit, .header-stats-group .stats-unit,
-        .header-stats-text .stats-count, .header-stats-group .stats-count { color: #334155 !important; }
-        .monthly-chart-legend, .monthly-chart-legend span { color: #334155 !important; }
+        .header-stats-text .stats-count, .header-stats-group .stats-count { color: #1A1A1A !important; }
+        .monthly-chart-legend, .monthly-chart-legend span { color: #1A1A1A !important; }
         .split-table-header-table { background-color: #B3D4FC !important; }
         .split-table-header-table th { background-color: #B3D4FC !important; color: #1565C0 !important; }
         #monthly-trend-category-label { color: #1565C0 !important; }
@@ -643,11 +643,11 @@
         .filter-group label { color: #1565C0 !important; font-weight: bold; }
         #category-bank-filter {
             background-color: #FFFFFF !important;
-            color: #334155 !important;
+            color: #1A1A1A !important;
             border: 1px solid #BBDEFB !important;
             font-weight: normal !important;
         }
-        #category-bank-filter option { color: #334155 !important; background-color: #FFFFFF !important; }
+        #category-bank-filter option { color: #1A1A1A !important; background-color: #FFFFFF !important; }
     </style>
 </head>
 <body>
@@ -701,7 +701,7 @@
             <div style="margin-bottom: 4px; flex-shrink: 0;">
                 <h2 style="margin: 0;">은행거래 월별 추이 그래프 <span id="monthly-trend-category-label">(전체)</span></h2>
             </div>
-            <div class="monthly-chart-legend" style="display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 16px; margin-bottom: 4px; font-size: 12px; flex-shrink: 0; color: #334155;"></div>
+            <div class="monthly-chart-legend" style="display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 16px; margin-bottom: 4px; font-size: 12px; flex-shrink: 0; color: #1A1A1A;"></div>
             <div class="monthly-chart-container" style="flex: 1; min-height: 0;">
                 <canvas id="category-monthly-trend-chart"></canvas>
             </div>
@@ -1256,7 +1256,7 @@
                 let cellBgColor = isEvenRow ? (columnBgColors[col] || '') : '';
                 let cellStyle = ' style="white-space: nowrap; text-align: left; padding: 2px; border: 1px solid #BBDEFB;' + (cellBgColor ? ' background-color: ' + cellBgColor + ';' : '') + '"';
                 if (col === '입금액' || col === '출금액') {
-                    cellStyle = ' style="white-space: nowrap; text-align: right; padding: 2px; border: 1px solid #BBDEFB; color: ' + (col === '입금액' ? '#1565C0' : col === '출금액' ? '#C62828' : '#334155') + '; font-size: 11px;' + (cellBgColor ? ' background-color: ' + cellBgColor + ';' : '') + '"';
+                    cellStyle = ' style="white-space: nowrap; text-align: right; padding: 2px; border: 1px solid #BBDEFB; color: ' + (col === '입금액' ? '#1565C0' : col === '출금액' ? '#C62828' : '#1A1A1A') + '; font-size: 11px;' + (cellBgColor ? ' background-color: ' + cellBgColor + ';' : '') + '"';
                 } else if (['거래일','거래시간','은행명','취소'].indexOf(col) >= 0) {
                     cellStyle = ' style="white-space: nowrap; text-align: center; padding: 2px; border: 1px solid #BBDEFB;' + (cellBgColor ? ' background-color: ' + cellBgColor + ';' : '') + '"';
                 } else if (['키워드','카테고리','기타거래'].indexOf(col) >= 0) {
@@ -1449,7 +1449,7 @@
                 const width = ((ratio / totalRatio) * 100).toFixed(2);
                 const filterAlign = col === '계좌번호' ? 'left' : 'center';
                 html += `<th style="width: ${width}%; padding: 2px 2px; border: 1px solid #BBDEFB; text-align: ${filterAlign};">
-                    <select id="filter-category-applied-index-${col}" style="width: 100%; padding: 1px 2px; font-size: 11px; border: 1px solid #BBDEFB; border-radius: 2px; color: #334155;">
+                    <select id="filter-category-applied-index-${col}" style="width: 100%; padding: 1px 2px; font-size: 11px; border: 1px solid #BBDEFB; border-radius: 2px; color: #1A1A1A;">
                         <option value="">전체</option>`;
                 if (col === '거래시간') {
                     html += '<option value="__심야구분__">심야구분</option>';
@@ -1504,7 +1504,7 @@
                     
                     let cellStyle = ` style="white-space: nowrap; text-align: left; padding: 2px; border: 1px solid #BBDEFB;${cellBgColor ? ` background-color: ${cellBgColor};` : ''}"`;
                     if (col === '입금액' || col === '출금액') {
-                        cellStyle = ` style="white-space: nowrap; text-align: right; padding: 2px; border: 1px solid #BBDEFB; color: ${col === '입금액' ? '#1565C0' : col === '출금액' ? '#C62828' : '#334155'}; font-size: 11px;${cellBgColor ? ` background-color: ${cellBgColor};` : ''}"`;
+                        cellStyle = ` style="white-space: nowrap; text-align: right; padding: 2px; border: 1px solid #BBDEFB; color: ${col === '입금액' ? '#1565C0' : col === '출금액' ? '#C62828' : '#1A1A1A'}; font-size: 11px;${cellBgColor ? ` background-color: ${cellBgColor};` : ''}"`;
                     } else if (col === '거래일' || col === '거래시간' || col === '은행명' || col === '사업자번호' || col === '폐업' || col === '취소') {
                         cellStyle = ` style="white-space: nowrap; text-align: center; padding: 2px; border: 1px solid #BBDEFB;${cellBgColor ? ` background-color: ${cellBgColor};` : ''}"`;
                     } else if (col === '키워드' || col === '카테고리' || col === '기타거래') {

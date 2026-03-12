@@ -150,7 +150,7 @@
             .risk-pie-legend { min-height: 140px; }
         }
 
-        /* 금융정보 검토 종합의견: 구분선·제목 제거, 간격 축소, 배경 투명해 배경 이미지 비침 */
+        /* 검토 종합의견: 구분선·제목 제거, 간격 축소, 배경 투명해 배경 이미지 비침 */
         .opinion-box {
             padding: 8px 12px;
             margin-top: 4px;
@@ -193,7 +193,7 @@
             .opinion-section h3 + p { display: inline; margin: 0 0 0 6px; }
             .opinion-section p + p { display: block; margin-top: 6px; margin-bottom: 6px; }
         }
-        /* 금융정보 위험도 종합의견(2페이지) 인쇄용 — R값 우측정렬, 진한 빨간색 */
+        /* 위험도 종합의견(2페이지) 인쇄용 — R값 우측정렬, 진한 빨간색 */
         .risk-report-r-value { text-align: right; color: #8B0000 !important; font-weight: bold; }
         .risk-formula-block { margin: 8px 0; padding: 6px 0; }
         .risk-formula { font-size: 13pt; font-weight: bold; }
@@ -246,7 +246,7 @@
 
     <div class="section section-opinion">
         <div class="opinion-title-row">
-            <div class="opinion-print-title">금융정보 검토 종합의견</div>
+            <div class="opinion-print-title">검토 종합의견</div>
         </div>
         <div class="opinion-print-header">
             <span>1. 검토 범위</span>
@@ -293,7 +293,7 @@
     </div>
 
     <div class="section">
-        <div class="section-title">금융정보 위험도</div>
+        <div class="section-title">금융정보 위험도{% if daechae_excluded_count is defined and daechae_excluded_count > 0 %} (대체거래 {{ daechae_excluded_count }}건 제외){% endif %}</div>
         <table style="width: 100%;">
                 <thead>
                     <tr>
@@ -319,9 +319,9 @@
                     <tr style="font-weight: bold; background: #FFCCBC;">
                         <td>합계</td>
                         <td></td>
-                        <td class="text-right">{{ total_count|default(0)|int }}</td>
-                        <td class="text-right col-deposit">{{ "{:,}".format((total_deposit|default(0))|int) }}</td>
-                        <td class="text-right col-withdraw">{{ "{:,}".format((total_withdraw|default(0))|int) }}</td>
+                        <td class="text-right">{{ risk_total_count|default(total_count|default(0))|int }}</td>
+                        <td class="text-right col-deposit">{{ "{:,}".format((risk_total_deposit|default(total_deposit|default(0)))|int) }}</td>
+                        <td class="text-right col-withdraw">{{ "{:,}".format((risk_total_withdraw|default(total_withdraw|default(0)))|int) }}</td>
                     </tr>
                 </tfoot>
             </table>

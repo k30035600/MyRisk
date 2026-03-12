@@ -229,13 +229,13 @@
             max-width: 480px;
             max-height: 70vh;
             overflow: auto;
-            background: #F3E5F5;
-            border: 1px solid #DFC4E8;
+            background: #F0F2F5;
+            border: 1px solid #B0BEC5;
             border-radius: 12px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.15);
             padding: 12px 14px;
-            font-size: 12.5px;
-            line-height: 1.5;
+            font-size: 11px;
+            line-height: 1.4;
             font-family: 'Malgun Gothic', sans-serif;
             pointer-events: auto;
         }
@@ -282,7 +282,7 @@
         .row-tooltip-bubble .tooltip-val {
             flex: 1;
             word-break: break-all;
-            color: #334155;
+            color: #1A1A1A;
         }
         .row-tooltip-selected { background-color: #DFC4E8 !important; }
         /* 입출금내역 행 클릭 시 세부내역 조회 중 선택 행 회색 표시, 끝나면 원위치 */
@@ -467,10 +467,11 @@
         #category-table td.loading {
             padding: 3px !important;
         }
-        #category-table th:nth-child(1), #category-table td:nth-child(1) { width: 50%; }
+        #category-table th:nth-child(1), #category-table td:nth-child(1) { width: 40%; }
         #category-table th:nth-child(2), #category-table td:nth-child(2) { width: 10%; }
-        #category-table th:nth-child(3), #category-table td:nth-child(3) { width: 20%; }
-        #category-table th:nth-child(4), #category-table td:nth-child(4) { width: 20%; }
+        #category-table th:nth-child(3), #category-table td:nth-child(3) { width: 18%; }
+        #category-table th:nth-child(4), #category-table td:nth-child(4) { width: 18%; }
+        #category-table th:nth-child(5), #category-table td:nth-child(5) { width: 14%; }
 
         /* 카테고리 거래내역: 헤더/행 25px, 셀 패딩 2px */
         #transaction-table {
@@ -864,7 +865,7 @@
 
         /* ═══════════════════════════════════════════════════════════
            신용카드 고유색 시스템 (Card Identity Color System)
-           고유색: #6A1B9A | 본문: #334155 | 헤더: #E1BEE7 | 구분선: #DFC4E8
+           고유색: #6A1B9A | 본문: #1A1A1A | 헤더: #E1BEE7 | 구분선: #DFC4E8
            ═══════════════════════════════════════════════════════════ */
         .header h1 { color: #6A1B9A !important; border-left: 4px solid #6A1B9A; padding-left: 10px; }
         .box-title { color: #6A1B9A !important; }
@@ -877,7 +878,7 @@
         }
         .split-table-header-table { background-color: #E1BEE7 !important; }
         .split-table-header-table th { background-color: #E1BEE7 !important; color: #6A1B9A !important; }
-        table tbody td { color: #334155; border-color: #DFC4E8 !important; }
+        table tbody td { color: #1A1A1A; border-color: #DFC4E8 !important; }
         table td[style*="color: #1565C0"], table td[style*="color:#1565C0"] { color: #1565C0 !important; }
         table td[style*="color: #C62828"], table td[style*="color:#C62828"] { color: #C62828 !important; }
         table tbody tr:hover {
@@ -887,18 +888,18 @@
         table tr.sum-row, table tr[data-sum-row="true"],
         table tfoot tr, table tr.total-row { background-color: #EAD0F1 !important; }
         table tr.sum-row td, table tr[data-sum-row="true"] td,
-        table tfoot td, table tr.total-row td { font-weight: 800 !important; color: #0F172A !important; }
+        table tfoot td, table tr.total-row td { font-weight: 800 !important; color: #1A1A1A !important; }
         table tr.sum-row td[data-sum-col="입금액"],
         table tr[data-sum-row="true"] td[data-sum-col="입금액"] { color: #1565C0 !important; }
         table tr.sum-row td[data-sum-col="출금액"],
         table tr[data-sum-row="true"] td[data-sum-col="출금액"] { color: #C62828 !important; }
-        select, select option { color: #334155 !important; font-weight: normal !important; background-color: #FFFFFF !important; }
+        select, select option { color: #1A1A1A !important; font-weight: normal !important; background-color: #FFFFFF !important; }
         .header-stats-text { font-size: clamp(10px, calc(0.45vw + 2px), 13px); font-weight: bold; }
         .header-stats-text, .header-stats-group, .header-stats-group span, .header-stats-group .label,
         .stat-item .label { color: #6A1B9A !important; }
-        .stats-unit, .stats-count { color: #334155 !important; }
+        .stats-unit, .stats-count { color: #1A1A1A !important; }
         .filter-group label { color: #6A1B9A !important; font-weight: bold; }
-        .monthly-chart-legend, .monthly-chart-legend span { color: #334155 !important; }
+        .monthly-chart-legend, .monthly-chart-legend span { color: #1A1A1A !important; }
         .header-stats-text .header-stats-group, .header-stats-group {
             display: flex; align-items: center; gap: 15px; white-space: nowrap; overflow: hidden;
         }
@@ -942,15 +943,16 @@
                     <table id="category-table" style="width: 100%; border-collapse: collapse; font-size: 11px; table-layout: fixed;">
                         <thead style="position: sticky; top: 0; background-color: #E1BEE7; color: #6A1B9A;">
                             <tr>
-                                <th style="width: 50%; text-align: left; border-bottom: 2px solid #DFC4E8; color: #6A1B9A;">카테고리</th>
+                                <th style="width: 40%; text-align: left; border-bottom: 2px solid #DFC4E8; color: #6A1B9A;">카테고리</th>
                                 <th style="width: 10%; text-align: right; border-bottom: 2px solid #DFC4E8; color: #6A1B9A;">건수</th>
-                                <th style="width: 20%; text-align: right; border-bottom: 2px solid #DFC4E8; color: #1565C0;">입금액</th>
-                                <th style="width: 20%; text-align: right; border-bottom: 2px solid #DFC4E8; color: #C62828;">출금액</th>
+                                <th style="width: 18%; text-align: right; border-bottom: 2px solid #DFC4E8; color: #1565C0;">입금액</th>
+                                <th style="width: 18%; text-align: right; border-bottom: 2px solid #DFC4E8; color: #C62828;">출금액</th>
+                                <th style="width: 14%; text-align: right; border-bottom: 2px solid #DFC4E8; color: #1565C0;">차액</th>
                             </tr>
                         </thead>
                         <tbody id="category-table-body">
                             <tr>
-                                <td colspan="4" style="padding: 20px; text-align: center; color: #1A1A1A;">데이터 로딩중 ... (0건)</td>
+                                <td colspan="5" style="padding: 20px; text-align: center; color: #1A1A1A;">데이터 로딩중 ... (0건)</td>
                             </tr>
                         </tbody>
                         <tfoot id="category-table-foot" style="background-color: #EAD0F1; border-top: 2px solid #263238;">
@@ -959,6 +961,7 @@
                                 <td id="total-count-category" style="font-weight: bold; padding: 3px; text-align: right;">0</td>
                                 <td id="total-deposit-category" style="font-weight: bold; padding: 3px; text-align: right; color: #1565C0;">0</td>
                                 <td id="total-withdraw-category" style="font-weight: bold; padding: 3px; text-align: right; color: #C62828;">0</td>
+                                <td id="total-diff-category" style="font-weight: bold; padding: 3px; text-align: right;">0</td>
                             </tr>
                         </tfoot>
                     </table>
@@ -1160,7 +1163,7 @@
                     const boxSpan = document.createElement('span');
                     boxSpan.style.cssText = 'background:' + item.fillStyle + ';border:1px solid ' + (item.strokeStyle || '#DFC4E8') + ';display:inline-block;height:10px;width:10px;border-radius:2px;';
                     const textSpan = document.createElement('span');
-                    textSpan.style.color = item.fontColor || '#334155';
+                    textSpan.style.color = item.fontColor || '#1A1A1A';
                     textSpan.style.textDecoration = item.hidden ? 'line-through' : '';
                     textSpan.textContent = item.text;
                     li.appendChild(boxSpan);
@@ -1192,7 +1195,7 @@
                     const boxSpan = document.createElement('span');
                     boxSpan.style.cssText = 'background:' + item.fillStyle + ';border:1px solid ' + (item.strokeStyle || '#DFC4E8') + ';flex-shrink:0;height:10px;width:10px;border-radius:2px;';
                     const textSpan = document.createElement('span');
-                    textSpan.style.color = item.fontColor || '#334155';
+                    textSpan.style.color = item.fontColor || '#1A1A1A';
                     textSpan.style.textDecoration = item.hidden ? 'line-through' : '';
                     textSpan.style.overflow = 'hidden';
                     textSpan.style.textOverflow = 'ellipsis';
@@ -1517,18 +1520,18 @@
                 if (!response.ok) {
                     const msg = (data.error || `서버 오류 ${response.status}`).replace(/</g, '&lt;').replace(/>/g, '&gt;');
                     document.getElementById('category-table-body').innerHTML = 
-                        `<tr><td colspan="4" style="padding: 20px; text-align: center; color: #C62828;">데이터 로딩 오류: ${msg}</td></tr>`;
+                        `<tr><td colspan="5" style="padding: 20px; text-align: center; color: #C62828;">데이터 로딩 오류: ${msg}</td></tr>`;
                     return;
                 }
                 if (data.error) {
                     const errEsc = String(data.error).replace(/</g, '&lt;').replace(/>/g, '&gt;');
                     document.getElementById('category-table-body').innerHTML = 
-                        `<tr><td colspan="4" style="padding: 20px; text-align: center; color: #C62828;">데이터 로딩 오류: ${errEsc}</td></tr>`;
+                        `<tr><td colspan="5" style="padding: 20px; text-align: center; color: #C62828;">데이터 로딩 오류: ${errEsc}</td></tr>`;
                     return;
                 }
                 if (!data.data || data.data.length === 0) {
                     document.getElementById('category-table-body').innerHTML = 
-                        '<tr><td colspan="4" style="padding: 20px; text-align: center; color: #1A1A1A;">데이터가 없습니다.</td></tr>';
+                        '<tr><td colspan="5" style="padding: 20px; text-align: center; color: #1A1A1A;">데이터가 없습니다.</td></tr>';
                     return;
                 }
                 
@@ -1556,11 +1559,14 @@
                     totalCount += item.count != null ? item.count : 0;
                     const catVal = (item.category || '(빈값)').replace(/"/g, '&quot;');
                     const cnt = item.count != null ? item.count : 0;
+                    const diff = (item.deposit || 0) - (item.withdraw || 0);
+                    const diffColor = diff > 0 ? '#1565C0' : diff < 0 ? '#C62828' : '#1A1A1A';
                     tableHtml += `<tr class="category-row" data-category="${catVal}" data-index="${index}" data-deposit="${item.deposit || 0}" data-withdraw="${item.withdraw || 0}" style="cursor: pointer;">
-                        <td style="width: 50%; border-bottom: 1px solid #DFC4E8;">${item.category || '(빈값)'}</td>
+                        <td style="width: 40%; border-bottom: 1px solid #DFC4E8;">${item.category || '(빈값)'}</td>
                         <td style="width: 10%; text-align: right; border-bottom: 1px solid #DFC4E8;">${formatNumber(cnt)}</td>
-                        <td style="width: 20%; text-align: right; border-bottom: 1px solid #DFC4E8; color: #1565C0;">${formatAmount(item.deposit || 0)}</td>
-                        <td style="width: 20%; text-align: right; border-bottom: 1px solid #DFC4E8; color: #C62828;">${formatAmount(item.withdraw || 0)}</td>
+                        <td style="width: 18%; text-align: right; border-bottom: 1px solid #DFC4E8; color: #1565C0;">${formatAmount(item.deposit || 0)}</td>
+                        <td style="width: 18%; text-align: right; border-bottom: 1px solid #DFC4E8; color: #C62828;">${formatAmount(item.withdraw || 0)}</td>
+                        <td style="width: 14%; text-align: right; border-bottom: 1px solid #DFC4E8; color: ${diffColor};">${formatAmount(diff)}</td>
                     </tr>`;
                 });
                 
@@ -1571,6 +1577,12 @@
                 if (totalCountEl) totalCountEl.textContent = formatNumber(totalCount);
                 document.getElementById('total-deposit-category').textContent = formatAmount(totalDeposit);
                 document.getElementById('total-withdraw-category').textContent = formatAmount(totalWithdraw);
+                const totalDiff = totalDeposit - totalWithdraw;
+                const diffEl = document.getElementById('total-diff-category');
+                if (diffEl) {
+                    diffEl.textContent = formatAmount(totalDiff);
+                    diffEl.style.color = totalDiff > 0 ? '#1565C0' : totalDiff < 0 ? '#C62828' : '#1A1A1A';
+                }
                 
                 // 카테고리별 원그래프 업데이트 (전체 데이터)
                 updateCategoryChart(allCategoryData);
@@ -1590,7 +1602,7 @@
                 console.error('Error loading category analysis:', error);
                 const errMsg = (error && error.message) ? String(error.message).replace(/</g, '&lt;').replace(/>/g, '&gt;') : '알 수 없음';
                 document.getElementById('category-table-body').innerHTML = 
-                    `<tr><td colspan="4" style="padding: 20px; text-align: center; color: #C62828;">데이터 로딩 오류: ${errMsg}</td></tr>`;
+                    `<tr><td colspan="5" style="padding: 20px; text-align: center; color: #C62828;">데이터 로딩 오류: ${errMsg}</td></tr>`;
             }
         }
 

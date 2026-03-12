@@ -394,7 +394,7 @@
         }
         table select {
             background-color: #FFFFFF !important;
-            color: #334155 !important;
+            color: #1A1A1A !important;
             border: 1px solid #DFC4E8;
         }
         table select.filter-selected {
@@ -624,7 +624,7 @@
 
         /* ═══════════════════════════════════════════════════════════
            신용카드 고유색 시스템 (Card Identity Color System)
-           고유색: #6A1B9A | 본문: #334155 | 헤더: #E1BEE7 | 구분선: #DFC4E8
+           고유색: #6A1B9A | 본문: #1A1A1A | 헤더: #E1BEE7 | 구분선: #DFC4E8
            ═══════════════════════════════════════════════════════════ */
         .header h1 { color: #6A1B9A !important; border-left: 4px solid #6A1B9A; padding-left: 10px; }
         .box-title { color: #6A1B9A !important; }
@@ -637,7 +637,7 @@
         }
         .split-table-header-table { background-color: #E1BEE7 !important; }
         .split-table-header-table th { background-color: #E1BEE7 !important; color: #6A1B9A !important; }
-        table tbody td { color: #334155; border-color: #DFC4E8 !important; }
+        table tbody td { color: #1A1A1A; border-color: #DFC4E8 !important; }
         table td[style*="color: #1565C0"], table td[style*="color:#1565C0"] { color: #1565C0 !important; }
         table td[style*="color: #C62828"], table td[style*="color:#C62828"] { color: #C62828 !important; }
         table tbody tr:hover {
@@ -647,18 +647,18 @@
         table tr.sum-row, table tr[data-sum-row="true"],
         table tfoot tr, table tr.total-row { background-color: #EAD0F1 !important; }
         table tr.sum-row td, table tr[data-sum-row="true"] td,
-        table tfoot td, table tr.total-row td { font-weight: 800 !important; color: #0F172A !important; }
+        table tfoot td, table tr.total-row td { font-weight: 800 !important; color: #1A1A1A !important; }
         table tr.sum-row td[data-sum-col="입금액"],
         table tr[data-sum-row="true"] td[data-sum-col="입금액"] { color: #1565C0 !important; }
         table tr.sum-row td[data-sum-col="출금액"],
         table tr[data-sum-row="true"] td[data-sum-col="출금액"] { color: #C62828 !important; }
-        select, select option { color: #334155 !important; font-weight: normal !important; background-color: #FFFFFF !important; }
+        select, select option { color: #1A1A1A !important; font-weight: normal !important; background-color: #FFFFFF !important; }
         .header-stats-text { font-size: clamp(10px, calc(0.45vw + 2px), 13px); font-weight: bold; }
         .header-stats-text, .header-stats-group, .header-stats-group span, .header-stats-group .label,
         .stat-item .label { color: #6A1B9A !important; }
-        .stats-unit, .stats-count { color: #334155 !important; }
+        .stats-unit, .stats-count { color: #1A1A1A !important; }
         .filter-group label { color: #6A1B9A !important; font-weight: bold; }
-        .monthly-chart-legend, .monthly-chart-legend span { color: #334155 !important; }
+        .monthly-chart-legend, .monthly-chart-legend span { color: #1A1A1A !important; }
     </style>
 </head>
 <body>
@@ -1443,7 +1443,7 @@
             availableColumns.forEach(col => {
                 const width = columnWidths[col] || (100 / availableColumns.length).toFixed(2);
                 html += `<th style="width: ${width}%; padding: 2px 2px; border: 1px solid #DFC4E8;">
-                    <select id="filter-category-applied-index-${col}" style="width: 100%; padding: 1px 2px; font-size: 11px; border: 1px solid #DFC4E8; border-radius: 2px; color: #334155;">
+                    <select id="filter-category-applied-index-${col}" style="width: 100%; padding: 1px 2px; font-size: 11px; border: 1px solid #DFC4E8; border-radius: 2px; color: #1A1A1A;">
                         <option value="">전체</option>`;
                 if (col === '거래시간' || col === '이용시간') {
                     html += '<option value="__심야구분__">심야구분</option>';
@@ -1493,7 +1493,7 @@
                     
                     let cellStyle = ` style="white-space: nowrap; text-align: left; padding: 2px; border: 1px solid #DFC4E8;${cellBgColor ? ` background-color: ${cellBgColor};` : ''}"`;
                     if (col === '입금액' || col === '출금액' || col === '잔액') {
-                        cellStyle = ` style="white-space: nowrap; text-align: right; padding: 2px; border: 1px solid #DFC4E8; color: ${col === '입금액' ? '#1565C0' : col === '출금액' ? '#C62828' : '#334155'}; font-size: 11px;${cellBgColor ? ` background-color: ${cellBgColor};` : ''}"`;
+                        cellStyle = ` style="white-space: nowrap; text-align: right; padding: 2px; border: 1px solid #DFC4E8; color: ${col === '입금액' ? '#1565C0' : col === '출금액' ? '#C62828' : '#1A1A1A'}; font-size: 11px;${cellBgColor ? ` background-color: ${cellBgColor};` : ''}"`;
                     } else if (col === '거래일' || col === '거래시간' || col === '이용일' || col === '이용시간' || col === '카드사' || col === '폐업' || col === '취소') {
                         cellStyle = ` style="white-space: nowrap; text-align: center; padding: 2px; border: 1px solid #DFC4E8;${cellBgColor ? ` background-color: ${cellBgColor};` : ''}"`;
                     } else if (col === '입출금') {
@@ -2347,7 +2347,7 @@
                 const ratio = columnWidths[col] || 1.0;
                 const width = ((ratio / totalRatio) * 100).toFixed(2);
                 html += `<th style="width: ${width}%; padding: 2px 2px; border: 1px solid #DFC4E8;">
-                    <select id="filter-category-applied-${col}" style="width: 100%; padding: 1px 2px; font-size: 11px; border: 1px solid #DFC4E8; border-radius: 2px; color: #334155;">
+                    <select id="filter-category-applied-${col}" style="width: 100%; padding: 1px 2px; font-size: 11px; border: 1px solid #DFC4E8; border-radius: 2px; color: #1A1A1A;">
                         <option value="">전체</option>`;
                 if (col === '이용시간' || col === '거래시간') {
                     html += '<option value="__심야구분__">심야구분</option>';

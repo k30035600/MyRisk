@@ -614,6 +614,49 @@
         .split-table-header-table { background-color: #FFCCBC !important; }
         .split-table-header-table th { background-color: #FFCCBC !important; color: #E65100 !important; }
         .chart-card h2 { color: #E65100 !important; }
+
+        /* ── 대체거래 작업 오버레이 ── */
+        #match-overlay { position:absolute; inset:0; z-index:500; background:#fff; border:2px solid #FFDBC8; border-radius:6px; display:none; flex-direction:column; overflow:hidden; }
+        #match-overlay.active { display:flex; }
+        #match-overlay-header { display:flex; align-items:center; gap:8px; padding:5px 10px; background:#FFCCBC; flex-shrink:0; border-bottom:2px solid #FFDBC8; }
+        #match-overlay-header h3 { margin:0; font-size:13px; color:#E65100; white-space:nowrap; }
+        .match-stats { font-size:11px; font-weight:bold; color:#1A1A1A; display:flex; gap:0; flex-wrap:wrap; align-items:center; margin-left:auto; }
+        .match-stats .ms-item { display:inline-flex; align-items:center; }
+        .match-stats .ms-item + .ms-item { margin-left:4em; }
+        .match-stats .ms-label { color:#E65100; margin-right:2px; }
+        .match-stats .ms-sep { margin:0 2em; color:#999; }
+        #match-save-btn { background:#E65100; color:#fff; border:1px solid #E65100; border-radius:4px; padding:3px 18px; font-size:13px; font-weight:bold; cursor:pointer; flex-shrink:0; }
+        #match-save-btn:hover { background:#BF360C; border-color:#BF360C; }
+        #match-overlay-body { flex:1; overflow-y:auto; overflow-x:auto; min-height:0; }
+        #match-table { width:100%; border-collapse:collapse; font-size:10px; table-layout:fixed; }
+        #match-table thead { position:sticky; top:0; z-index:10; }
+        #match-table thead th { padding:3px 2px; font-size:12px; font-weight:bold; text-align:center; }
+        #match-table thead th.in-col { background:#EFF6FF; color:#1565C0; border:1px solid #BFDBFE; }
+        #match-table thead th.out-col { background:#FFF5F5; color:#C62828; border:1px solid #FECACA; }
+        #match-table thead th.mid-col { background:#FFCCBC; color:#E65100; border:1px solid #FFDBC8; }
+        #match-table tbody tr { cursor:pointer; }
+        #match-table tbody tr:hover { background:#FBE9E7 !important; }
+        #match-table tbody td { padding:2px 3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border-bottom:1px solid #E8E8E8; color:#1A1A1A; }
+        #match-table tbody td.amt-in { color:#1565C0; text-align:right; font-weight:bold; }
+        #match-table tbody td.amt-out { color:#C62828; text-align:right; font-weight:bold; }
+        #match-table tbody td.mid-cell { text-align:center; background:#FFCCBC; }
+        .match-bg-bank { background-color:#EFF6FF; }
+        .match-bg-card { background-color:#F8F0FC; }
+        .match-bg-empty { background-color:#F9F9F9; }
+        #match-table tfoot td { font-weight:800; padding:3px; border-top:2px solid #FFDBC8; color:#1A1A1A; font-size:10px; }
+        #match-table tfoot tr { background:#FFF5EE; }
+        #match-table tfoot tr:last-child { background:#FFD9CC; }
+        #match-table tfoot td.amt-in { color:#1565C0; }
+        #match-table tfoot td.amt-out { color:#C62828; }
+        .match-tooltip { position:fixed; z-index:9999; background:#F0F2F5; border:1px solid #B0BEC5; border-radius:6px; padding:8px 10px; font-size:11px; line-height:1.4; max-width:340px; box-shadow:0 2px 8px rgba(0,0,0,.15); pointer-events:none; display:none; }
+        .match-tooltip table { border-collapse:collapse; }
+        .match-tooltip td { padding:1px 4px; vertical-align:top; }
+        .match-tooltip .tt-key { color:#5A6872; font-weight:bold; white-space:nowrap; }
+        .match-tooltip .tt-val { color:#1A1A1A; }
+        #btn-match-toggle { font-size:18px; font-weight:bold; color:#E65100; cursor:pointer; white-space:nowrap; background:none; border:none; padding:0; line-height:1; }
+        #btn-match-toggle:hover { text-decoration:underline; }
+        #match-close-btn { background:none; border:1px solid #E65100; border-radius:4px; padding:3px 16px; font-size:13px; font-weight:bold; color:#E65100; cursor:pointer; flex-shrink:0; }
+        #match-close-btn:hover { background:#FFF5EE; }
     </style>
 </head>
 <body>
@@ -645,8 +688,9 @@
 
     <!-- 업종분류 적용후 -->
     <div class="chart-card" style="margin-top: 0; margin-bottom: 6px; display: flex; flex-direction: column; flex: 70 1 0; min-height: 0; overflow: hidden;">
-        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; flex-shrink: 0;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; flex-shrink: 0; position:relative;">
             <h2 style="margin: 0;">금융정보 업종분류 조회</h2>
+            <button type="button" id="btn-match-toggle" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);">대체거래 작업</button>
             <div style="display: flex; align-items: center; gap: 15px; margin-left: auto; font-size: 13px; font-weight: bold;">
                 <span class="label">(은행+카드)</span>
                 <span id="cash-applied-summary-count">집계: 0건</span>
@@ -654,11 +698,26 @@
                 <span><span class="label">출금합계:</span> <span id="cash-applied-summary-withdraw" style="color: #C62828;">0</span>원</span>
             </div>
         </div>
-        <div class="bank_category-container" style="overflow-x: auto; overflow-y: auto; flex: 1; min-height: 0;">
+        <div class="bank_category-container" style="overflow-x: auto; overflow-y: auto; flex: 1; min-height: 0; position:relative;">
             <div id="category-applied-content" style="width: 100%; height: 100%; overflow-y: auto;">
                 <div class="loading" style="padding: 20px; text-align: center; color: #1A1A1A;">데이터 로딩중 ... (0건)</div>
             </div>
+            <div id="match-overlay">
+                <div id="match-overlay-header">
+                    <h3>대체거래 작업</h3>
+                    <div class="match-stats">
+                        <span class="ms-item"><span class="ms-label">은행대체:</span> <span id="ms-bank-in" style="color:#1565C0">0</span><span class="ms-sep">/</span><span id="ms-bank-out" style="color:#C62828">0</span></span>
+                        <span class="ms-item"><span class="ms-label">카드대체:</span> <span id="ms-card-in" style="color:#1565C0">0</span><span class="ms-sep">/</span><span id="ms-card-out" style="color:#C62828">0</span></span>
+                        <span class="ms-item"><span class="ms-label">취소:</span> <span id="ms-cancel-in" style="color:#1565C0">0</span><span class="ms-sep">/</span><span id="ms-cancel-out" style="color:#C62828">0</span></span>
+                        <span class="ms-item"><span class="ms-label">전체:</span> <span id="ms-total-cnt">0건</span></span>
+                    </div>
+                    <button id="match-save-btn">저장</button>
+                    <button id="match-close-btn" title="닫기 (ESC)">닫기</button>
+                </div>
+                <div id="match-overlay-body"></div>
+            </div>
         </div>
+        <div class="match-tooltip" id="match-tooltip"></div>
     </div>
 
     <div class="charts-grid charts-grid-monthly" style="grid-template-columns: 1fr; margin-top: 0; flex: 30 1 0; min-height: 0; display: flex; flex-direction: column; overflow: hidden;">
@@ -1412,10 +1471,10 @@
             // 위험도키워드·위험도분류·위험도 좌측, 기타거래 뒤 키워드·계정과목(카테고리) 표시
             const COL_HEADER_NAMES = { '카테고리': '계정과목' };
             const columns = [
-                '위험도키워드', '위험도분류', '위험도', '금융사', '계좌번호', '거래일', '거래시간', '입금액', '출금액', '취소', '기타거래', '키워드', '카테고리', '사업자번호', '폐업'
+                '위험도키워드', '위험도분류', '위험도', '금융사', '계좌번호', '거래일', '거래시간', '입금액', '출금액', '취소', '기타거래', '키워드', '카테고리', '사업자번호', '폐업', '대체구분'
             ];
-            const QUERY_WIDTHS = [1, 1, 0.6, 0.6, 1, 0.6, 0.6, 1, 1, 0.6, 3, 1, 1.4, 1, 0.6];
-            const QUERY_ALIGN = ['left', 'left', 'center', 'center', 'left', 'center', 'center', 'right', 'right', 'center', 'left', 'left', 'left', 'center', 'center'];
+            const QUERY_WIDTHS = [1, 1, 0.6, 0.6, 1, 0.6, 0.6, 1, 1, 0.6, 3, 1, 1.4, 1, 0.6, 0.7];
+            const QUERY_ALIGN = ['left', 'left', 'center', 'center', 'left', 'center', 'center', 'right', 'right', 'center', 'left', 'left', 'left', 'center', 'center', 'center'];
             const availableColumns = columns;
             const totalRatio = availableColumns.reduce((sum, col, i) => sum + (QUERY_WIDTHS[columns.indexOf(col)] || 1.0), 0);
             
@@ -2145,10 +2204,10 @@ const rowIndex = parseInt(row.getAttribute('data-i'));
             // 위험도키워드·위험도분류·위험도 좌측, 기타거래 뒤 키워드·계정과목(카테고리) 표시
             const COL_HEADER_NAMES_MAIN = { '카테고리': '계정과목' };
             const columns = [
-                '위험도키워드', '위험도분류', '위험도', '금융사', '계좌번호', '거래일', '거래시간', '입금액', '출금액', '취소', '기타거래', '키워드', '카테고리', '사업자번호', '폐업'
+                '위험도키워드', '위험도분류', '위험도', '금융사', '계좌번호', '거래일', '거래시간', '입금액', '출금액', '취소', '기타거래', '키워드', '카테고리', '사업자번호', '폐업', '대체구분'
             ];
-            const QUERY_WIDTHS = [1, 1, 0.6, 0.6, 1, 0.6, 0.6, 1, 1, 0.6, 3, 1, 1.4, 1, 0.6];
-            const QUERY_ALIGN = ['left', 'left', 'center', 'center', 'left', 'center', 'center', 'right', 'right', 'center', 'left', 'left', 'left', 'center', 'center'];
+            const QUERY_WIDTHS = [1, 1, 0.6, 0.6, 1, 0.6, 0.6, 1, 1, 0.6, 3, 1, 1.4, 1, 0.6, 0.7];
+            const QUERY_ALIGN = ['left', 'left', 'center', 'center', 'left', 'center', 'center', 'right', 'right', 'center', 'left', 'left', 'left', 'center', 'center', 'center'];
             const availableColumns = columns;
             const totalRatio = availableColumns.reduce((sum, col) => sum + (QUERY_WIDTHS[columns.indexOf(col)] || 1.0), 0);
             
@@ -2378,9 +2437,9 @@ const rowIndex = parseInt(row.getAttribute('data-i'));
             
             const rows = tbody.querySelectorAll('tr');
             const columns = [
-                '위험도키워드', '위험도분류', '위험도', '금융사', '계좌번호', '거래일', '거래시간', '입금액', '출금액', '취소', '기타거래', '키워드', '카테고리', '사업자번호', '폐업'
+                '위험도키워드', '위험도분류', '위험도', '금융사', '계좌번호', '거래일', '거래시간', '입금액', '출금액', '취소', '기타거래', '키워드', '카테고리', '사업자번호', '폐업', '대체구분'
             ];
-            
+
             // 필터링된 데이터 수집 (그래프 업데이트용)
             const filteredData = [];
             let sumRow = null; // 합계 행 저장
@@ -2583,9 +2642,9 @@ const rowIndex = parseInt(row.getAttribute('data-i'));
                 return;
             }
             const columns = [
-                '위험도키워드', '위험도분류', '위험도', '금융사', '계좌번호', '거래일', '거래시간', '입금액', '출금액', '취소', '기타거래', '키워드', '카테고리', '사업자번호', '폐업'
+                '위험도키워드', '위험도분류', '위험도', '금융사', '계좌번호', '거래일', '거래시간', '입금액', '출금액', '취소', '기타거래', '키워드', '카테고리', '사업자번호', '폐업', '대체구분'
             ];
-            const exportColWidths = { 위험도키워드:1, 위험도분류:1, 위험도:0.6, 금융사:0.6, 계좌번호:1, 거래일:0.6, 거래시간:0.6, 입금액:1, 출금액:1, 취소:0.6, 기타거래:3, 키워드:1, 카테고리:1.4, 사업자번호:1, 폐업:0.6 };
+            const exportColWidths = { 위험도키워드:1, 위험도분류:1, 위험도:0.6, 금융사:0.6, 계좌번호:1, 거래일:0.6, 거래시간:0.6, 입금액:1, 출금액:1, 취소:0.6, 기타거래:3, 키워드:1, 카테고리:1.4, 사업자번호:1, 폐업:0.6, 대체구분:0.7 };
             const availableColumns = columns;
             const totalRatio = availableColumns.reduce((s, c) => s + (exportColWidths[c] != null ? exportColWidths[c] : 1), 0);
             const getAlign = (col) => {
@@ -3248,8 +3307,394 @@ const rowIndex = parseInt(row.getAttribute('data-i'));
         
         // 테이블 필터링 후 그래프 업데이트
         function updateChartFromTable() {
-            // 월별 추이 그래프 업데이트
             loadMonthlyTrend();
+        }
+
+        /* ══════ 대체거래 작업 오버레이 ══════ */
+        let _mEntries = [];
+        let _mAllData = [];
+
+        function _buildMatchEntries(data) {
+            if (!data || !data.length) return [];
+            const entries = [];
+            const usedIdx = new Set();
+
+            const savedRows = [];
+            data.forEach((r) => {
+                const oi = r['_idx']; if (oi == null) return;
+                const dc = (r['대체구분'] || '').trim();
+                if (!dc) return;
+                savedRows.push({ r, i: oi, dc, dep: parseFloat(r['입금액']) || 0, wth: parseFloat(r['출금액']) || 0 });
+            });
+            const savedUsed = new Set();
+            const savedDeps = savedRows.filter(x => x.dep > 0 && x.wth === 0);
+            const savedWths = savedRows.filter(x => x.wth > 0 && x.dep === 0);
+            const savedBoth = savedRows.filter(x => x.dep > 0 && x.wth > 0);
+            savedDeps.forEach(d => {
+                if (savedUsed.has(d.i)) return;
+                for (const w of savedWths) {
+                    if (savedUsed.has(w.i)) continue;
+                    if (d.dc !== w.dc) continue;
+                    const dd = (d.r['거래일']||'').substring(0,10), wd = (w.r['거래일']||'').substring(0,10);
+                    if (dd === wd && d.dep === w.wth && (d.r['금융사']||'').trim() !== (w.r['금융사']||'').trim()) {
+                        entries.push({ inRow: d.r, outRow: w.r, type: d.dc, inIdx: d.i, outIdx: w.i, inSaved: true, outSaved: true });
+                        savedUsed.add(d.i); savedUsed.add(w.i); return;
+                    }
+                }
+                for (const d2 of savedDeps) {
+                    if (d2.i <= d.i || savedUsed.has(d2.i)) continue;
+                    if (d.dc !== d2.dc) continue;
+                    const dd = (d.r['거래일']||'').substring(0,10), d2d = (d2.r['거래일']||'').substring(0,10);
+                    if (dd === d2d && d.dep === d2.dep && (d.r['금융사']||'').trim() !== (d2.r['금융사']||'').trim()) {
+                        entries.push({ inRow: d.r, outRow: d2.r, type: d.dc, inIdx: d.i, outIdx: d2.i, inSaved: true, outSaved: true });
+                        savedUsed.add(d.i); savedUsed.add(d2.i); return;
+                    }
+                }
+            });
+            savedWths.forEach(w => {
+                if (savedUsed.has(w.i)) return;
+                for (const w2 of savedWths) {
+                    if (w2.i <= w.i || savedUsed.has(w2.i)) continue;
+                    if (w.dc !== w2.dc) continue;
+                    const wd = (w.r['거래일']||'').substring(0,10), w2d = (w2.r['거래일']||'').substring(0,10);
+                    if (wd === w2d && w.wth === w2.wth && (w.r['금융사']||'').trim() !== (w2.r['금융사']||'').trim()) {
+                        entries.push({ inRow: w.r, outRow: w2.r, type: w.dc, inIdx: w.i, outIdx: w2.i, inSaved: true, outSaved: true });
+                        savedUsed.add(w.i); savedUsed.add(w2.i); return;
+                    }
+                }
+            });
+            savedBoth.forEach(x => { if (savedUsed.has(x.i)) return; entries.push({ inRow: x.r, outRow: x.r, type: x.dc, inIdx: x.i, outIdx: x.i, inSaved: true, outSaved: true }); savedUsed.add(x.i); });
+            savedRows.forEach(x => {
+                if (savedUsed.has(x.i)) return;
+                entries.push({ inRow: x.dep > 0 ? x.r : null, outRow: x.wth > 0 ? x.r : null, type: x.dc, inIdx: x.dep > 0 ? x.i : -1, outIdx: x.wth > 0 ? x.i : -1, inSaved: x.dep > 0, outSaved: x.wth > 0 });
+                savedUsed.add(x.i);
+            });
+            savedRows.forEach(x => usedIdx.add(x.i));
+
+            data.forEach((r) => {
+                const oi = r['_idx']; if (oi == null) return;
+                if (usedIdx.has(oi)) return;
+                if ((r['취소'] || '').trim() === '') return;
+                const dep = parseFloat(r['입금액']) || 0;
+                const wth = parseFloat(r['출금액']) || 0;
+                entries.push({ inRow: dep > 0 ? r : null, outRow: wth > 0 ? r : null, type: '취소거래', inIdx: dep > 0 ? oi : -1, outIdx: wth > 0 ? oi : -1, inSaved: false, outSaved: false });
+                usedIdx.add(oi);
+            });
+
+            const normals = [];
+            data.forEach((r) => { const oi = r['_idx']; if (oi == null) return; if (!usedIdx.has(oi) && (r['취소'] || '').trim() === '') normals.push({ r, i: oi }); });
+            const inRows = normals.filter(x => (parseFloat(x.r['입금액']) || 0) > 0);
+            const outRows = normals.filter(x => (parseFloat(x.r['출금액']) || 0) > 0);
+            const pairUsed = new Set();
+            const outByDate = {};
+            outRows.forEach(x => { const d = (x.r['거래일'] || '').substring(0, 10); if (!d) return; if (!outByDate[d]) outByDate[d] = []; outByDate[d].push(x); });
+
+            function _matchType(srcA, srcB) { return (srcA === '은행거래' && srcB === '은행거래') ? '은행대체' : '카드대체'; }
+
+            inRows.forEach(x => {
+                const d = (x.r['거래일'] || '').substring(0, 10);
+                if (!d || !outByDate[d]) return;
+                const amt = parseFloat(x.r['입금액']) || 0;
+                const iBank = (x.r['금융사'] || '').trim();
+                const iSrc = (x.r['출처'] || '').trim();
+                for (const e of outByDate[d]) {
+                    if (pairUsed.has(e.i)) continue;
+                    if (amt !== (parseFloat(e.r['출금액']) || 0)) continue;
+                    const oBank = (e.r['금융사'] || '').trim();
+                    if (iBank === oBank) continue;
+                    entries.push({ inRow: x.r, outRow: e.r, type: _matchType(iSrc, (e.r['출처']||'').trim()), inIdx: x.i, outIdx: e.i, inSaved: false, outSaved: false });
+                    pairUsed.add(e.i); usedIdx.add(x.i); usedIdx.add(e.i);
+                    break;
+                }
+            });
+
+            const inByDate = {};
+            inRows.forEach(x => { if (usedIdx.has(x.i)) return; const d = (x.r['거래일'] || '').substring(0, 10); if (!d) return; if (!inByDate[d]) inByDate[d] = []; inByDate[d].push(x); });
+            for (const d of Object.keys(inByDate)) {
+                const arr = inByDate[d];
+                for (let a = 0; a < arr.length; a++) {
+                    if (usedIdx.has(arr[a].i)) continue;
+                    const amtA = parseFloat(arr[a].r['입금액']) || 0;
+                    const bankA = (arr[a].r['금융사'] || '').trim();
+                    for (let b = a + 1; b < arr.length; b++) {
+                        if (usedIdx.has(arr[b].i)) continue;
+                        if (amtA !== (parseFloat(arr[b].r['입금액']) || 0)) continue;
+                        if (bankA === (arr[b].r['금융사'] || '').trim()) continue;
+                        entries.push({ inRow: arr[a].r, outRow: arr[b].r, type: _matchType((arr[a].r['출처']||'').trim(), (arr[b].r['출처']||'').trim()), inIdx: arr[a].i, outIdx: arr[b].i, inSaved: false, outSaved: false });
+                        usedIdx.add(arr[a].i); usedIdx.add(arr[b].i);
+                        break;
+                    }
+                }
+            }
+            const outByDate2 = {};
+            outRows.forEach(x => { if (usedIdx.has(x.i)) return; const d = (x.r['거래일'] || '').substring(0, 10); if (!d) return; if (!outByDate2[d]) outByDate2[d] = []; outByDate2[d].push(x); });
+            for (const d of Object.keys(outByDate2)) {
+                const arr = outByDate2[d];
+                for (let a = 0; a < arr.length; a++) {
+                    if (usedIdx.has(arr[a].i)) continue;
+                    const amtA = parseFloat(arr[a].r['출금액']) || 0;
+                    const bankA = (arr[a].r['금융사'] || '').trim();
+                    for (let b = a + 1; b < arr.length; b++) {
+                        if (usedIdx.has(arr[b].i)) continue;
+                        if (amtA !== (parseFloat(arr[b].r['출금액']) || 0)) continue;
+                        if (bankA === (arr[b].r['금융사'] || '').trim()) continue;
+                        entries.push({ inRow: arr[a].r, outRow: arr[b].r, type: _matchType((arr[a].r['출처']||'').trim(), (arr[b].r['출처']||'').trim()), inIdx: arr[a].i, outIdx: arr[b].i, inSaved: false, outSaved: false });
+                        usedIdx.add(arr[a].i); usedIdx.add(arr[b].i);
+                        break;
+                    }
+                }
+            }
+
+            entries.sort((a, b) => {
+                const tO = { '은행대체': 0, '카드대체': 1, '취소거래': 2 };
+                if ((tO[a.type] ?? 9) !== (tO[b.type] ?? 9)) return (tO[a.type] ?? 9) - (tO[b.type] ?? 9);
+                const rA = (a.inRow || a.outRow) || {}, rB = (b.inRow || b.outRow) || {};
+                const dA = rA['거래일'] || '', dB = rB['거래일'] || '';
+                if (dA !== dB) return dB.localeCompare(dA);
+                const tA = rA['거래시간'] || '', tB = rB['거래시간'] || '';
+                if (tA !== tB) return tB.localeCompare(tA);
+                const bA = rA['금융사'] || '', bB = rB['금융사'] || '';
+                return bA.localeCompare(bB);
+            });
+            return entries;
+        }
+
+        function _fa(v) { const n = parseFloat(v) || 0; return n === 0 ? '' : formatNumber(n); }
+        function _fd(v) { return typeof formatDate === 'function' ? formatDate(v || '') : (v || '').substring(0, 10); }
+        function _ft(v) { return typeof formatTime === 'function' ? formatTime(v || '') : (v || '').substring(0, 8); }
+        function _esc(s) { return (s || '').replace(/"/g, '&quot;'); }
+        function _bgCls(row) { if (!row) return 'match-bg-empty'; return (row['출처'] || '') === '은행거래' ? 'match-bg-bank' : 'match-bg-card'; }
+        function _typClr(t) { if (t === '은행대체') return '#1565C0'; if (t === '카드대체') return '#6A1B9A'; return '#E65100'; }
+
+        function renderMatchTable() {
+            const body = document.getElementById('match-overlay-body');
+            if (!body) return;
+            if (!_mEntries.length) { body.innerHTML = '<div style="padding:30px;text-align:center;color:#1A1A1A;">대체거래가 없습니다.</div>'; _updateMatchStats([]); return; }
+            const vis = _mEntries;
+            let h = '<table id="match-table"><colgroup>';
+            h += '<col style="width:5%"><col style="width:10%"><col style="width:12.5%"><col style="width:6%"><col style="width:10%"><col style="width:5%">';
+            h += '<col style="width:1.5%"><col style="width:5%"><col style="width:1.5%">';
+            h += '<col style="width:5%"><col style="width:10%"><col style="width:6%"><col style="width:12.5%"><col style="width:5%"><col style="width:5%">';
+            h += '</colgroup><thead><tr>';
+            h += '<th class="in-col">거래일</th><th class="in-col">거래시간</th><th class="in-col">기타거래</th><th class="in-col">입금액</th><th class="in-col">계좌번호</th><th class="in-col">금융사</th>';
+            h += '<th class="mid-col"><input type="checkbox" id="match-chk-all-in" title="입금 전체"></th>';
+            h += '<th class="mid-col">대체구분</th>';
+            h += '<th class="mid-col"><input type="checkbox" id="match-chk-all-out" title="출금 전체"></th>';
+            h += '<th class="out-col">금융사</th><th class="out-col">계좌번호</th><th class="out-col">출금액</th><th class="out-col">기타거래</th><th class="out-col">거래시간</th><th class="out-col">거래일</th>';
+            h += '</tr></thead><tbody>';
+
+            vis.forEach((p, vi) => {
+                const ir = p.inRow, or = p.outRow;
+                const inBg = _bgCls(ir), outBg = _bgCls(or);
+                h += `<tr data-mi="${vi}">`;
+                if (ir) {
+                    h += `<td class="${inBg}" data-side="in" style="text-align:center">${_fd(ir['거래일'])}</td>`;
+                    h += `<td class="${inBg}" data-side="in" style="text-align:center">${_ft(ir['거래시간'])}</td>`;
+                    h += `<td class="${inBg}" data-side="in" style="text-align:right;overflow:hidden;text-overflow:ellipsis" title="${_esc(ir['기타거래'])}">${ir['기타거래'] || ''}</td>`;
+                    h += `<td class="${inBg} amt-in" data-side="in">${_fa(ir['입금액'])}</td>`;
+                    h += `<td class="${inBg}" data-side="in" style="text-align:right;overflow:hidden;text-overflow:ellipsis" title="${_esc(ir['계좌번호'])}">${ir['계좌번호'] || ''}</td>`;
+                    h += `<td class="${inBg}" data-side="in" style="text-align:center">${ir['금융사'] || ''}</td>`;
+                } else { for (let i = 0; i < 6; i++) h += '<td class="match-bg-empty"></td>'; }
+                h += `<td class="mid-cell">${ir ? `<input type="checkbox" data-mc-in="${vi}" ${p.inSaved ? 'checked' : ''}>` : ''}</td>`;
+                h += `<td class="mid-cell" style="color:${_typClr(p.type)};font-weight:bold;font-size:10px;">${p.type}</td>`;
+                h += `<td class="mid-cell">${or ? `<input type="checkbox" data-mc-out="${vi}" ${p.outSaved ? 'checked' : ''}>` : ''}</td>`;
+                if (or) {
+                    h += `<td class="${outBg}" data-side="out" style="text-align:center">${or['금융사'] || ''}</td>`;
+                    h += `<td class="${outBg}" data-side="out" style="text-align:left;overflow:hidden;text-overflow:ellipsis" title="${_esc(or['계좌번호'])}">${or['계좌번호'] || ''}</td>`;
+                    h += `<td class="${outBg} amt-out" data-side="out">${_fa(or['출금액'])}</td>`;
+                    h += `<td class="${outBg}" data-side="out" style="text-align:left;overflow:hidden;text-overflow:ellipsis" title="${_esc(or['기타거래'])}">${or['기타거래'] || ''}</td>`;
+                    h += `<td class="${outBg}" data-side="out" style="text-align:center">${_ft(or['거래시간'])}</td>`;
+                    h += `<td class="${outBg}" data-side="out" style="text-align:center">${_fd(or['거래일'])}</td>`;
+                } else { for (let i = 0; i < 6; i++) h += '<td class="match-bg-empty"></td>'; }
+                h += '</tr>';
+            });
+            h += '</tbody><tfoot>';
+            const g = { '은행대체': { in: 0, out: 0, cnt: 0 }, '카드대체': { in: 0, out: 0, cnt: 0 }, '취소거래': { in: 0, out: 0, cnt: 0 } };
+            vis.forEach(p => { const x = g[p.type]; if (x) { if (p.inRow) x.in += parseFloat(p.inRow['입금액']) || 0; if (p.outRow) x.out += parseFloat(p.outRow['출금액']) || 0; x.cnt++; } });
+            const allIn = g['은행대체'].in + g['카드대체'].in + g['취소거래'].in;
+            const allOut = g['은행대체'].out + g['카드대체'].out + g['취소거래'].out;
+            for (const [lb, d] of [['은행대체', g['은행대체']], ['카드대체', g['카드대체']], ['취소거래', g['취소거래']]]) {
+                if (d.cnt === 0) continue;
+                h += `<tr><td colspan="3" style="text-align:left;color:${_typClr(lb)}">${lb} (${d.cnt}건)</td>`;
+                h += `<td class="amt-in" style="text-align:right">${_fa(d.in)}</td><td colspan="2"></td><td colspan="3"></td>`;
+                h += `<td colspan="2"></td><td class="amt-out" style="text-align:right">${_fa(d.out)}</td><td colspan="3"></td></tr>`;
+            }
+            h += `<tr><td colspan="3" style="text-align:left;font-size:11px;">대체거래 합계 (${vis.length}건)</td>`;
+            h += `<td class="amt-in" style="text-align:right">${_fa(allIn)}</td><td colspan="2"></td><td colspan="3"></td>`;
+            h += `<td colspan="2"></td><td class="amt-out" style="text-align:right">${_fa(allOut)}</td><td colspan="3"></td></tr>`;
+            h += '</tfoot></table>';
+            body.innerHTML = h;
+            _updateMatchStats(vis);
+            _bindMatchEvents();
+        }
+
+        function _updateMatchStats(vis) {
+            const g = { '은행대체': { in: 0, out: 0 }, '카드대체': { in: 0, out: 0 }, '취소거래': { in: 0, out: 0 } };
+            vis.forEach(p => { const x = g[p.type]; if (!x) return; if (p.inRow) x.in += parseFloat(p.inRow['입금액']) || 0; if (p.outRow) x.out += parseFloat(p.outRow['출금액']) || 0; });
+            const el = id => document.getElementById(id);
+            if (el('ms-bank-in')) { el('ms-bank-in').textContent = _fa(g['은행대체'].in); el('ms-bank-out').textContent = _fa(g['은행대체'].out); }
+            if (el('ms-card-in')) { el('ms-card-in').textContent = _fa(g['카드대체'].in); el('ms-card-out').textContent = _fa(g['카드대체'].out); }
+            if (el('ms-cancel-in')) { el('ms-cancel-in').textContent = _fa(g['취소거래'].in); el('ms-cancel-out').textContent = _fa(g['취소거래'].out); }
+            if (el('ms-total-cnt')) el('ms-total-cnt').textContent = vis.length + '건';
+        }
+
+        function _syncAllChk() {
+            const aic = document.getElementById('match-chk-all-in');
+            const aoc = document.getElementById('match-chk-all-out');
+            if (aic) { const arr = _mEntries.filter(e => e.inRow); aic.checked = arr.length > 0 && arr.every(e => e.inSaved); aic.indeterminate = arr.some(e => e.inSaved) && !aic.checked; }
+            if (aoc) { const arr = _mEntries.filter(e => e.outRow); aoc.checked = arr.length > 0 && arr.every(e => e.outSaved); aoc.indeterminate = arr.some(e => e.outSaved) && !aoc.checked; }
+        }
+
+        function _bindMatchEvents() {
+            _syncAllChk();
+            const body = document.getElementById('match-overlay-body');
+            if (!body) return;
+            document.getElementById('match-chk-all-in')?.addEventListener('change', function() {
+                _mEntries.forEach(e => { if (e.inRow) e.inSaved = this.checked; });
+                renderMatchTable();
+            });
+            document.getElementById('match-chk-all-out')?.addEventListener('change', function() {
+                _mEntries.forEach(e => { if (e.outRow) e.outSaved = this.checked; });
+                renderMatchTable();
+            });
+            body.querySelectorAll('input[data-mc-in]').forEach(chk => {
+                chk.addEventListener('change', function(e) { e.stopPropagation(); _mEntries[parseInt(this.getAttribute('data-mc-in'))].inSaved = this.checked; _syncAllChk(); });
+            });
+            body.querySelectorAll('input[data-mc-out]').forEach(chk => {
+                chk.addEventListener('change', function(e) { e.stopPropagation(); _mEntries[parseInt(this.getAttribute('data-mc-out'))].outSaved = this.checked; _syncAllChk(); });
+            });
+            body.querySelectorAll('#match-table tbody tr').forEach(tr => {
+                tr.addEventListener('click', function(e) {
+                    if (e.target.tagName === 'INPUT') return;
+                    _hideMatchTip();
+                    const p = _mEntries[parseInt(this.getAttribute('data-mi'))]; if (!p) return;
+                    const side = e.target.closest('td')?.getAttribute('data-side');
+                    let rd, lb;
+                    if (side === 'out' && p.outRow) { rd = p.outRow; lb = '출금거래'; }
+                    else if (p.inRow) { rd = p.inRow; lb = '입금거래'; }
+                    else if (p.outRow) { rd = p.outRow; lb = '출금거래'; }
+                    if (rd) _showMatchTip(rd, lb, e);
+                });
+            });
+        }
+
+        async function _saveMatchTypes() {
+            const updates = [];
+            _mEntries.forEach(e => {
+                if (e.inIdx >= 0) updates.push({ idx: e.inIdx, value: e.inSaved ? e.type : '' });
+                if (e.outIdx >= 0 && e.outIdx !== e.inIdx) updates.push({ idx: e.outIdx, value: e.outSaved ? e.type : '' });
+            });
+            try {
+                const res = await fetch(`${API_BASE}/api/save-match-type`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ updates }) });
+                const json = await res.json();
+                if (json.success) {
+                    closeMatchOverlay();
+                    if (typeof loadCategoryAppliedTable === 'function') loadCategoryAppliedTable(true);
+                    else if (typeof loadCategoryAppliedTableForIndex === 'function') loadCategoryAppliedTableForIndex();
+                } else { alert('저장 실패: ' + (json.error || '')); }
+            } catch (err) { console.error('대체구분 저장 오류:', err); alert('저장 중 오류가 발생했습니다.'); }
+        }
+
+        function _showMatchTip(data, label, e) {
+            const tip = document.getElementById('match-tooltip'); if (!tip) return;
+            let html = '<div style="margin-bottom:4px;font-weight:800;color:#E65100;">' + label + '</div><table>';
+            for (const k of Object.keys(data)) { let v = data[k]; if (v == null || v === '') continue; if (k === '입금액' || k === '출금액') v = formatNumber(parseFloat(v) || 0); html += `<tr><td class="tt-key">${k}</td><td class="tt-val">${v}</td></tr>`; }
+            html += '</table>'; tip.innerHTML = html; tip.style.display = 'block';
+            const r = tip.getBoundingClientRect(); let x = e.clientX + 12, y = e.clientY + 12;
+            if (x + r.width > window.innerWidth) x = e.clientX - r.width - 8;
+            if (y + r.height > window.innerHeight) y = e.clientY - r.height - 8;
+            tip.style.left = x + 'px'; tip.style.top = y + 'px';
+        }
+        function _hideMatchTip() { const t = document.getElementById('match-tooltip'); if (t) t.style.display = 'none'; }
+
+        function _updateChartForMatch() {
+            if (!_mEntries.length) return;
+            const matchData = [];
+            _mEntries.forEach(p => {
+                if (p.inRow) matchData.push(p.inRow);
+                if (p.outRow && p.outRow !== p.inRow) matchData.push(p.outRow);
+            });
+            const table = document.getElementById('category-applied-table') || document.getElementById('category-applied-table-index');
+            if (table && typeof loadMonthlyTrendFromTable === 'function') {
+                const lbl = document.getElementById('monthly-trend-category-label');
+                if (lbl) lbl.textContent = '(대체거래)';
+                (async () => {
+                    let dateRange = { min_date: null, max_date: null };
+                    try { const r = await fetch(`${API_BASE}/api/analysis/cash-after-date-range`); if (r.ok) { const d = await r.json(); dateRange = { min_date: d.min_date || null, max_date: d.max_date || null }; } } catch (_) {}
+                    loadMonthlyTrendFromTable(table, matchData, '', dateRange);
+                })();
+            }
+        }
+
+        function openMatchOverlay() {
+            const ov = document.getElementById('match-overlay'); if (!ov) return;
+            const src = (categoryAppliedDataOriginal && categoryAppliedDataOriginal.length) ? categoryAppliedDataOriginal : (categoryAppliedDataOriginalForIndex || []);
+            _mAllData = src; _mEntries = _buildMatchEntries(src);
+            renderMatchTable(); ov.classList.add('active');
+            _updateChartForMatch();
+        }
+        function closeMatchOverlay() {
+            const ov = document.getElementById('match-overlay'); if (ov) ov.classList.remove('active'); _hideMatchTip();
+            if (typeof loadMonthlyTrend === 'function') loadMonthlyTrend();
+        }
+
+        document.getElementById('btn-match-toggle')?.addEventListener('click', function() { const ov = document.getElementById('match-overlay'); if (ov && ov.classList.contains('active')) closeMatchOverlay(); else openMatchOverlay(); });
+        document.getElementById('match-save-btn')?.addEventListener('click', function() { _saveMatchTypes(); });
+        document.getElementById('match-close-btn')?.addEventListener('click', function() { closeMatchOverlay(); });
+        document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { closeMatchOverlay(); _hideMatchTip(); } });
+        document.addEventListener('click', function(e) { _hideMatchTip(); });
+
+        (function() {
+            const btn = document.getElementById('export-category-applied-btn'); if (!btn) return;
+            btn.addEventListener('click', function(e) { const ov = document.getElementById('match-overlay'); if (ov && ov.classList.contains('active')) { e.stopImmediatePropagation(); _printMatchTable(); } }, true);
+        })();
+
+        function _printMatchTable() {
+            const vis = _mEntries.slice().sort((a, b) => {
+                const rA = a.inRow || a.outRow || {}, rB = b.inRow || b.outRow || {};
+                const dA = rA['거래일'] || '', dB = rB['거래일'] || '';
+                if (dA !== dB) return dB.localeCompare(dA);
+                const tA = rA['거래시간'] || '', tB = rB['거래시간'] || '';
+                if (tA !== tB) return tB.localeCompare(tA);
+                const bA = rA['금융사'] || '', bB = rB['금융사'] || '';
+                return bB.localeCompare(bA);
+            });
+            if (!vis.length) { alert('출력할 대체거래가 없습니다.'); return; }
+            let rows = '';
+            const g = { '은행대체': { in: 0, out: 0, cnt: 0 }, '카드대체': { in: 0, out: 0, cnt: 0 }, '취소거래': { in: 0, out: 0, cnt: 0 } };
+            vis.forEach(p => {
+                const ir = p.inRow, or = p.outRow;
+                const iA = ir ? (parseFloat(ir['입금액']) || 0) : 0, oA = or ? (parseFloat(or['출금액']) || 0) : 0;
+                const x = g[p.type]; if (x) { x.in += iA; x.out += oA; x.cnt++; }
+                const iBg = ir ? ((ir['출처'] || '') === '은행거래' ? '#EFF6FF' : '#F8F0FC') : '#F9F9F9';
+                const oBg = or ? ((or['출처'] || '') === '은행거래' ? '#EFF6FF' : '#F8F0FC') : '#F9F9F9';
+                rows += '<tr>';
+                rows += '<td style="background:' + iBg + ';text-align:center">' + (ir ? _fd(ir['거래일']) : '') + '</td><td style="background:' + iBg + ';text-align:center">' + (ir ? _ft(ir['거래시간']) : '') + '</td>';
+                rows += '<td style="background:' + iBg + ';text-align:right">' + (ir ? (ir['기타거래'] || '') : '') + '</td><td style="background:' + iBg + ';text-align:right;color:#1565C0;font-weight:bold">' + (ir ? _fa(iA) : '') + '</td>';
+                rows += '<td style="background:' + iBg + ';text-align:right">' + (ir ? (ir['계좌번호'] || '') : '') + '</td><td style="background:' + iBg + ';text-align:center">' + (ir ? (ir['금융사'] || '') : '') + '</td>';
+                rows += '<td style="background:' + oBg + ';text-align:center">' + (or ? (or['금융사'] || '') : '') + '</td><td style="background:' + oBg + ';text-align:left">' + (or ? (or['계좌번호'] || '') : '') + '</td>';
+                rows += '<td style="background:' + oBg + ';text-align:right;color:#C62828;font-weight:bold">' + (or ? _fa(oA) : '') + '</td><td style="background:' + oBg + ';text-align:left">' + (or ? (or['기타거래'] || '') : '') + '</td>';
+                rows += '<td style="background:' + oBg + ';text-align:center">' + (or ? _ft(or['거래시간']) : '') + '</td><td style="background:' + oBg + ';text-align:center">' + (or ? _fd(or['거래일']) : '') + '</td></tr>';
+            });
+            const allIn = g['은행대체'].in + g['카드대체'].in + g['취소거래'].in, allOut = g['은행대체'].out + g['카드대체'].out + g['취소거래'].out;
+            let foot = '';
+            for (const [lb, d] of [['은행대체', g['은행대체']], ['카드대체', g['카드대체']], ['취소거래', g['취소거래']]]) {
+                if (d.cnt === 0) continue;
+                foot += '<tr style="background:#FFF5EE;font-weight:bold"><td colspan="3">' + lb + ' (' + d.cnt + '건)</td><td style="text-align:right;color:#1565C0">' + _fa(d.in) + '</td><td colspan="2"></td><td colspan="2"></td><td style="text-align:right;color:#C62828">' + _fa(d.out) + '</td><td colspan="3"></td></tr>';
+            }
+            foot += '<tr style="background:#FFD9CC;font-weight:800"><td colspan="3">합계 (' + vis.length + '건)</td><td style="text-align:right;color:#1565C0">' + _fa(allIn) + '</td><td colspan="2"></td><td colspan="2"></td><td style="text-align:right;color:#C62828">' + _fa(allOut) + '</td><td colspan="3"></td></tr>';
+            const w = window.open('', '_blank');
+            w.document.write('<!DOCTYPE html><html><head><title>대체거래 작업</title><meta charset="UTF-8"><style>@page{size:A4 landscape;margin:10mm;}body{font-family:sans-serif;font-size:11px;}h2{font-size:18px;margin:0 0 8px;}table{border-collapse:collapse;width:100%;font-size:11px;table-layout:fixed;}th,td{border:1px solid #bbb;padding:4px 5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}th.in{background:#DBEAFE;color:#1565C0;}th.out{background:#FFEBEE;color:#C62828;}.summary-tbl{margin-top:6px;width:100%;border-collapse:collapse;font-size:11px;table-layout:auto;}.summary-tbl td{border:1px solid #bbb;padding:4px 5px;}</style></head><body>'
+                + '<h2>대체거래 작업 (' + vis.length + '건) — ' + new Date().toLocaleString('ko-KR') + '</h2>'
+                + '<table><colgroup>'
+                + '<col style="width:5.6%"><col style="width:5.6%"><col style="width:11.1%"><col style="width:8.3%"><col style="width:11.1%"><col style="width:5.6%">'
+                + '<col style="width:5.6%"><col style="width:11.1%"><col style="width:8.3%"><col style="width:11.1%"><col style="width:5.6%"><col style="width:5.6%">'
+                + '</colgroup><thead><tr><th class="in">거래일</th><th class="in">거래시간</th><th class="in">기타거래</th><th class="in">입금액</th><th class="in">계좌번호</th><th class="in">금융사</th>'
+                + '<th class="out">금융사</th><th class="out">계좌번호</th><th class="out">출금액</th><th class="out">기타거래</th><th class="out">거래시간</th><th class="out">거래일</th></tr></thead>'
+                + '<tbody>' + rows + '</tbody></table>'
+                + '<table class="summary-tbl">' + foot + '</table>'
+                + '<script>window.onload=function(){window.print();}<\/script></body></html>');
+            w.document.close();
         }
     </script>
     

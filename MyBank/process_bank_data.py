@@ -1168,8 +1168,10 @@ def classify_and_save(input_file=None, output_file=None, input_df=None):
     output_columns = [
         '거래일', '거래시간', '은행명', '계좌번호', '입금액', '출금액',
         '사업자번호', '폐업', '취소', '적요', '내용', '송금메모', '거래점',
-        '입출금', '키워드', '카테고리', '기타거래'
+        '입출금', '키워드', '카테고리', '기타거래', '대체구분'
     ]
+    if '대체구분' not in df.columns:
+        df['대체구분'] = ''
 
     available_columns = [col for col in output_columns if col in df.columns]
     result_df = df[available_columns].copy()

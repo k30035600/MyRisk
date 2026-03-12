@@ -1,5 +1,5 @@
     <div class="content-card summary-opinion">
-        <h2 class="opinion-print-hide">금융정보 검토 종합의견</h2>
+        <h2 class="opinion-print-hide">검토 종합의견</h2>
 
         <div class="opinion-section">
             <h3>1. 검토 범위{% if review_start_date and review_end_date %} ({{ review_start_date }} ~ {{ review_end_date }}){% endif %}</h3>
@@ -18,12 +18,18 @@
             {% if filter_institution is defined and filter_institution %}
             <p style="color:#E65100; font-weight:bold; margin-top:6px; padding:4px 8px; background:#FBE9E7; border-radius:4px;">※ 본 의견서는 「{{ filter_institution }}」 거래에 한정한 분석이며, 타 금융기관 거래는 반영되지 아니하였다.</p>
             {% endif %}
+            {% if daechae_total_count is defined and daechae_total_count > 0 %}
+            <p style="color:#E65100; font-weight:bold; margin-top:6px; padding:4px 8px; background:#FBE9E7; border-radius:4px;">※ 검토 대상 {{ total_count|default(0) }}건 중 대체거래(계좌 간 이체·취소) <strong>{{ daechae_total_count }}건</strong>이 포함되어 있다. 아래 분석에서는 전체 금액과 함께 대체거래를 제외한 <strong>실질 금액</strong>을 병기한다.</p>
+            {% endif %}
         </div>
 
         <div class="opinion-section">
             <h3>2. 은행거래 분석 결과</h3>
             {% if bank_count|default(0) > 0 %}
             <p>은행거래 <strong>{{ bank_count }}</strong>건에 대하여, 입금 합계 <strong>{{ bank_deposit_fmt|default('0') }}원</strong>, 출금 합계 <strong>{{ bank_withdraw_fmt|default('0') }}원</strong>으로 순잔액은 <strong>{{ bank_net_fmt|default('0') }}원</strong>이다. {% if bank_balance_comment %}{{ bank_balance_comment }}{% endif %}</p>
+            {% if daechae_total_count is defined and daechae_total_count > 0 and bank_net_deposit_fmt2 is defined %}
+            <p style="background:#FFF8E1; padding:4px 8px; border-left:3px solid #F9A825; margin:4px 0; font-size:12px;"><strong>[대체거래 제외 실질]</strong> 은행거래 {{ bank_net_count|default(0) }}건 — 실질 입금 <strong>{{ bank_net_deposit_fmt2 }}원</strong>, 실질 출금 <strong>{{ bank_net_withdraw_fmt2 }}원</strong>, 실질 순잔액 <strong>{{ bank_net_balance_fmt }}원</strong></p>
+            {% endif %}
             {% if bank_by_name %}
             <p><strong>[금융기관별 거래 규모]</strong> {% for b in bank_by_name[:5] %}{% if loop.index > 1 %}, {% endif %}{{ b.name }} 약 {{ b.total_fmt }}{% if b.is_억 %}억 원{% else %}원{% endif %}(입금 {{ '{:,}'.format(b.deposit) }}원 / 출금 {{ '{:,}'.format(b.withdraw) }}원){% endfor %}{% if bank_by_name|length > 5 %} 외 {{ bank_by_name|length - 5 }}개 기관{% endif %} 순이다.</p>
             {% endif %}
@@ -39,6 +45,9 @@
             <h3>3. 신용카드 분석 결과</h3>
             {% if card_count|default(0) > 0 %}
             <p>신용카드 <strong>{{ card_count }}</strong>건에 대하여, 입금 합계 <strong>{{ card_deposit_fmt|default('0') }}원</strong>, 출금 합계 <strong>{{ card_withdraw_fmt|default('0') }}원</strong>으로 순잔액은 <strong>{{ card_net_fmt|default('0') }}원</strong>이다. {% if card_balance_comment %}{{ card_balance_comment }}{% endif %}</p>
+            {% if daechae_total_count is defined and daechae_total_count > 0 and card_net_deposit_fmt2 is defined %}
+            <p style="background:#FFF8E1; padding:4px 8px; border-left:3px solid #F9A825; margin:4px 0; font-size:12px;"><strong>[대체거래 제외 실질]</strong> 신용카드 {{ card_net_count|default(0) }}건 — 실질 입금 <strong>{{ card_net_deposit_fmt2 }}원</strong>, 실질 출금 <strong>{{ card_net_withdraw_fmt2 }}원</strong>, 실질 순잔액 <strong>{{ card_net_balance_fmt }}원</strong></p>
+            {% endif %}
             {% if card_by_name %}
             <p><strong>[카드사별 이용 현황]</strong> {% for b in card_by_name[:5] %}{% if loop.index > 1 %}, {% endif %}{{ b.name }}(출금 약 {{ b.withdraw_fmt }}원){% endfor %} 순이다.</p>
             {% endif %}
@@ -54,6 +63,9 @@
             <h3>4. 병합 금융정보 및 위험도 분석 결과</h3>
             {% if total_has_amount|default(false) %}
             <p>{% if bank_count|default(0) > 0 and card_count|default(0) > 0 %}은행거래와 신용카드를 병합한{% elif bank_count|default(0) > 0 %}은행거래 기반{% elif card_count|default(0) > 0 %}신용카드 기반{% else %}수집된{% endif %} 금융정보 기준, 총 입금 <strong>{{ total_deposit_fmt|default('0') }}원</strong>, 총 출금 <strong>{{ total_withdraw_fmt|default('0') }}원</strong>, 순잔액 <strong>{{ total_net_fmt|default('0') }}원</strong>이다. {% if bank_count|default(0) > 0 and card_count|default(0) > 0 %}병합 데이터에는{% else %}해당 데이터에는{% endif %} 업종분류(category_table) 및 1~10호 위험도 지표가 적용되어 있다.</p>
+            {% if daechae_total_count is defined and daechae_total_count > 0 and daechae_net_deposit is defined %}
+            <p style="background:#FFF8E1; padding:4px 8px; border-left:3px solid #F9A825; margin:4px 0; font-size:12px;"><strong>[대체거래 제외 실질]</strong> 대체거래 {{ daechae_total_count }}건(입금 {{ '{:,}'.format(daechae_total_deposit) }}원, 출금 {{ '{:,}'.format(daechae_total_withdraw) }}원)을 제외하면, 실질 입금 <strong>{{ daechae_net_deposit_fmt }}원</strong>, 실질 출금 <strong>{{ daechae_net_withdraw_fmt }}원</strong>, 실질 순잔액 <strong>{{ '{:,}'.format(daechae_net_deposit - daechae_net_withdraw) }}원</strong>이다.</p>
+            {% endif %}
             {% else %}
             <p>{% if total_count|default(0) == 0 %}검토 대상 금융거래가 없거나,{% else %}해당 기간·조건 내{% endif %} 입출금 금액 집계가 없어 총입금·총출금·순잔액을 산출할 수 없다. {% if total_count|default(0) > 0 %}은행·카드 원본에 입금액·출금액이 기재되어 있는지 확인하거나, 검토 기간을 변경한 뒤 다시 조회하시기 바란다.{% endif %} 적용된 업종분류(category_table) 및 1~10호 위험도 지표는 아래와 같다.</p>
             {% endif %}
@@ -237,8 +249,55 @@
         </div>
         {% endif %}
 
+        {% if daechae_total_count is defined and daechae_total_count > 0 %}
         <div class="opinion-section">
-            <h3>{% if monthly_trend_comment is defined and monthly_trend_comment %}11{% else %}5{% endif %}. 종합 의견 및 소명 권고사항</h3>
+            <h3>{% if monthly_trend_comment is defined and monthly_trend_comment %}11{% else %}5{% endif %}. 대체거래 분석</h3>
+            <p style="color:#555; margin-bottom:6px;">대체거래(계좌 간 이체·환불 등)는 은행거래와 신용카드 자료가 병합된 이후에야 동일 날짜·동일 금액의 교차 비교를 통해 식별이 가능하다. 개별 금융사 자료만으로는 타 금융사와의 자금 이동을 확인할 수 없으므로, 병합 분석이 대체거래 식별의 전제 조건이다.</p>
+            <p>{{ daechae_comment }}</p>
+            <table style="width:100%; border-collapse:collapse; font-size:12px; margin:8px 0;">
+                <thead>
+                    <tr style="background:#FFCCBC; color:#E65100;">
+                        <th style="border:1px solid #FFDBC8; padding:4px 8px; text-align:center;">구분</th>
+                        <th style="border:1px solid #FFDBC8; padding:4px 8px; text-align:center;">건수</th>
+                        <th style="border:1px solid #FFDBC8; padding:4px 8px; text-align:center;">입금액</th>
+                        <th style="border:1px solid #FFDBC8; padding:4px 8px; text-align:center;">출금액</th>
+                        <th style="border:1px solid #FFDBC8; padding:4px 8px; text-align:center;">차액</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if daechae_bank_count|default(0) > 0 %}
+                    <tr><td style="border:1px solid #FFDBC8; padding:4px 8px;">은행대체</td><td style="border:1px solid #FFDBC8; padding:4px 8px; text-align:center;">{{ daechae_bank_count }}건</td><td style="border:1px solid #FFDBC8; padding:4px 8px; text-align:right; color:#1565C0;">{{ '{:,}'.format(daechae_bank_deposit) }}원</td><td style="border:1px solid #FFDBC8; padding:4px 8px; text-align:right; color:#C62828;">{{ '{:,}'.format(daechae_bank_withdraw) }}원</td><td style="border:1px solid #FFDBC8; padding:4px 8px; text-align:right;">{{ '{:,}'.format(daechae_bank_deposit - daechae_bank_withdraw) }}원</td></tr>
+                    {% endif %}
+                    {% if daechae_card_count|default(0) > 0 %}
+                    <tr><td style="border:1px solid #FFDBC8; padding:4px 8px;">카드대체</td><td style="border:1px solid #FFDBC8; padding:4px 8px; text-align:center;">{{ daechae_card_count }}건</td><td style="border:1px solid #FFDBC8; padding:4px 8px; text-align:right; color:#1565C0;">{{ '{:,}'.format(daechae_card_deposit) }}원</td><td style="border:1px solid #FFDBC8; padding:4px 8px; text-align:right; color:#C62828;">{{ '{:,}'.format(daechae_card_withdraw) }}원</td><td style="border:1px solid #FFDBC8; padding:4px 8px; text-align:right;">{{ '{:,}'.format(daechae_card_deposit - daechae_card_withdraw) }}원</td></tr>
+                    {% endif %}
+                    {% if daechae_cancel_count|default(0) > 0 %}
+                    <tr><td style="border:1px solid #FFDBC8; padding:4px 8px;">취소거래</td><td style="border:1px solid #FFDBC8; padding:4px 8px; text-align:center;">{{ daechae_cancel_count }}건</td><td style="border:1px solid #FFDBC8; padding:4px 8px; text-align:right; color:#1565C0;">{{ '{:,}'.format(daechae_cancel_deposit) }}원</td><td style="border:1px solid #FFDBC8; padding:4px 8px; text-align:right; color:#C62828;">{{ '{:,}'.format(daechae_cancel_withdraw) }}원</td><td style="border:1px solid #FFDBC8; padding:4px 8px; text-align:right;">{{ '{:,}'.format(daechae_cancel_deposit - daechae_cancel_withdraw) }}원</td></tr>
+                    {% endif %}
+                    <tr style="background:#FFF5EE; font-weight:bold;"><td style="border:1px solid #FFDBC8; padding:4px 8px;">합계</td><td style="border:1px solid #FFDBC8; padding:4px 8px; text-align:center;">{{ daechae_total_count }}건</td><td style="border:1px solid #FFDBC8; padding:4px 8px; text-align:right; color:#1565C0;">{{ '{:,}'.format(daechae_total_deposit) }}원</td><td style="border:1px solid #FFDBC8; padding:4px 8px; text-align:right; color:#C62828;">{{ '{:,}'.format(daechae_total_withdraw) }}원</td><td style="border:1px solid #FFDBC8; padding:4px 8px; text-align:right;">{{ '{:,}'.format(daechae_total_deposit - daechae_total_withdraw) }}원</td></tr>
+                </tbody>
+            </table>
+            <p style="margin-top:8px;"><strong>[유형별 해석]</strong></p>
+            <ul style="font-size:11px; margin:4px 0 8px 18px; line-height:1.7;">
+                {% if daechae_bank_count|default(0) > 0 %}
+                <li><strong>은행대체({{ daechae_bank_count }}건):</strong> 동일인의 서로 다른 은행 계좌 간 자금 이체로서, 실질적 소득·지출이 아닌 단순 자금 재배치에 해당한다. 채무자회생법 제564조의 면책불허가 사유 중 재산의 은닉·불이익처분에 해당하지 않으며, 금액 산정에서 제외하는 것이 법원 실무상 합리적이다.</li>
+                {% endif %}
+                {% if daechae_card_count|default(0) > 0 %}
+                <li><strong>카드대체({{ daechae_card_count }}건):</strong> 신용카드 결제 후 은행 계좌에서의 동일 금액 출금(카드 대금 결제) 또는 카드사 간 이체로서, 이중 계상을 방지하기 위해 제외한다. 카드 결제액은 카드사 자료에, 대금 납부는 은행 자료에 각각 반영되므로, 병합 분석 시 중복 산정되는 것을 막아야 한다.</li>
+                {% endif %}
+                {% if daechae_cancel_count|default(0) > 0 %}
+                <li><strong>취소거래({{ daechae_cancel_count }}건):</strong> 결제 취소·환불 등으로 원거래가 무효화된 건으로서, 실질 소비에 해당하지 않는다. 취소 전·후 거래가 모두 계상되면 거래 규모가 과대 표시되므로, 취소 건을 별도 분리하여야 한다.</li>
+                {% endif %}
+            </ul>
+            <p style="background:#FFF8E1; padding:6px 10px; border-left:3px solid #F9A825; font-size:10.5px; line-height:1.6; margin:6px 0;"><strong>[법률적 근거]</strong> 채무자 회생 및 파산에 관한 법률 제564조(면책의 불허가)에 따른 면책불허가 사유 판단 시, 대체거래(계좌 간 이체·카드 대금 납부·결제 취소)는 <strong>재산의 은닉·불이익처분이 아닌 단순 자금 이동</strong>에 해당한다. 따라서 면책불허가 사유의 금액 산정에서 대체거래를 제외하고 <strong>실질 소비·수입 금액</strong>을 기준으로 판단하는 것이 법원 실무상 합리적이다.</p>
+            {% if daechae_net_deposit is defined %}
+            <p><strong>[대체거래 제외 실질 입출금]</strong> 대체거래를 제외한 실질 입금 <strong>{{ daechae_net_deposit_fmt }}원</strong>, 실질 출금 <strong>{{ daechae_net_withdraw_fmt }}원</strong>이다.</p>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="opinion-section">
+            <h3>{% if daechae_total_count is defined and daechae_total_count > 0 %}{% if monthly_trend_comment is defined and monthly_trend_comment %}12{% else %}6{% endif %}{% elif monthly_trend_comment is defined and monthly_trend_comment %}11{% else %}5{% endif %}. 종합 의견 및 소명 권고사항</h3>
             <p>검토 대상 금융거래 전반에 걸쳐 다음과 같은 사항이 확인된다.</p>
             <ul>
                 {% if bank_count|default(0) > 0 %}
@@ -246,6 +305,19 @@
                 {% endif %}
                 {% if card_count|default(0) > 0 %}
                 <li><strong>신용카드:</strong> {% if card_balance_comment %}{{ card_balance_comment }}{% else %}카드 거래가 확인된다.{% endif %}{% if card_top_categories %} 주요 지출 카테고리는 {% for c in card_top_categories[:2] %}{{ c.카테고리 }}{% if not loop.last %}·{% endif %}{% endfor %} 등이다.{% endif %}</li>
+                {% endif %}
+                {% if daechae_total_count is defined and daechae_total_count > 0 %}
+                <li><strong>대체거래:</strong> 총 {{ daechae_total_count }}건, {{ '{:,}'.format(daechae_total_amount) }}원 규모의 대체거래가 확인되었다.
+                    {% if daechae_bank_count|default(0) > 0 %}은행대체 {{ daechae_bank_count }}건{% endif %}
+                    {% if daechae_card_count|default(0) > 0 %}{% if daechae_bank_count|default(0) > 0 %}, {% endif %}카드대체 {{ daechae_card_count }}건{% endif %}
+                    {% if daechae_cancel_count|default(0) > 0 %}{% if daechae_bank_count|default(0) > 0 or daechae_card_count|default(0) > 0 %}, {% endif %}취소거래 {{ daechae_cancel_count }}건{% endif %}이
+                    포함되어 있다. 대체거래는 동일인의 계좌 간 자금 이동으로, 실질적 소비·수입이 아니므로 면책 심사 시 이를 분리하여 평가하는 것이 타당하다.
+                    {% if daechae_ratio_pct is defined and daechae_ratio_pct|float >= 50 %}
+                    대체거래 비중이 전체 거래의 약 {{ daechae_ratio_pct }}%로 과반수를 초과하며, 이를 포함한 총액 기준의 분석은 실질 재무 상태를 심각하게 왜곡할 수 있다. 면책 심사 시 대체거래를 반드시 분리하여 실질 소비·수입 기준으로 재산정할 필요가 있으며, 대체거래의 목적·경위에 대한 소명 자료를 준비하는 것이 강력히 권고된다.
+                    {% elif daechae_ratio_pct is defined and daechae_ratio_pct|float >= 30 %}
+                    대체거래 비중이 전체의 약 {{ daechae_ratio_pct }}%에 달하여, 이를 포함한 총액 기준의 분석은 실질 재무 상태를 왜곡할 수 있으므로 주의가 필요하다.
+                    {% endif %}
+                </li>
                 {% endif %}
                 {% if risk_total_score is defined and risk_total_score > 0 %}
                 <li><strong>위험도 종합:</strong> R = {{ "%.2f"|format(risk_total_score) }} ({{ risk_grade_label }}).
@@ -269,7 +341,7 @@
             {% if risk_total_score is defined and risk_total_score > 0 %}
             <p>이상의 분석 결과를 종합하면, 대상자의 금융거래는
                 {% if risk_grade_label == '안전 (Safe)' %}
-                전반적으로 일상적 수입·지출 패턴의 범위 내에 있으며, 면책 절차에 있어 특별한 장애 요인은 확인되지 아니한다. 다만 일부 항목에 대하여는 보충적 설명이 수반되는 것이 바람직하다.
+                전반적으로 일상적 수입·지출 패턴의 범위 내에 있으며, 면책 절차에 있어 특별한 장애 요인은 확인되지 아니한다.
                 {% elif risk_grade_label == '보통 (Normal)' %}
                 대체로 일상적 범위 내에 있으나, 일부 특이 항목이 관찰되어 선별적 소명이 필요하다. 위험도 산출 결과를 참고하여 한도 초과 항목에 대한 거래 사유를 구체적으로 기재하는 것이 타당하다.
                 {% elif risk_grade_label == '주의 (Caution)' %}
@@ -277,9 +349,18 @@
                 {% elif risk_grade_label == '심각 (Critical)' %}
                 다수의 고위험 거래가 식별되어 상세 사유서 작성이 필수적이다. 모든 고위험 거래에 대하여 증빙 서류를 확보하고, 거래별 소명서를 개별 작성하여 제출하는 것이 강력히 권고된다. 면책 절차의 원활한 진행을 위해 전문가 자문을 병행하는 것이 바람직하다.
                 {% endif %}
+                {% if daechae_total_count is defined and daechae_total_count > 0 %}
+                다만, 대체거래 {{ daechae_total_count }}건(입금 {{ '{:,}'.format(daechae_total_deposit) }}원, 출금 {{ '{:,}'.format(daechae_total_withdraw) }}원)은 동일인의 계좌 간 단순 자금 이동 또는 거래 취소에 해당하므로, 실질적인 소득·지출 분석에서는 이를 별도로 구분하여야 한다.
+                {% if daechae_net_deposit is defined %}전체 입금 {{ total_deposit_fmt|default('0') }}원 중 대체거래 입금 {{ '{:,}'.format(daechae_total_deposit) }}원을 제외한 실질 입금은 <strong>{{ daechae_net_deposit_fmt }}원</strong>이며, 전체 출금 {{ total_withdraw_fmt|default('0') }}원 중 대체거래 출금 {{ '{:,}'.format(daechae_total_withdraw) }}원을 제외한 실질 출금은 <strong>{{ daechae_net_withdraw_fmt }}원</strong>이다. 면책 심사 시에는 이 실질 금액을 기준으로 평가하는 것이 합리적이다.{% endif %}
+                {% endif %}
+                일부 항목에 대하여는 보충적 설명이 수반되는 것이 바람직하다.
             </p>
             {% else %}
-            <p>이상의 분석 결과를 종합하면, 대상자의 금융거래는 전반적으로 일상적 수입·지출 패턴의 범위 내에 있으나, 일부 항목에 대하여는 거래 경위 및 자금 출처에 관한 보충 소명이 수반되는 것이 타당하다.</p>
+            <p>이상의 분석 결과를 종합하면, 대상자의 금융거래는 전반적으로 일상적 수입·지출 패턴의 범위 내에 있으나, 일부 항목에 대하여는 거래 경위 및 자금 출처에 관한 보충 소명이 수반되는 것이 타당하다.
+            {% if daechae_total_count is defined and daechae_total_count > 0 %}
+            특히, 대체거래 {{ daechae_total_count }}건(입금 {{ '{:,}'.format(daechae_total_deposit) }}원, 출금 {{ '{:,}'.format(daechae_total_withdraw) }}원)은 실질적 소비·수입이 아닌 계좌 간 이동으로 확인되므로, 이를 제외한 실질 입금 {{ daechae_net_deposit_fmt }}원, 실질 출금 {{ daechae_net_withdraw_fmt }}원을 기준으로 면책 심사를 진행하는 것이 합리적이다.
+            {% endif %}
+            </p>
             {% endif %}
         </div>
     </div>

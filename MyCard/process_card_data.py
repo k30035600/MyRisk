@@ -861,7 +861,9 @@ def classify_and_save(input_df=None):
         if not df_card.empty and '취소' in df_card.columns:
             df_card['취소'] = df_card['취소'].apply(lambda v: _normalize_cancel_value_card(v, empty_means_cancel_only=False))
 
-        card_after_cols = ['카드사', '카드번호', '이용일', '이용시간', '입금액', '출금액', '취소', '사업자번호', '폐업', '키워드', '카테고리', '가맹점명']
+        card_after_cols = ['카드사', '카드번호', '이용일', '이용시간', '입금액', '출금액', '취소', '사업자번호', '폐업', '키워드', '카테고리', '가맹점명', '대체구분']
+        if '대체구분' not in df_card.columns:
+            df_card['대체구분'] = ''
         existing = [c for c in card_after_cols if c in df_card.columns]
         extra = [c for c in df_card.columns if c not in card_after_cols]
         df_card = df_card.reindex(columns=existing + extra)

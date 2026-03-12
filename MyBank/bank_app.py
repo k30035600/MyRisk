@@ -214,7 +214,7 @@ def load_category_file():
 
 @app.route('/')
 def index():
-    # 카테고리 정의 테이블: 서버에서 HTML로 렌더링. 은행 카테고리 조회에서는 분류=심야구분/업종분류/위험도분류 제외.
+    # 카테고리 정의 테이블: 서버에서 HTML로 렌더링. 은행 카테고리 조회에서는 분류=업종분류/위험도분류 제외.
     category_table_rows = []
     category_file_exists = False
     try:
@@ -222,7 +222,7 @@ def index():
         if df is not None and not df.empty:
             if '분류' in df.columns:
                 분류_col = df['분류'].fillna('').astype(str).str.strip()
-                df = df[~분류_col.isin(['심야구분', '업종분류', '위험도분류'])].copy()
+                df = df[~분류_col.isin(['업종분류', '위험도분류'])].copy()
             for c in CATEGORY_TABLE_EXTENDED_COLUMNS:
                 if c not in df.columns:
                     df[c] = ''
@@ -313,7 +313,7 @@ def _create_empty_bank_after(path):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     cols = ['거래일', '거래시간', '은행명', '계좌번호', '입금액', '출금액',
-            '사업자번호', '폐업', '취소', '적요', '내용', '송금메모', '거래점', '키워드', '카테고리', '기타거래']
+            '사업자번호', '폐업', '취소', '적요', '내용', '송금메모', '거래점', '키워드', '카테고리', '기타거래', '대체구분']
     empty = pd.DataFrame(columns=cols)
     if safe_write_data_json:
         safe_write_data_json(str(path), empty)
@@ -889,10 +889,10 @@ def get_category_table():
                 os.chdir(_orig_cwd)
         if df is None or df.empty:
             df = pd.DataFrame(columns=cols)
-        # 은행 카테고리 조회: 분류=심야구분/업종분류/위험도분류 제외, 5컬럼(위험도·업종코드 포함) 반환
+        # 은행 카테고리 조회: 분류=업종분류/위험도분류 제외, 5컬럼(위험도·업종코드 포함) 반환
         if not df.empty and '분류' in df.columns:
             분류_col = df['분류'].fillna('').astype(str).str.strip()
-            df = df[~분류_col.isin(['심야구분', '업종분류', '위험도분류'])].copy()
+            df = df[~분류_col.isin(['업종분류', '위험도분류'])].copy()
         for c in CATEGORY_TABLE_EXTENDED_COLUMNS:
             if c not in df.columns:
                 df[c] = ''
@@ -978,6 +978,44 @@ def save_category_table():
 def analysis_basic():
     """기본 기능 분석 페이지"""
     return render_template('analysis_basic.html')
+
+def _get_daechae_info(df):
+    """bank_after DataFrame에서 대체거래 통계를 dict로 반환."""
+    info = {'daechae_total_count': 0, 'daechae_bank_count': 0, 'daechae_card_count': 0, 'daechae_cancel_count': 0,
+            'daechae_bank_deposit': 0, 'daechae_bank_withdraw': 0, 'daechae_card_deposit': 0, 'daechae_card_withdraw': 0,
+            'daechae_cancel_deposit': 0, 'daechae_cancel_withdraw': 0,
+            'daechae_total_deposit': 0, 'daechae_total_withdraw': 0, 'daechae_total_amount': 0, 'daechae_comment': ''}
+    if df is None or df.empty or '대체구분' not in df.columns:
+        return info
+    dc = df['대체구분'].fillna('').astype(str).str.strip()
+    df_dc = df[dc != '']
+    if df_dc.empty:
+        return info
+    dc_vals = df_dc['대체구분'].fillna('').astype(str).str.strip()
+    for label, mask in [('은행대체', dc_vals == '은행대체'), ('카드대체', dc_vals == '카드대체'), ('취소거래', dc_vals == '취소거래')]:
+        key = label[:2]
+        cnt = int(mask.sum())
+        dep = int(df_dc.loc[mask, '입금액'].sum()) if '입금액' in df_dc.columns else 0
+        wit = int(df_dc.loc[mask, '출금액'].sum()) if '출금액' in df_dc.columns else 0
+        if label == '은행대체':
+            info['daechae_bank_count'], info['daechae_bank_deposit'], info['daechae_bank_withdraw'] = cnt, dep, wit
+        elif label == '카드대체':
+            info['daechae_card_count'], info['daechae_card_deposit'], info['daechae_card_withdraw'] = cnt, dep, wit
+        else:
+            info['daechae_cancel_count'], info['daechae_cancel_deposit'], info['daechae_cancel_withdraw'] = cnt, dep, wit
+    info['daechae_total_count'] = info['daechae_bank_count'] + info['daechae_card_count'] + info['daechae_cancel_count']
+    info['daechae_total_deposit'] = info['daechae_bank_deposit'] + info['daechae_card_deposit'] + info['daechae_cancel_deposit']
+    info['daechae_total_withdraw'] = info['daechae_bank_withdraw'] + info['daechae_card_withdraw'] + info['daechae_cancel_withdraw']
+    info['daechae_total_amount'] = info['daechae_total_deposit'] + info['daechae_total_withdraw']
+    total_dep = int(pd.to_numeric(df['입금액'], errors='coerce').fillna(0).sum()) if '입금액' in df.columns else 0
+    total_wit = int(pd.to_numeric(df['출금액'], errors='coerce').fillna(0).sum()) if '출금액' in df.columns else 0
+    info['daechae_net_deposit'] = total_dep - info['daechae_total_deposit']
+    info['daechae_net_withdraw'] = total_wit - info['daechae_total_withdraw']
+    info['daechae_total_deposit_all'] = total_dep
+    info['daechae_total_withdraw_all'] = total_wit
+    info['daechae_comment'] = '은행거래 중 대체거래(계좌 간 이체·환불 등)로 분류된 거래가 {}건으로 확인되었다. 자세한 내용은 금융정보 종합분석 보고서를 참조한다.'.format(info['daechae_total_count'])
+    return info
+
 
 @app.route('/analysis/print')
 @ensure_working_directory
@@ -1078,6 +1116,8 @@ def print_analysis():
             max_monthly_withdraw = 1
             max_monthly_both = 1
 
+        daechae_info = _get_daechae_info(df)
+
         return render_template('print_analysis.html',
                              report_date=datetime.now().strftime('%Y-%m-%d'),
                              bank_filter=bank_filter or '전체',
@@ -1109,7 +1149,8 @@ def print_analysis():
                              months_list=months_list,
                              monthly_totals_list=monthly_totals_list,
                              max_monthly_withdraw=max_monthly_withdraw,
-                             max_monthly_both=max_monthly_both)
+                             max_monthly_both=max_monthly_both,
+                             **daechae_info)
     except Exception as e:
         traceback.print_exc()
         return f"오류 발생: {str(e)}", 500

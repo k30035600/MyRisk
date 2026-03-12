@@ -859,6 +859,32 @@
             </div>
         </div>
     </div>
+    {% if daechae_total_count is defined and daechae_total_count > 0 %}
+    <div class="section" style="margin-top:16px; padding:10px; border:1px solid #FFDBC8; border-radius:4px; background:rgba(255,245,238,0.5);">
+        <div class="section-title" style="margin-bottom:6px;">대체거래 현황</div>
+        <p style="font-size:9pt; color:#1A1A1A; margin-bottom:6px;">{{ daechae_comment }}</p>
+        <table style="width:100%; border-collapse:collapse; font-size:9pt;">
+            <thead><tr>
+                <th style="border:1px solid #FFDBC8; padding:3px 6px; background:#FFCCBC; color:#E65100; text-align:center;">구분</th>
+                <th style="border:1px solid #FFDBC8; padding:3px 6px; background:#FFCCBC; color:#E65100; text-align:center;">건수</th>
+                <th style="border:1px solid #FFDBC8; padding:3px 6px; background:#FFCCBC; color:#E65100; text-align:center;">입금액</th>
+                <th style="border:1px solid #FFDBC8; padding:3px 6px; background:#FFCCBC; color:#E65100; text-align:center;">출금액</th>
+                <th style="border:1px solid #FFDBC8; padding:3px 6px; background:#FFCCBC; color:#E65100; text-align:center;">차액</th>
+            </tr></thead>
+            <tbody>
+                {% if daechae_bank_count|default(0) > 0 %}<tr><td style="border:1px solid #FFDBC8; padding:3px 6px;">은행대체</td><td style="border:1px solid #FFDBC8; padding:3px 6px; text-align:center;">{{ daechae_bank_count }}건</td><td style="border:1px solid #FFDBC8; padding:3px 6px; text-align:right; color:#1565C0;">{{ '{:,}'.format(daechae_bank_deposit) }}원</td><td style="border:1px solid #FFDBC8; padding:3px 6px; text-align:right; color:#C62828;">{{ '{:,}'.format(daechae_bank_withdraw) }}원</td><td style="border:1px solid #FFDBC8; padding:3px 6px; text-align:right;">{{ '{:,}'.format(daechae_bank_deposit - daechae_bank_withdraw) }}원</td></tr>{% endif %}
+                {% if daechae_card_count|default(0) > 0 %}<tr><td style="border:1px solid #FFDBC8; padding:3px 6px;">카드대체</td><td style="border:1px solid #FFDBC8; padding:3px 6px; text-align:center;">{{ daechae_card_count }}건</td><td style="border:1px solid #FFDBC8; padding:3px 6px; text-align:right; color:#1565C0;">{{ '{:,}'.format(daechae_card_deposit) }}원</td><td style="border:1px solid #FFDBC8; padding:3px 6px; text-align:right; color:#C62828;">{{ '{:,}'.format(daechae_card_withdraw) }}원</td><td style="border:1px solid #FFDBC8; padding:3px 6px; text-align:right;">{{ '{:,}'.format(daechae_card_deposit - daechae_card_withdraw) }}원</td></tr>{% endif %}
+                {% if daechae_cancel_count|default(0) > 0 %}<tr><td style="border:1px solid #FFDBC8; padding:3px 6px;">취소거래</td><td style="border:1px solid #FFDBC8; padding:3px 6px; text-align:center;">{{ daechae_cancel_count }}건</td><td style="border:1px solid #FFDBC8; padding:3px 6px; text-align:right; color:#1565C0;">{{ '{:,}'.format(daechae_cancel_deposit) }}원</td><td style="border:1px solid #FFDBC8; padding:3px 6px; text-align:right; color:#C62828;">{{ '{:,}'.format(daechae_cancel_withdraw) }}원</td><td style="border:1px solid #FFDBC8; padding:3px 6px; text-align:right;">{{ '{:,}'.format(daechae_cancel_deposit - daechae_cancel_withdraw) }}원</td></tr>{% endif %}
+                <tr style="background:#FFF5EE; font-weight:bold;"><td style="border:1px solid #FFDBC8; padding:3px 6px;">합계</td><td style="border:1px solid #FFDBC8; padding:3px 6px; text-align:center;">{{ daechae_total_count }}건</td><td style="border:1px solid #FFDBC8; padding:3px 6px; text-align:right; color:#1565C0;">{{ '{:,}'.format(daechae_total_deposit) }}원</td><td style="border:1px solid #FFDBC8; padding:3px 6px; text-align:right; color:#C62828;">{{ '{:,}'.format(daechae_total_withdraw) }}원</td><td style="border:1px solid #FFDBC8; padding:3px 6px; text-align:right;">{{ '{:,}'.format(daechae_total_deposit - daechae_total_withdraw) }}원</td></tr>
+            </tbody>
+        </table>
+        {% if daechae_net_deposit is defined %}
+        <div style="background:#E8F5E9; border-left:3px solid #43A047; padding:6px 10px; margin:8px 0 4px 0; font-size:9pt; line-height:1.6;">
+            <strong>[대체거래 제외 실질 합계]</strong> 은행거래 전체 입금 {{ '{:,}'.format(daechae_total_deposit_all|default(total_account_deposit)) }}원 중 대체거래 입금 {{ '{:,}'.format(daechae_total_deposit) }}원을 제외한 <strong>실질 입금 {{ '{:,}'.format(daechae_net_deposit) }}원</strong>, 전체 출금 {{ '{:,}'.format(daechae_total_withdraw_all|default(total_account_withdraw)) }}원 중 대체거래 출금 {{ '{:,}'.format(daechae_total_withdraw) }}원을 제외한 <strong>실질 출금 {{ '{:,}'.format(daechae_net_withdraw) }}원</strong>이다. 면책 심사 시에는 대체거래를 제외한 실질 금액을 기준으로 평가하는 것이 합리적이다.
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
     </div><!-- .report-wrap -->
     {% include '_fullscreen_persist.html' %}
 </body>

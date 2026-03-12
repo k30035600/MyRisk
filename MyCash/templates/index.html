@@ -61,7 +61,7 @@
         }
 
         .header h1 {
-            color: #334155;
+            color: #1A1A1A;
             margin: 0;
             text-align: left;
             flex: 0 0 auto;
@@ -224,7 +224,7 @@
         }
         
         .category-work-box .box-title {
-            color: #334155;
+            color: #1A1A1A;
         }
         
         .category-applied-box {
@@ -232,7 +232,7 @@
         }
         
         .category-applied-box .box-title {
-            color: #334155;
+            color: #1A1A1A;
         }
 
         .wrapper-box {
@@ -365,7 +365,7 @@
 
         .filter-group label {
             font-weight: bold;
-            color: #334155;
+            color: #1A1A1A;
         }
 
         .filter-group select,
@@ -380,7 +380,7 @@
         .filter-group select,
         .filter-group input {
             background-color: #FFFFFF !important;
-            color: #334155 !important;
+            color: #1A1A1A !important;
             border: 1px solid #FFDBC8;
         }
         
@@ -397,7 +397,7 @@
         
         table select {
             background-color: #FFFFFF !important;
-            color: #334155 !important;
+            color: #1A1A1A !important;
             border: 1px solid #FFDBC8;
         }
         
@@ -460,7 +460,7 @@
         }
         #right-filter-section select {
             background-color: #FFFFFF !important;
-            color: #334155 !important;
+            color: #1A1A1A !important;
             border: 1px solid #DFC4E8;
         }
         #right-filter-section select.filter-default {
@@ -479,7 +479,7 @@
 
         .stat-item {
             font-weight: bold;
-            color: #334155;
+            color: #1A1A1A;
             padding: 0;
             margin: 0;
             text-align: right;
@@ -523,7 +523,7 @@
         
         .modal-header h2 {
             margin: 0;
-            color: #334155;
+            color: #1A1A1A;
         }
         
         .close {
@@ -536,7 +536,7 @@
         
         .close:hover,
         .close:focus {
-            color: #334155;
+            color: #1A1A1A;
         }
         
         .modal-table {
@@ -578,11 +578,11 @@
         .modal-empty {
             text-align: center;
             padding: 20px;
-            color: #334155;
+            color: #1A1A1A;
         }
 
         .stat-item .label {
-            color: #334155;
+            color: #1A1A1A;
             margin-right: 5px;
         }
         
@@ -590,7 +590,7 @@
         .header-stats-text {
             font-size: clamp(10px, calc(0.45vw + 2px), 13px);
             font-weight: bold;
-            color: #334155;
+            color: #1A1A1A;
         }
         .header-stats-text .stat-item,
         .header-stats-text .stat-item .label,
@@ -600,7 +600,7 @@
             font-weight: inherit;
         }
         .header-stats-text .label {
-            color: #334155;
+            color: #1A1A1A;
         }
         .header-stats-text .header-stats-group {
             display: flex;
@@ -617,7 +617,7 @@
         .box-title {
             font-weight: 700;
             font-size: 20px;
-            color: #334155;
+            color: #1A1A1A;
             margin-right: 15px;
             margin-top: 0px;
             margin-bottom: 0px;
@@ -708,6 +708,8 @@
         #category-query-table thead th { background-color: #FFCCBC; color: #E65100; box-shadow: 0 2px 2px 0 rgba(0,0,0,0.06); }
         #category-query-table thead tr:first-child th { background-color: #FFCCBC !important; color: #E65100 !important; }
         #category-query-table thead tr:nth-child(2) th { background-color: #FFCCBC !important; color: #E65100 !important; }
+        /* sticky + border-collapse 조합 스크롤 시 테두리 두배 방지 */
+        #category-query-table thead tr:last-child th { border-bottom: none !important; }
         #category-table-content.has-split-table, #category-query-content.has-split-table { display: flex !important; flex-direction: column !important; overflow: hidden !important; height: 100% !important; min-height: 0 !important; }
         #category-table-content.has-split-table .split-table-wrap, #category-query-content.has-split-table .split-table-wrap { flex: 1 !important; min-height: 0 !important; display: flex !important; flex-direction: column !important; }
         #category-query-content.has-split-table .split-table-scroll { flex: 1 !important; min-height: 0 !important; overflow: auto !important; scrollbar-gutter: stable !important; }
@@ -776,7 +778,7 @@
 
         .file-header {
             font-weight: bold;
-            color: #334155;
+            color: #1A1A1A;
             margin-bottom: 8px;
             padding-bottom: 8px;
             border-bottom: 2px solid #FFDBC8;
@@ -833,7 +835,7 @@
             display: flex;
             gap: 15px;
             font-size: 12px;
-            color: #334155;
+            color: #1A1A1A;
         }
         
         .file-header-stat {
@@ -862,7 +864,7 @@
 
         .sheet-name {
             font-weight: bold;
-            color: #334155;
+            color: #1A1A1A;
             margin-bottom: 6px;
             font-size: 12px;
             font-weight: 700;
@@ -944,12 +946,12 @@
         #row-tooltip-overlay { position: fixed; inset: 0; z-index: 2147483647; pointer-events: none; display: none; }
         #row-tooltip-overlay .row-tooltip-bubble { pointer-events: auto; }
         /* 말풍선 배경색: rgb(255, 204, 128) (#FFDBC8) */
-        .row-tooltip-bubble { position: fixed; z-index: 2147483647; max-width: 560px; max-height: 70vh; min-width: 280px; min-height: 80px; overflow: auto; background: #FBE9E7; border: 1px solid #FFDBC8; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); padding: 12px 14px; font-size: 12.5px; line-height: 1.5; font-family: 'Malgun Gothic', sans-serif; }
+        .row-tooltip-bubble { position: fixed; z-index: 2147483647; max-width: 560px; max-height: 70vh; min-width: 280px; min-height: 80px; overflow: auto; background: #F0F2F5; border: 1px solid #B0BEC5; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); padding: 12px 14px; font-size: 11px; line-height: 1.4; font-family: 'Malgun Gothic', sans-serif; }
         .row-tooltip-bubble .tooltip-title { font-weight: bold; font-size: 13px; color: #BF360C; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1.5px solid #FFAB91; }
         .row-tooltip-bubble .tooltip-row { display: flex; gap: 8px; padding: 4px 0; border-bottom: 1px solid rgba(0,0,0,0.06); }
         .row-tooltip-bubble .tooltip-row:last-child { border-bottom: none; }
         .row-tooltip-bubble .tooltip-key { flex: 0 0 80px; color: #E65100; font-weight: 600; }
-        .row-tooltip-bubble .tooltip-val { flex: 1; word-break: break-all; color: #334155; }
+        .row-tooltip-bubble .tooltip-val { flex: 1; word-break: break-all; color: #1A1A1A; }
         .row-tooltip-selected { background-color: #FFDBC8 !important; }
 
         /* 좌측 카테고리 조회 테이블: 한 줄 표시, 말줄임 */
@@ -1418,7 +1420,7 @@
         }
 
         .left-box .box-title {
-            color: #334155;
+            color: #1A1A1A;
             font-size: 18px !important;
         }
 
@@ -1427,7 +1429,7 @@
         }
 
         .right-box .box-title {
-            color: #334155;
+            color: #1A1A1A;
             font-size: 18px !important;
         }
         /* 금융정보: 카테고리 조회/병합후 그래프 타이틀 - 금융정보 업종분류 페이지 "금융정보 업종분류 조회" 텍스트 크기와 동일 (18px) */
@@ -1450,7 +1452,7 @@
         .loading {
             text-align: center;
             padding: 40px;
-            color: #334155;
+            color: #1A1A1A;
             animation: blink 1.5s ease-in-out infinite;
         }
 
@@ -1525,7 +1527,7 @@
            금융정보 고유색 시스템 (Cash Identity Color System)
            ───────────────────────────────────────────────────────
            고유색:   #E65100 (딥 오렌지)
-           본문색:   #334155 (Slate 700 — 공통 본문 텍스트)
+           본문색:   #1A1A1A (Slate 700 — 공통 본문 텍스트)
            헤더 배경: #FFCCBC (파스텔 오렌지)
            구분선:   #FFDBC8 (미디엄 오렌지)
            ═══════════════════════════════════════════════════════════ */
@@ -1562,7 +1564,7 @@
         .split-table-header-table th { background-color: #FFCCBC !important; color: #E65100 !important; }
 
         /* --- 본문 텍스트 = 공통색 --- */
-        table tbody td { color: #334155; border-color: #FFDBC8 !important; }
+        table tbody td { color: #1A1A1A; border-color: #FFDBC8 !important; }
         #source-data-table tbody td { border-color: #BBDEFB !important; }
         #processed-data-table tbody td { border-color: #DFC4E8 !important; }
 
@@ -1580,7 +1582,7 @@
         table tr.sum-row, table tr[data-sum-row="true"],
         table tfoot tr, table tr.total-row { background-color: #FFD9CC !important; }
         table tr.sum-row td, table tr[data-sum-row="true"] td,
-        table tfoot td, table tr.total-row td { font-weight: 800 !important; color: #0F172A !important; }
+        table tfoot td, table tr.total-row td { font-weight: 800 !important; color: #1A1A1A !important; }
         table tr.sum-row td[data-sum-col="입금액"],
         table tr[data-sum-row="true"] td[data-sum-col="입금액"] { color: #1565C0 !important; }
         table tr.sum-row td[data-sum-col="출금액"],
@@ -1592,7 +1594,7 @@
         #processed-data-table tr[data-sum-row="true"] { background-color: #EAD0F1 !important; }
 
         /* --- 드롭다운 --- */
-        select, select option { color: #334155 !important; font-weight: normal !important; background-color: #FFFFFF !important; }
+        select, select option { color: #1A1A1A !important; font-weight: normal !important; background-color: #FFFFFF !important; }
         select option { background-color: #FFFFFF !important; }
 
         /* --- 통계 텍스트 --- */
@@ -1604,13 +1606,13 @@
             display: flex; align-items: center; gap: 15px; white-space: nowrap; overflow: hidden;
         }
         .header-stats-text .stats-unit, .header-stats-group .stats-unit,
-        .header-stats-text .stats-count, .header-stats-group .stats-count { color: #334155 !important; }
+        .header-stats-text .stats-count, .header-stats-group .stats-count { color: #1A1A1A !important; }
 
         /* --- 필터 라벨 --- */
         .filter-group label { color: #E65100 !important; font-weight: bold; }
 
         /* --- 차트 범례 --- */
-        .monthly-chart-legend, .monthly-chart-legend span { color: #334155 !important; }
+        .monthly-chart-legend, .monthly-chart-legend span { color: #1A1A1A !important; }
         .chart-card h2 { color: #E65100 !important; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -1743,9 +1745,9 @@
                                     <th style="text-align: center; border: 1px solid #FFDBC8; padding: 2px 2px; white-space: nowrap; color: #E65100;">업종코드</th>
                                     <th style="text-align: center; border: 1px solid #FFDBC8; padding: 2px 2px; white-space: nowrap; color: #E65100;">위험도</th>
                                 </tr>
-                                <tr style="background-color: #FFCCBC; color: #334155;">
+                                <tr style="background-color: #FFCCBC; color: #1A1A1A;">
                                     <td style="border: 1px solid #FFDBC8; padding: 2px 2px;">
-                                        <select id="new-category-chasu" style="padding: 1px 2px; width: 100%; font-size: 11px; border: 1px solid #FFDBC8; border-radius: 2px; background-color: #FFFFFF; color: #334155;">
+                                        <select id="new-category-chasu" style="padding: 1px 2px; width: 100%; font-size: 11px; border: 1px solid #FFDBC8; border-radius: 2px; background-color: #FFFFFF; color: #1A1A1A;">
                                             <option value="">전체</option>
                                             <option value="입력">입력</option>
                                             <option value="수정">수정</option>
@@ -1759,29 +1761,29 @@
                                         </select>
                                     </td>
                                     <td style="border: 1px solid #FFDBC8; padding: 2px 2px;">
-                                        <select id="new-category-keyword-filter" style="padding: 1px 2px; width: 100%; font-size: 11px; border: 1px solid #FFDBC8; border-radius: 2px; background-color: #FFFFFF; color: #334155;">
+                                        <select id="new-category-keyword-filter" style="padding: 1px 2px; width: 100%; font-size: 11px; border: 1px solid #FFDBC8; border-radius: 2px; background-color: #FFFFFF; color: #1A1A1A;">
                                             <option value="">전체</option>
                                         </select>
                                     </td>
                                     <td style="border: 1px solid #FFDBC8; padding: 2px 2px;">
-                                        <select id="new-category-name-filter" style="padding: 1px 2px; width: 100%; font-size: 11px; border: 1px solid #FFDBC8; border-radius: 2px; background-color: #FFFFFF; color: #334155;">
+                                        <select id="new-category-name-filter" style="padding: 1px 2px; width: 100%; font-size: 11px; border: 1px solid #FFDBC8; border-radius: 2px; background-color: #FFFFFF; color: #1A1A1A;">
                                             <option value="">전체</option>
                                         </select>
                                     </td>
                                     <td style="border: 1px solid #FFDBC8; padding: 2px 2px;">
-                                        <select id="new-category-biz-filter" style="padding: 1px 2px; width: 100%; font-size: 11px; border: 1px solid #FFDBC8; border-radius: 2px; background-color: #FFFFFF; color: #334155;">
+                                        <select id="new-category-biz-filter" style="padding: 1px 2px; width: 100%; font-size: 11px; border: 1px solid #FFDBC8; border-radius: 2px; background-color: #FFFFFF; color: #1A1A1A;">
                                             <option value="">전체</option>
                                         </select>
                                     </td>
                                     <td style="border: 1px solid #FFDBC8; padding: 2px 2px;">
-                                        <select id="new-category-risk-filter" style="padding: 1px 2px; width: 100%; font-size: 11px; border: 1px solid #FFDBC8; border-radius: 2px; background-color: #FFFFFF; color: #334155;">
+                                        <select id="new-category-risk-filter" style="padding: 1px 2px; width: 100%; font-size: 11px; border: 1px solid #FFDBC8; border-radius: 2px; background-color: #FFFFFF; color: #1A1A1A;">
                                             <option value="">전체</option>
                                         </select>
                                     </td>
                                 </tr>
-                                <tr style="background-color: #FFCCBC; color: #334155;">
+                                <tr style="background-color: #FFCCBC; color: #1A1A1A;">
                                     <td style="border: 1px solid #FFDBC8; padding: 2px 2px;">
-                                        <select id="new-category-chasu-input" style="padding: 1px 2px; width: 100%; font-size: 11px; border: 1px solid #FFDBC8; border-radius: 2px; box-sizing: border-box; background-color: #FFFFFF; color: #334155;">
+                                        <select id="new-category-chasu-input" style="padding: 1px 2px; width: 100%; font-size: 11px; border: 1px solid #FFDBC8; border-radius: 2px; box-sizing: border-box; background-color: #FFFFFF; color: #1A1A1A;">
                                             <option value="" selected>분류선택</option>
                                             <option value="신용카드">신용카드</option>
                                             <option value="가상자산">가상자산</option>
@@ -1792,21 +1794,21 @@
                                         </select>
                                     </td>
                                     <td style="border: 1px solid #FFDBC8; padding: 2px 2px;">
-                                        <input type="text" id="new-category-keyword-input" placeholder="키워드 직접 입력" style="padding: 1px 2px; width: 100%; font-size: 11px; border: 1px solid #FFDBC8; border-radius: 2px; box-sizing: border-box; background-color: #FFFFFF; color: #334155;">
+                                        <input type="text" id="new-category-keyword-input" placeholder="키워드 직접 입력" style="padding: 1px 2px; width: 100%; font-size: 11px; border: 1px solid #FFDBC8; border-radius: 2px; box-sizing: border-box; background-color: #FFFFFF; color: #1A1A1A;">
                                     </td>
                                     <td style="border: 1px solid #FFDBC8; padding: 2px 2px;">
-                                        <input type="text" id="new-category-name-input" placeholder="카테고리 직접 입력" style="padding: 1px 2px; width: 100%; font-size: 11px; border: 1px solid #FFDBC8; border-radius: 2px; box-sizing: border-box; background-color: #FFFFFF; color: #334155;">
+                                        <input type="text" id="new-category-name-input" placeholder="카테고리 직접 입력" style="padding: 1px 2px; width: 100%; font-size: 11px; border: 1px solid #FFDBC8; border-radius: 2px; box-sizing: border-box; background-color: #FFFFFF; color: #1A1A1A;">
                                     </td>
                                     <td style="border: 1px solid #FFDBC8; padding: 2px 2px;">
-                                        <input type="text" id="new-category-biz-input" placeholder="업종코드" style="padding: 1px 2px; width: 100%; font-size: 11px; border: 1px solid #FFDBC8; border-radius: 2px; box-sizing: border-box; background-color: #FFFFFF; color: #334155;">
+                                        <input type="text" id="new-category-biz-input" placeholder="업종코드" style="padding: 1px 2px; width: 100%; font-size: 11px; border: 1px solid #FFDBC8; border-radius: 2px; box-sizing: border-box; background-color: #FFFFFF; color: #1A1A1A;">
                                     </td>
                                     <td style="border: 1px solid #FFDBC8; padding: 2px 2px;">
-                                        <input type="text" id="new-category-risk-input" placeholder="위험도" style="padding: 1px 2px; width: 100%; font-size: 11px; border: 1px solid #FFDBC8; border-radius: 2px; box-sizing: border-box; background-color: #FFFFFF; color: #334155;">
+                                        <input type="text" id="new-category-risk-input" placeholder="위험도" style="padding: 1px 2px; width: 100%; font-size: 11px; border: 1px solid #FFDBC8; border-radius: 2px; box-sizing: border-box; background-color: #FFFFFF; color: #1A1A1A;">
                                     </td>
                                 </tr>
                             </thead>
                             <tbody id="category-definition-table-body">
-                                <tr><td colspan="5" style="padding: 20px; text-align: center; color: #334155;">데이터 로딩중 ...</td></tr>
+                                <tr><td colspan="5" style="padding: 20px; text-align: center; color: #1A1A1A;">데이터 로딩중 ...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -1832,7 +1834,7 @@
                     </div>
                     <div class="category-table-container category-query-container" style="overflow: hidden; flex: 1; min-height: 0; display: flex; flex-direction: column;">
                         <div id="category-query-content" style="width: 100%; height: 100%; min-height: 0;">
-                            <div class="loading" style="padding: 20px; text-align: center; color: #334155;">데이터 로딩중 ... (0건)</div>
+                            <div class="loading" style="padding: 20px; text-align: center; color: #1A1A1A;">데이터 로딩중 ... (0건)</div>
                         </div>
                     </div>
                 </div>
@@ -2035,7 +2037,7 @@
                     document.getElementById('left-count').textContent = '0';
                     document.getElementById('left-deposit').textContent = '0';
                     document.getElementById('left-withdraw').textContent = '0';
-                    contentDiv.innerHTML = `<div class="loading" style="color: #334155;">${(data.error || '').replace(/\n/g, '<br>')}</div>`;
+                    contentDiv.innerHTML = `<div class="loading" style="color: #1A1A1A;">${(data.error || '').replace(/\n/g, '<br>')}</div>`;
                     return;
                 }
                 if (!response.ok) {
@@ -2927,7 +2929,7 @@
                 
                 if (!data.data || data.data.length === 0) {
                     document.getElementById('category-definition-table-body').innerHTML = 
-                        '<tr><td colspan="5" style="padding: 20px; text-align: center; color: #334155; white-space: normal;">카테고리 데이터가 없습니다.</td></tr>';
+                        '<tr><td colspan="5" style="padding: 20px; text-align: center; color: #1A1A1A; white-space: normal;">카테고리 데이터가 없습니다.</td></tr>';
                     allCategoryTableData = [];
                     if (typeof updateCategoryDefinitionSummary === 'function') updateCategoryDefinitionSummary(0);
                     return;
@@ -3131,7 +3133,7 @@
             if (riskEl) updateCategoryFilterBackground(riskEl);
             
             if (filteredData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="padding: 20px; text-align: center; color: #334155; white-space: normal;">카테고리 데이터가 없습니다.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" style="padding: 20px; text-align: center; color: #1A1A1A; white-space: normal;">카테고리 데이터가 없습니다.</td></tr>';
                 updateDropdownOptions();
                 if (typeof updateCategoryDefinitionSummary === 'function') updateCategoryDefinitionSummary(0);
                 return;
@@ -3514,7 +3516,7 @@
                 'th:nth-child(4), td:nth-child(4) { width: 10%; }' +
                 'th:nth-child(5), td:nth-child(5) { width: 10%; }' +
                 'tr:nth-child(even) { background-color: #F7F8FA; }' +
-                '.header-info { text-align: center; margin-bottom: 15px; font-size: 12px; color: #334155; }' +
+                '.header-info { text-align: center; margin-bottom: 15px; font-size: 12px; color: #1A1A1A; }' +
                 '</style>' +
                 '</head><body><div class="report-wrap">' +
                 '<div class="header-info">' +
@@ -3541,7 +3543,7 @@
         async function loadCategoryTableLeft() {
             const contentEl = document.getElementById('category-table-content');
             if (!contentEl) return;
-            contentEl.innerHTML = '<div class="loading" style="padding: 20px; text-align: center; color: #334155;">데이터 로딩중 ... (0건)</div>';
+            contentEl.innerHTML = '<div class="loading" style="padding: 20px; text-align: center; color: #1A1A1A;">데이터 로딩중 ... (0건)</div>';
             try {
                 const response = await fetchWithTimeout(`${API_BASE}/api/category`);
                 const result = await response.json().catch(() => ({}));
@@ -3556,7 +3558,7 @@
                 const colLabels = ['분류', '키워드', '카테고리', '업종코드', '위험도'];
                 if (data.length === 0) {
                     categoryTableData = [];
-                    contentEl.innerHTML = '<div style="padding: 20px; text-align: center; color: #334155;">카테고리 데이터가 없습니다. data/category_table.json을 확인하세요.</div>';
+                    contentEl.innerHTML = '<div style="padding: 20px; text-align: center; color: #1A1A1A;">카테고리 데이터가 없습니다. data/category_table.json을 확인하세요.</div>';
                     return;
                 }
                 const colWidths = ['15%', '40%', '20%', '15%', '10%'];
@@ -3615,7 +3617,7 @@
             const contentEl = document.getElementById('category-query-content');
             if (!contentEl) return;
             categoryQueryTableData = [];
-            contentEl.innerHTML = '<div class="loading" style="padding: 20px; text-align: center; color: #334155;">데이터 로딩중 ... (0건)</div>';
+            contentEl.innerHTML = '<div class="loading" style="padding: 20px; text-align: center; color: #1A1A1A;">데이터 로딩중 ... (0건)</div>';
             const loadingMsg = '데이터 로딩중';
             let safetyTimeoutId = setTimeout(() => {
                 if (contentEl.textContent && contentEl.textContent.includes(loadingMsg)) {
@@ -3709,10 +3711,10 @@
                 } else {
                     if (skipAutoCreate) {
                         clearSafety();
-                        contentEl.innerHTML = '<div style="padding: 20px; text-align: center; color: #334155;">생성되었습니다. 새로고침(F5) 해 주세요.</div>';
+                        contentEl.innerHTML = '<div style="padding: 20px; text-align: center; color: #1A1A1A;">생성되었습니다. 새로고침(F5) 해 주세요.</div>';
                     } else {
                         // 데이터 없음 → cash_after 생성 시도
-                        contentEl.innerHTML = '<div class="loading" style="padding: 20px; text-align: center; color: #334155;">cash_after 생성 중...<br><small style="color:#5A6872;margin-top:8px;display:block;">MyCash/cash_after_progress.log 파일을 열어 단계별 진행 상황을 확인할 수 있습니다. (서버를 터미널에서 직접 실행한 경우 터미널에도 출력됩니다.) 데이터가 많으면 2분까지 걸릴 수 있습니다.</small></div>';
+                        contentEl.innerHTML = '<div class="loading" style="padding: 20px; text-align: center; color: #1A1A1A;">cash_after 생성 중...<br><small style="color:#5A6872;margin-top:8px;display:block;">MyCash/cash_after_progress.log 파일을 열어 단계별 진행 상황을 확인할 수 있습니다. (서버를 터미널에서 직접 실행한 경우 터미널에도 출력됩니다.) 데이터가 많으면 2분까지 걸릴 수 있습니다.</small></div>';
                         let createOk = false;
                         try {
                             const ctrl2 = new AbortController();
@@ -3733,10 +3735,10 @@
                             }
                         const errMsg = createJson.error || (createRes.ok ? '' : '생성 실패');
                         const safeErr = (errMsg || '데이터가 없습니다.').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                        contentEl.innerHTML = '<div style="padding: 20px; text-align: center; color: #334155;">'
+                        contentEl.innerHTML = '<div style="padding: 20px; text-align: center; color: #1A1A1A;">'
                             + '<p style="margin: 0 0 12px 0; font-weight: bold; color: #C62828;">' + safeErr + '</p>'
-                            + '<p style="margin: 0 0 8px 0; font-size: 12px; color: #334155;">cash_after를 생성하지 못하는 흔한 이유:</p>'
-                            + '<ul style="text-align: left; margin: 0 auto 12px auto; padding-left: 24px; max-width: 420px; font-size: 12px; color: #334155;">'
+                            + '<p style="margin: 0 0 8px 0; font-size: 12px; color: #1A1A1A;">cash_after를 생성하지 못하는 흔한 이유:</p>'
+                            + '<ul style="text-align: left; margin: 0 auto 12px auto; padding-left: 24px; max-width: 420px; font-size: 12px; color: #1A1A1A;">'
                             + '<li>bank_after·card_after가 없거나 비어 있음 → 은행/신용카드 전처리 후, 금융정보에서 cash_after 생성(병합) 재시도</li>'
                             + '<li>쓰기 권한·한글 경로·디스크 부족 → 한글 없는 경로(C:\\CursorWorkspace 등)에서 실행</li>'
                             + '<li>요청 시간 초과 → 새로고침(F5) 후 재시도</li>'
@@ -3751,7 +3753,7 @@
                         const retryBtn = document.getElementById('category-query-retry-btn');
                         if (retryBtn) retryBtn.addEventListener('click', function() { loadCategoryQueryTable(); });
                     }
-                        if (!createOk) contentEl.innerHTML = contentEl.innerHTML || '<div style="padding: 20px; text-align: center; color: #334155;">데이터가 없습니다.</div>';
+                        if (!createOk) contentEl.innerHTML = contentEl.innerHTML || '<div style="padding: 20px; text-align: center; color: #1A1A1A;">데이터가 없습니다.</div>';
                     }
                 }
                 
@@ -3790,7 +3792,7 @@
             const contentDiv = document.getElementById('category-query-content');
             categoryQueryTableData = data || [];
             if (!data || data.length === 0) {
-                contentDiv.innerHTML = '<div style="padding: 20px; text-align: center; color: #334155;">데이터가 없습니다.</div>';
+                contentDiv.innerHTML = '<div style="padding: 20px; text-align: center; color: #1A1A1A;">데이터가 없습니다.</div>';
                 return;
             }
             // API 정렬 유지: 거래일(내림) → 거래시간(내림) → 금융사(오름). 프론트에서 재정렬하지 않고 data 그대로 사용.
@@ -3850,12 +3852,12 @@
                 const displayName = columnDisplayNames[col] || col;
                 html += `<th style="width: ${width}%; white-space: nowrap; text-align: center; padding: 8px; border: 1px solid #FFDBC8;${headerBgColor ? ` background-color: ${headerBgColor};` : ''}">${displayName}</th>`;
             });
-            html += '</tr><tr style="background-color: #FFCCBC; color: #334155;">';
+            html += '</tr><tr style="background-color: #FFCCBC; color: #1A1A1A;">';
             availableColumns.forEach(col => {
                 const ratio = columnWidths[col] || 1.0;
                 const width = ((ratio / totalRatio) * 100).toFixed(2);
                 html += `<th style="width: ${width}%; padding: 4px 8px; border: 1px solid #FFDBC8;">
-                    <select id="filter-category-query-${col}" style="width: 100%; padding: 1px 2px; font-size: 11px; border: 1px solid #FFDBC8; border-radius: 2px; background-color: #FFFFFF; color: #334155;">
+                    <select id="filter-category-query-${col}" style="width: 100%; padding: 1px 2px; font-size: 11px; border: 1px solid #FFDBC8; border-radius: 2px; background-color: #FFFFFF; color: #1A1A1A;">
                         <option value="">전체</option>`;
                 if (col === '카테고리') {
                     html += '<option value="__미분류__">미분류</option>';
@@ -4236,7 +4238,7 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { display: true, position: 'top', align: 'end', labels: { color: '#334155' } },
+                        legend: { display: true, position: 'top', align: 'end', labels: { color: '#1A1A1A' } },
                         tooltip: {
                             callbacks: {
                                 label: function(context) {

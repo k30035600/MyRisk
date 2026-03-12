@@ -270,7 +270,7 @@
         .risk-inner-row .chart-card:nth-child(1) { min-width: 0; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
         .risk-inner-row .chart-card:nth-child(2) { min-width: 0; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
         .risk-inner-row .chart-card:nth-child(3) { min-width: 0; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
-        /* 금융정보 검토 종합의견 + 금융정보 위험도 종합의견: 2:1 두 박스. 720p에서 스크롤 가능하도록 min-height 보장 */
+        /* 검토 종합의견 + 위험도 종합의견: 2:1 두 박스. 720p에서 스크롤 가능하도록 min-height 보장 */
         .opinion-container-fullwidth {
             width: 100%;
             flex: 60 1 0;
@@ -893,6 +893,23 @@
         .split-table-header-table { background-color: #FFCCBC !important; }
         .split-table-header-table th { background-color: #FFCCBC !important; color: #E65100 !important; }
         .chart-card h2 { color: #E65100 !important; }
+
+        #daechae-tbl { width:100%; border-collapse:collapse; font-size:10px; table-layout:fixed; }
+        #daechae-tbl thead { position:sticky; top:0; z-index:1; }
+        #daechae-tbl thead th { padding:3px 2px; font-size:12px; font-weight:bold; text-align:center; }
+        #daechae-tbl thead th.dt-in { background:#EFF6FF; color:#1565C0; border:1px solid #BFDBFE; }
+        #daechae-tbl thead th.dt-out { background:#FFF5F5; color:#C62828; border:1px solid #FECACA; }
+        #daechae-tbl thead th.dt-mid { background:#FFCCBC; color:#E65100; border:1px solid #FFDBC8; }
+        #daechae-tbl tbody td { padding:2px 3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border-bottom:1px solid #E8E8E8; color:#1A1A1A; }
+        #daechae-tbl tbody td.dt-amt-in { color:#1565C0; text-align:right; font-weight:bold; }
+        #daechae-tbl tbody td.dt-amt-out { color:#C62828; text-align:right; font-weight:bold; }
+        #daechae-tbl tbody td.dt-mid-cell { text-align:center; background:#FFCCBC; }
+        #daechae-tbl tfoot td { font-weight:800; padding:3px; border-top:2px solid #FFDBC8; color:#1A1A1A; font-size:10px; }
+        #daechae-tbl tfoot tr { background:#FFF5EE; }
+        #daechae-tbl tfoot tr:last-child { background:#FFD9CC; }
+        .dt-bg-bank { background-color:#EFF6FF; }
+        .dt-bg-card { background-color:#F8F0FC; }
+        .dt-bg-empty { background-color:#F9F9F9; }
     </style>
 </head>
 <body>
@@ -903,6 +920,10 @@
                 <h1>금융정보 종합분석</h1>
             </div>
             <div class="header-filters" style="display: flex; align-items: center; gap: 12px;">
+                <div class="filter-group" style="display:flex;align-items:center;gap:4px;">
+                    <input type="checkbox" id="filter-daechae" checked>
+                    <label for="filter-daechae" style="font-size:12px;cursor:pointer;">대체거래</label>
+                </div>
                 <div class="filter-group">
                     <label for="bank-filter">금융사:</label>
                     <select id="bank-filter" style="width: 150px;">
@@ -1040,14 +1061,22 @@
             </div>
         </div>
     </div>
-    <!-- 3행: 금융정보 검토 종합의견(2) + 금융정보 위험도 종합의견(1) -->
+    <!-- 대체거래 박스 -->
+    <div id="daechae-box" style="display:none; height:250px; margin-top:2px; margin-bottom:2px; background:#FFF5EE; border:1px solid #FFDBC8; border-radius:6px; padding:0; overflow:hidden; flex-direction:column; flex-shrink:0;">
+        <div style="display:flex;align-items:center;gap:8px;padding:4px 10px;background:#FFCCBC;border-bottom:1px solid #FFDBC8;flex-shrink:0;">
+            <h3 style="margin:0;font-size:13px;color:#E65100;">대체거래 내역</h3>
+            <div id="daechae-box-stats" style="font-size:11px;font-weight:bold;color:#1A1A1A;display:flex;gap:0;flex-wrap:wrap;align-items:center;margin-left:auto;"></div>
+        </div>
+        <div id="daechae-box-body" style="flex:1;overflow-y:auto;overflow-x:auto;min-height:0;font-size:10px;"></div>
+    </div>
+    <!-- 3행: 검토 종합의견(2) + 위험도 종합의견(1) -->
     <div class="opinion-container-fullwidth">
         <div class="opinion-box opinion-box-left">
-            <h3>금융정보 검토 종합의견</h3>
+            <h3>검토 종합의견</h3>
             <iframe id="opinion-iframe" title="금융정보 종합의견" src="/cash/analysis/opinion"></iframe>
         </div>
         <div class="opinion-box opinion-box-right">
-            <h3>금융정보 위험도 종합의견</h3>
+            <h3>위험도 종합의견</h3>
             <iframe id="risk-report-iframe" title="금융정보 위험도 분석 리포트" src="/cash/analysis/risk-report" style="width:100%; flex:1; min-height:280px; border:0;"></iframe>
         </div>
     </div>
@@ -1075,7 +1104,8 @@
             }
         }
 
-        // 전체 통계 로드
+        function _daechaeParam() { return document.getElementById('filter-daechae')?.checked ? '1' : ''; }
+
         async function loadSummary() {
             try {
                 const bankFilter = document.getElementById('bank-filter').value;
@@ -1084,6 +1114,7 @@
                 const params = [];
                 if (bankFilter) params.push(`bank=${encodeURIComponent(bankFilter)}`);
                 if (periodFilter) params.push(`period=${encodeURIComponent(periodFilter)}`);
+                const ed = _daechaeParam(); if (ed) params.push(`exclude_daechae=${ed}`);
                 url += params.join('&');
                 
                 const response = await fetchWithTimeout(url);
@@ -1107,7 +1138,7 @@
             const period = document.getElementById('period-filter').value;
             let src = `${API_BASE}/analysis/opinion?`;
             if (bank) src += 'bank=' + encodeURIComponent(bank) + '&';
-            if (period) src += 'period=' + encodeURIComponent(period);
+            if (period) src += 'period=' + encodeURIComponent(period) + '&';
             if (src.endsWith('&')) src = src.slice(0, -1);
             if (src.endsWith('?')) src = src.slice(0, -1);
             iframe.src = src || (API_BASE + '/analysis/opinion');
@@ -1119,13 +1150,14 @@
             const period = document.getElementById('period-filter').value;
             let src = `${API_BASE}/analysis/risk-report?`;
             if (bank) src += 'bank=' + encodeURIComponent(bank) + '&';
-            if (period) src += 'period=' + encodeURIComponent(period);
+            if (period) src += 'period=' + encodeURIComponent(period) + '&';
             if (src.endsWith('&')) src = src.slice(0, -1);
             if (src.endsWith('?')) src = src.slice(0, -1);
             iframe.src = src || (API_BASE + '/analysis/risk-report');
         }
         document.getElementById('bank-filter').addEventListener('change', () => { loadSummary(); loadRiskSection(); updateOpinionIframe(); updateRiskReportIframe(); });
         document.getElementById('period-filter').addEventListener('change', () => { loadSummary(); loadRiskSection(); updateOpinionIframe(); updateRiskReportIframe(); });
+        document.getElementById('filter-daechae').addEventListener('change', () => { loadSummary(); loadRiskSection(); updateOpinionIframe(); updateRiskReportIframe(); _loadDaechaeBox(); });
 
         document.getElementById('print-btn').addEventListener('click', () => {
             const bankFilter = document.getElementById('bank-filter').value;
@@ -1312,6 +1344,7 @@
                 const periodFilter = document.getElementById('period-filter').value;
                 if (bankFilter) url += '&bank=' + encodeURIComponent(bankFilter);
                 if (periodFilter) url += '&period=' + encodeURIComponent(periodFilter);
+                const ed = _daechaeParam(); if (ed) url += '&exclude_daechae=' + ed;
                 const response = await fetchWithTimeout(url);
                 if (!response.ok) throw new Error(`서버 오류: ${response.status}`);
                 const json = await response.json();
@@ -1451,7 +1484,142 @@
             loadRiskSection();
             if (typeof updateOpinionIframe === 'function') updateOpinionIframe();
             if (typeof updateRiskReportIframe === 'function') updateRiskReportIframe();
+            _loadDaechaeBox();
         });
+
+        function _dtFa(v) { const n = parseFloat(v) || 0; return n === 0 ? '' : formatNumber(n); }
+        function _dtFd(v) { return typeof formatDate === 'function' ? formatDate(v || '') : (v || '').substring(0, 10); }
+        function _dtFt(v) { return typeof formatTime === 'function' ? formatTime(v || '') : (v || '').substring(0, 8); }
+        function _dtBg(row) { if (!row) return 'dt-bg-empty'; return (row['출처'] || '') === '은행거래' ? 'dt-bg-bank' : 'dt-bg-card'; }
+        function _dtTypClr(t) { if (t === '은행대체') return '#1565C0'; if (t === '카드대체') return '#6A1B9A'; return '#E65100'; }
+
+        function _dtBuildEntries(data) {
+            if (!data || !data.length) return [];
+            const entries = [], usedIdx = new Set();
+            data.forEach(r => {
+                const oi = r['_idx']; if (oi == null) return;
+                const dc = (r['대체구분'] || '').trim(); if (!dc) return;
+                const dep = parseFloat(r['입금액']) || 0, wth = parseFloat(r['출금액']) || 0;
+                entries.push({ inRow: dep > 0 ? r : null, outRow: wth > 0 ? r : null, type: dc, inIdx: dep > 0 ? oi : -1, outIdx: wth > 0 ? oi : -1 });
+                usedIdx.add(oi);
+            });
+            const paired = [], pUsed = new Set();
+            const ins = entries.filter(e => e.inRow && !e.outRow);
+            const outs = entries.filter(e => e.outRow && !e.inRow);
+            const both = entries.filter(e => e.inRow && e.outRow);
+            both.forEach(e => { paired.push(e); pUsed.add(entries.indexOf(e)); });
+            ins.forEach((e, ei) => {
+                if (pUsed.has(entries.indexOf(e))) return;
+                const d = (e.inRow['거래일']||'').substring(0,10), amt = parseFloat(e.inRow['입금액'])||0, bank = (e.inRow['금융사']||'').trim();
+                for (const o of outs) {
+                    if (pUsed.has(entries.indexOf(o))) continue;
+                    if (e.type !== o.type) continue;
+                    const od = (o.outRow['거래일']||'').substring(0,10);
+                    if (d === od && amt === (parseFloat(o.outRow['출금액'])||0) && bank !== (o.outRow['금융사']||'').trim()) {
+                        paired.push({ inRow: e.inRow, outRow: o.outRow, type: e.type, inIdx: e.inIdx, outIdx: o.outIdx });
+                        pUsed.add(entries.indexOf(e)); pUsed.add(entries.indexOf(o)); return;
+                    }
+                }
+                for (let j = ei + 1; j < ins.length; j++) {
+                    const e2 = ins[j]; if (pUsed.has(entries.indexOf(e2))) continue;
+                    if (e.type !== e2.type) continue;
+                    const d2 = (e2.inRow['거래일']||'').substring(0,10);
+                    if (d === d2 && amt === (parseFloat(e2.inRow['입금액'])||0) && bank !== (e2.inRow['금융사']||'').trim()) {
+                        paired.push({ inRow: e.inRow, outRow: e2.inRow, type: e.type, inIdx: e.inIdx, outIdx: e2.inIdx });
+                        pUsed.add(entries.indexOf(e)); pUsed.add(entries.indexOf(e2)); return;
+                    }
+                }
+            });
+            outs.forEach((e, ei) => {
+                if (pUsed.has(entries.indexOf(e))) return;
+                const d = (e.outRow['거래일']||'').substring(0,10), amt = parseFloat(e.outRow['출금액'])||0, bank = (e.outRow['금융사']||'').trim();
+                for (let j = ei + 1; j < outs.length; j++) {
+                    const e2 = outs[j]; if (pUsed.has(entries.indexOf(e2))) continue;
+                    if (e.type !== e2.type) continue;
+                    const d2 = (e2.outRow['거래일']||'').substring(0,10);
+                    if (d === d2 && amt === (parseFloat(e2.outRow['출금액'])||0) && bank !== (e2.outRow['금융사']||'').trim()) {
+                        paired.push({ inRow: e.outRow, outRow: e2.outRow, type: e.type, inIdx: e.outIdx, outIdx: e2.outIdx });
+                        pUsed.add(entries.indexOf(e)); pUsed.add(entries.indexOf(e2)); return;
+                    }
+                }
+            });
+            entries.forEach(e => { if (!pUsed.has(entries.indexOf(e))) paired.push(e); });
+            paired.sort((a, b) => {
+                const tO = { '은행대체': 0, '카드대체': 1, '취소거래': 2 };
+                if ((tO[a.type] ?? 9) !== (tO[b.type] ?? 9)) return (tO[a.type] ?? 9) - (tO[b.type] ?? 9);
+                const rA = (a.inRow || a.outRow) || {}, rB = (b.inRow || b.outRow) || {};
+                const dA = rA['거래일'] || '', dB = rB['거래일'] || '';
+                if (dA !== dB) return dB.localeCompare(dA);
+                const tA = rA['거래시간'] || '', tB = rB['거래시간'] || '';
+                if (tA !== tB) return tB.localeCompare(tA);
+                const bA = rA['금융사'] || '', bB = rB['금융사'] || '';
+                return bA.localeCompare(bB);
+            });
+            return paired;
+        }
+
+        async function _loadDaechaeBox() {
+            const box = document.getElementById('daechae-box');
+            const body = document.getElementById('daechae-box-body');
+            const stats = document.getElementById('daechae-box-stats');
+            if (!box || !body) return;
+            if (!document.getElementById('filter-daechae')?.checked) { box.style.display = 'none'; return; }
+            try {
+                const res = await fetchWithTimeout(`${API_BASE}/api/category-applied-data`);
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const json = await res.json();
+                const all = json.data || json;
+                const vis = _dtBuildEntries(all);
+                if (!vis.length) { box.style.display = 'none'; return; }
+                box.style.display = 'flex';
+                let h = '<table id="daechae-tbl"><colgroup>';
+                h += '<col style="width:5.2%"><col style="width:10.3%"><col style="width:12.9%"><col style="width:6.2%"><col style="width:10.3%"><col style="width:5.2%">';
+                h += '<col style="width:5.2%">';
+                h += '<col style="width:5.2%"><col style="width:10.3%"><col style="width:6.2%"><col style="width:12.9%"><col style="width:5.2%"><col style="width:5.2%">';
+                h += '</colgroup><thead><tr>';
+                h += '<th class="dt-in">거래일</th><th class="dt-in">거래시간</th><th class="dt-in">기타거래</th><th class="dt-in">입금액</th><th class="dt-in">계좌번호</th><th class="dt-in">금융사</th>';
+                h += '<th class="dt-mid">대체구분</th>';
+                h += '<th class="dt-out">금융사</th><th class="dt-out">계좌번호</th><th class="dt-out">출금액</th><th class="dt-out">기타거래</th><th class="dt-out">거래시간</th><th class="dt-out">거래일</th>';
+                h += '</tr></thead><tbody>';
+                const g = { '은행대체': { in: 0, out: 0, cnt: 0 }, '카드대체': { in: 0, out: 0, cnt: 0 }, '취소거래': { in: 0, out: 0, cnt: 0 } };
+                vis.forEach(p => {
+                    const ir = p.inRow, or = p.outRow;
+                    const inBg = _dtBg(ir), outBg = _dtBg(or);
+                    const x = g[p.type]; if (x) { if (ir) x.in += parseFloat(ir['입금액']) || 0; if (or) x.out += parseFloat(or['출금액']) || 0; x.cnt++; }
+                    h += '<tr>';
+                    if (ir) {
+                        h += `<td class="${inBg}" style="text-align:center">${_dtFd(ir['거래일'])}</td><td class="${inBg}" style="text-align:center">${_dtFt(ir['거래시간'])}</td>`;
+                        h += `<td class="${inBg}" style="text-align:right;overflow:hidden;text-overflow:ellipsis" title="${(ir['기타거래']||'').replace(/"/g,'&quot;')}">${ir['기타거래'] || ''}</td><td class="${inBg} dt-amt-in">${_dtFa(ir['입금액'])}</td>`;
+                        h += `<td class="${inBg}" style="text-align:right;overflow:hidden;text-overflow:ellipsis" title="${(ir['계좌번호']||'').replace(/"/g,'&quot;')}">${ir['계좌번호'] || ''}</td><td class="${inBg}" style="text-align:center">${ir['금융사'] || ''}</td>`;
+                    } else { for (let i = 0; i < 6; i++) h += '<td class="dt-bg-empty"></td>'; }
+                    h += `<td class="dt-mid-cell" style="color:${_dtTypClr(p.type)};font-weight:bold;">${p.type}</td>`;
+                    if (or) {
+                        h += `<td class="${outBg}" style="text-align:center">${or['금융사'] || ''}</td><td class="${outBg}" style="text-align:left;overflow:hidden;text-overflow:ellipsis" title="${(or['계좌번호']||'').replace(/"/g,'&quot;')}">${or['계좌번호'] || ''}</td>`;
+                        h += `<td class="${outBg} dt-amt-out">${_dtFa(or['출금액'])}</td><td class="${outBg}" style="text-align:left;overflow:hidden;text-overflow:ellipsis" title="${(or['기타거래']||'').replace(/"/g,'&quot;')}">${or['기타거래'] || ''}</td>`;
+                        h += `<td class="${outBg}" style="text-align:center">${_dtFt(or['거래시간'])}</td><td class="${outBg}" style="text-align:center">${_dtFd(or['거래일'])}</td>`;
+                    } else { for (let i = 0; i < 6; i++) h += '<td class="dt-bg-empty"></td>'; }
+                    h += '</tr>';
+                });
+                h += '</tbody><tfoot>';
+                const allIn = g['은행대체'].in + g['카드대체'].in + g['취소거래'].in;
+                const allOut = g['은행대체'].out + g['카드대체'].out + g['취소거래'].out;
+                for (const [lb, d] of [['은행대체', g['은행대체']], ['카드대체', g['카드대체']], ['취소거래', g['취소거래']]]) {
+                    if (d.cnt === 0) continue;
+                    h += `<tr><td colspan="3" style="text-align:left;color:${_dtTypClr(lb)}">${lb} (${d.cnt}건)</td><td class="dt-amt-in" style="text-align:right;color:#1565C0">${_dtFa(d.in)}</td><td colspan="2"></td><td></td><td colspan="2"></td><td class="dt-amt-out" style="text-align:right;color:#C62828">${_dtFa(d.out)}</td><td colspan="3"></td></tr>`;
+                }
+                h += `<tr><td colspan="3" style="text-align:left;font-size:11px;">대체거래 합계 (${vis.length}건)</td><td style="text-align:right;color:#1565C0;font-weight:800">${_dtFa(allIn)}</td><td colspan="2"></td><td></td><td colspan="2"></td><td style="text-align:right;color:#C62828;font-weight:800">${_dtFa(allOut)}</td><td colspan="3"></td></tr>`;
+                h += '</tfoot></table>';
+                body.innerHTML = h;
+                if (stats) {
+                    let s = '';
+                    s += `<span style="display:inline-flex;align-items:center;"><span style="color:#E65100;margin-right:2px;">은행대체:</span><span style="color:#1565C0">${_dtFa(g['은행대체'].in)}</span><span style="margin:0 2em;color:#999">/</span><span style="color:#C62828">${_dtFa(g['은행대체'].out)}</span></span>`;
+                    s += `<span style="display:inline-flex;align-items:center;margin-left:4em;"><span style="color:#E65100;margin-right:2px;">카드대체:</span><span style="color:#1565C0">${_dtFa(g['카드대체'].in)}</span><span style="margin:0 2em;color:#999">/</span><span style="color:#C62828">${_dtFa(g['카드대체'].out)}</span></span>`;
+                    s += `<span style="display:inline-flex;align-items:center;margin-left:4em;"><span style="color:#E65100;margin-right:2px;">취소:</span><span style="color:#1565C0">${_dtFa(g['취소거래'].in)}</span><span style="margin:0 2em;color:#999">/</span><span style="color:#C62828">${_dtFa(g['취소거래'].out)}</span></span>`;
+                    s += `<span style="display:inline-flex;align-items:center;margin-left:4em;"><span style="color:#E65100;margin-right:2px;">전체:</span>${vis.length}건</span>`;
+                    stats.innerHTML = s;
+                }
+            } catch (err) { console.error('대체거래 박스 로드 오류:', err); box.style.display = 'none'; }
+        }
     </script>
     
     <script>
