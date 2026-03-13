@@ -1133,6 +1133,21 @@ def classify_and_save(input_file=None, output_file=None, input_df=None):
         if '키워드' not in df.columns:
             df['키워드'] = ''
 
+    # 미분류/기타 방향 구분
+    _입금 = pd.to_numeric(df['입금액'].fillna(0).astype(str).str.replace(',', ''), errors='coerce').fillna(0)
+    _출금 = pd.to_numeric(df['출금액'].fillna(0).astype(str).str.replace(',', ''), errors='coerce').fillna(0)
+    _is_deposit = (_입금 > 0) & (_출금 == 0)
+    # 키워드 매칭된 미분류 → 미분류입금/미분류출금
+    _미분류_mask = df['카테고리'].isin(['미분류', '미분류출금', '미분류입금'])
+    if _미분류_mask.any():
+        df.loc[_미분류_mask & _is_deposit, '카테고리'] = '미분류입금'
+        df.loc[_미분류_mask & ~_is_deposit, '카테고리'] = '미분류출금'
+    # 키워드 미매칭(기타거래) → 기타은행입금/기타은행출금
+    _기타_mask = df['카테고리'] == '기타거래'
+    if _기타_mask.any():
+        df.loc[_기타_mask & _is_deposit, '카테고리'] = '기타은행입금'
+        df.loc[_기타_mask & ~_is_deposit, '카테고리'] = '기타은행출금'
+
     # 후처리: 계정과목 분류 끝난 뒤, 저장 전에 수행. category_table '후처리' 규칙으로 적요/내용/송금메모 치환
     try:
         df = apply_후처리_bank(df, category_tables)

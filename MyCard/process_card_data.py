@@ -824,10 +824,22 @@ def classify_and_save(input_df=None):
         df_card = _apply_후처리_only_to_columns(df_card, ['가맹점명', '카드사'])
 
         if '카테고리' not in df_card.columns:
-            df_card['카테고리'] = '미분류'
+            df_card['카테고리'] = ''
         else:
-            empty_cat = df_card['카테고리'].fillna('').astype(str).str.strip() == ''
-            df_card.loc[empty_cat, '카테고리'] = '미분류'
+            df_card['카테고리'] = df_card['카테고리'].fillna('').astype(str).str.strip()
+        _입금 = pd.to_numeric(df_card['입금액'].fillna(0).astype(str).str.replace(',', ''), errors='coerce').fillna(0) if '입금액' in df_card.columns else pd.Series(0, index=df_card.index)
+        _출금 = pd.to_numeric(df_card['출금액'].fillna(0).astype(str).str.replace(',', ''), errors='coerce').fillna(0) if '출금액' in df_card.columns else pd.Series(0, index=df_card.index)
+        _is_deposit = (_입금 > 0) & (_출금 == 0)
+        # 키워드 매칭된 미분류 → 미분류입금/미분류출금
+        _미분류_mask = df_card['카테고리'].isin(['미분류', '미분류출금', '미분류입금'])
+        if _미분류_mask.any():
+            df_card.loc[_미분류_mask & _is_deposit, '카테고리'] = '미분류입금'
+            df_card.loc[_미분류_mask & ~_is_deposit, '카테고리'] = '미분류출금'
+        # 키워드 미매칭(빈값/기타거래) → 기타카드입금/기타카드출금
+        _기타_mask = df_card['카테고리'].isin(['', '기타거래'])
+        if _기타_mask.any():
+            df_card.loc[_기타_mask & _is_deposit, '카테고리'] = '기타카드입금'
+            df_card.loc[_기타_mask & ~_is_deposit, '카테고리'] = '기타카드출금'
 
         if not df_card.empty and '카드번호' in df_card.columns:
             def _card_no_str(v):

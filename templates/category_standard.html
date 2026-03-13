@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>카테고리 검수 - MyRisk</title>
+    <link rel="stylesheet" href="/static/common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background: #F0F2F5; color: #1A1A1A; min-height: 100vh; display: flex; flex-direction: column; }
+
+        .top-nav { background: #263238; padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; }
+        .top-nav .brand { font-size: 1.05em; font-weight: bold; color: #fff; }
+        .top-nav .brand span { color: #B0BEC5; }
+        .top-nav .nav-links { display: flex; gap: 18px; }
+        .top-nav .nav-links a { color: rgba(255,255,255,0.75); text-decoration: none; font-size: 0.88em; transition: color 0.2s; padding-bottom: 2px; border-bottom: 2px solid transparent; }
+        .top-nav .nav-links a:hover { color: #fff; border-bottom-color: #B0BEC5; }
+
+        .page-wrap { max-width: 1400px; margin: 0 auto; padding: 16px 24px; width: 100%; flex: 1; display: flex; flex-direction: column; }
+        .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+        .page-header h1 { font-size: 1.15em; color: #1A1A1A; }
+        .page-header .actions { display: flex; gap: 8px; align-items: center; }
+
+        .tab-bar { display: flex; gap: 2px; margin-bottom: 12px; background: #E2E8F0; border-radius: 6px; padding: 2px; }
+        .tab-bar button { flex: 1; padding: 8px 12px; font-size: 0.85em; font-weight: 600; border: none; border-radius: 4px; cursor: pointer; background: transparent; color: #5A6872; transition: all 0.2s; font-family: inherit; }
+        .tab-bar button.active { background: #455A64; color: #fff; }
+        .tab-bar button:hover:not(.active) { background: #CFD8DC; }
+
+        .section-wrap { flex: 1; overflow: auto; background: #fff; border-radius: 8px; border: 1px solid #D5DAE0; }
+        .std-table { width: 100%; border-collapse: collapse; font-size: 0.85em; table-layout: fixed; }
+        .std-table th, .std-table td { border: 1px solid #E8ECF0; padding: 5px 8px; vertical-align: middle; }
+        .std-table th { background: #455A64; color: #fff; font-weight: 700; text-align: center; position: sticky; top: 0; z-index: 2; }
+        .std-table tbody tr:nth-child(even) { background: #FAFBFC; }
+        .std-table tbody tr:hover { background: #E8F5E9; }
+        .std-table .col-no { width: 2.5%; text-align: center; color: #90A4AE; }
+        .std-table .col-major { width: 3.5%; text-align: center; font-weight: 700; }
+        .std-table .col-mid { width: 11%; text-align: left; font-weight: 600; white-space: nowrap; }
+        .std-table .col-code { width: 5%; text-align: center; font-weight: 700; }
+        .std-table .col-cat { width: 12%; white-space: nowrap; }
+        .std-table .col-kw { word-break: break-all; }
+        .std-table .col-risk { width: 6%; text-align: center; }
+        .std-table .col-biz { width: 7%; text-align: center; }
+
+        .code-badge { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 0.8em; font-weight: 700; color: #fff; }
+        .code-M { background: #546E7A; }
+        .code-L { background: #2E7D32; }
+        .code-D { background: #E65100; }
+        .code-H { background: #C62828; }
+        .code-F { background: #1565C0; }
+        .code-P { background: #6A1B9A; }
+        .code-X { background: #90A4AE; }
+
+        .major-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.78em; font-weight: 700; color: #fff; white-space: nowrap; }
+        .major-I { background: #546E7A; }
+        .major-II { background: #2E7D32; }
+        .major-III { background: #E65100; }
+        .major-IV { background: #C62828; }
+        .major-V { background: #1565C0; }
+        .major-VI { background: #6A1B9A; }
+        .major-VII { background: #90A4AE; }
+
+        .mid-cell { background: #F5F5F5; font-weight: 600; color: #37474F; }
+
+        .group-major { background: #CFD8DC !important; font-weight: 700; }
+        .group-major td { color: #263238; border-bottom: 2px solid #90A4AE; font-size: 0.92em; }
+        .group-mid { background: #ECEFF1 !important; }
+        .group-mid td { color: #455A64; border-bottom: 1px solid #B0BEC5; }
+
+        .stats-bar { display: flex; gap: 14px; flex-wrap: wrap; padding: 8px 12px; background: #ECEFF1; border-radius: 6px; margin-bottom: 10px; font-size: 0.82em; color: #37474F; }
+        .stats-bar .st { display: flex; align-items: center; gap: 4px; }
+        .stats-bar .st-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+        .summary-cards { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+        .summary-card { flex: 1; min-width: 120px; background: #fff; border: 1px solid #D5DAE0; border-radius: 8px; padding: 10px 14px; text-align: center; }
+        .summary-card .sc-num { font-size: 1.6em; font-weight: 800; color: #263238; }
+        .summary-card .sc-label { font-size: 0.78em; color: #78909C; margin-top: 2px; }
+
+        .btn-sm { padding: 6px 14px; font-size: 0.85em; border: none; border-radius: 4px; cursor: pointer; font-family: inherit; font-weight: 600; transition: background 0.2s; }
+        .btn-back { background: #546E7A; color: #fff; text-decoration: none; }
+        .btn-back:hover { background: #37474F; }
+        .btn-print { background: #fff; color: #1A1A1A; border: 1px solid #455A64; }
+        .btn-print:hover { background: #455A64; color: #fff; }
+
+        @media print {
+            @page { size: A4 portrait; margin: 12mm 10mm; }
+            body { background: #fff; }
+            .top-nav, .tab-bar { display: none !important; }
+            .page-header .btn-sm { display: none !important; }
+            .page-header h1 { font-size: 1em; }
+            .page-wrap { padding: 0; max-width: 100%; }
+            .section-wrap { border: none; overflow: visible; }
+
+            .summary-cards { gap: 6px; margin-bottom: 8px; }
+            .summary-card { border: 1px solid #B0BEC5; padding: 6px 8px; border-radius: 4px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .summary-card .sc-num { font-size: 1.3em; }
+            .summary-card .sc-label { font-size: 0.72em; }
+
+            .stats-bar { padding: 5px 10px; font-size: 0.72em; margin-bottom: 6px; background: #ECEFF1; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .stats-bar .st-dot { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+            .std-table th { position: static; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .std-table { font-size: 0.7em; }
+            .std-table th, .std-table td { padding: 2px 4px; }
+            .std-table .col-no { width: 2.5%; }
+            .std-table .col-major { width: 3%; }
+            .std-table .col-mid { width: 11%; }
+            .std-table .col-code { width: 5%; }
+            .std-table .col-cat { width: 12%; }
+            .code-badge { padding: 0 4px; font-size: 0.75em; }
+            .major-badge { padding: 1px 5px; font-size: 0.72em; }
+            .group-major, .group-mid, .code-badge, .major-badge { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            h2, h3 { page-break-after: avoid; }
+            table { page-break-inside: auto; }
+            tr { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="brand">MyRisk <span>카테고리 검수</span></div>
+        <div class="nav-links">
+            <a href="/">홈</a>
+            <a href="/reset">초기화</a>
+        </div>
+    </nav>
+
+    <div class="page-wrap">
+        <div class="page-header">
+            <h1>계정과목 표준 검수</h1>
+            <div class="actions">
+                <a href="/reset" class="btn-sm btn-back">← 초기화</a>
+                <button class="btn-sm btn-print" onclick="window.print()">인쇄</button>
+            </div>
+        </div>
+
+        <div class="summary-cards" id="summary-cards"></div>
+        <div class="stats-bar" id="stats-bar">로딩 중...</div>
+
+        <div class="tab-bar" id="tab-bar">
+            <button data-tab="계정과목" class="active">계정과목</button>
+            <button data-tab="전처리">전처리</button>
+            <button data-tab="후처리">후처리</button>
+            <button data-tab="신청인">신청인</button>
+            <button data-tab="심야구분">심야구분</button>
+            <button data-tab="위험도분류">위험도분류</button>
+            <button data-tab="업종분류">업종분류</button>
+            <button data-tab="전수조사" style="background:#C62828;color:#fff;font-weight:700;">전수조사</button>
+        </div>
+
+        <div class="section-wrap" id="table-wrap">
+            <div style="padding:40px; text-align:center; color:#90A4AE;">데이터를 불러오는 중...</div>
+        </div>
+    </div>
+
+<script>
+(function() {
+    let _data = null;
+    let _currentTab = '계정과목';
+
+    async function loadData() {
+        try {
+            const res = await fetch('/api/category-standard-data');
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            _data = await res.json();
+            if (_data.error) { document.getElementById('table-wrap').innerHTML = '<div style="padding:40px;text-align:center;color:#C62828;">' + _data.error + '</div>'; return; }
+            renderSummary();
+            renderStats();
+            renderTable();
+        } catch (e) {
+            document.getElementById('table-wrap').innerHTML = '<div style="padding:40px;text-align:center;color:#C62828;">오류: ' + e.message + '</div>';
+        }
+    }
+
+    function renderSummary() {
+        if (!_data) return;
+        const acc = _data['계정과목'] || [];
+        const majors = new Set(), mids = new Set(), codes = new Set();
+        let totalKw = 0;
+        acc.forEach(r => {
+            majors.add(r['대분류'] || '');
+            mids.add((r['대분류'] || '') + '|' + (r['중분류'] || ''));
+            codes.add(r['코드'] || '');
+            totalKw += (r['키워드'] || '').split('/').length;
+        });
+        const cards = [
+            { num: majors.size, label: '대분류' },
+            { num: mids.size, label: '중분류' },
+            { num: codes.size, label: '소분류' },
+            { num: acc.length, label: '키워드 행' },
+            { num: totalKw, label: '개별 키워드' },
+        ];
+        document.getElementById('summary-cards').innerHTML = cards.map(c =>
+            `<div class="summary-card"><div class="sc-num">${c.num}</div><div class="sc-label">${c.label}</div></div>`
+        ).join('');
+    }
+
+    function renderStats() {
+        if (!_data) return;
+        const acc = _data['계정과목'] || [];
+        const majorColors = { 'I': '#546E7A', 'II': '#2E7D32', 'III': '#E65100', 'IV': '#C62828', 'V': '#1565C0', 'VI': '#6A1B9A', 'VII': '#90A4AE' };
+
+        const byMajor = {};
+        acc.forEach(r => {
+            const mj = r['대분류'] || '';
+            if (!byMajor[mj]) byMajor[mj] = { rows: 0, kw: 0 };
+            byMajor[mj].rows++;
+            byMajor[mj].kw += (r['키워드'] || '').split('/').length;
+        });
+
+        let h = '';
+        for (const [mj, info] of Object.entries(byMajor)) {
+            const roman = (mj.match(/^(I{1,3}V?|IV|V|VI{0,2}|VII)/) || [''])[0];
+            const color = majorColors[roman] || '#546E7A';
+            h += `<div class="st"><span class="st-dot" style="background:${color}"></span><strong>${mj}</strong> ${info.rows}행/${info.kw}키워드</div>`;
+        }
+
+        h += '<div style="width:100%;border-top:1px solid #B0BEC5;margin:2px 0;"></div>';
+
+        const others = [['전처리', _data['전처리']], ['후처리', _data['후처리']], ['위험도분류', _data['위험도분류']], ['업종분류', _data['업종분류']]];
+        others.forEach(([name, arr]) => { if (arr && arr.length) h += `<div class="st"><strong>${name}</strong> ${arr.length}행</div>`; });
+        document.getElementById('stats-bar').innerHTML = h;
+    }
+
+    function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+    function renderTable() {
+        if (!_data) return;
+        const wrap = document.getElementById('table-wrap');
+        if (_currentTab === '계정과목') renderAccountTable(wrap);
+        else if (_currentTab === '전수조사') renderAuditTab(wrap);
+        else if (_currentTab === '위험도분류' || _currentTab === '업종분류') renderRiskTable(wrap, _currentTab);
+        else renderSimpleTable(wrap, _currentTab);
+    }
+
+    let _auditData = null;
+    async function renderAuditTab(wrap) {
+        if (!_auditData) {
+            wrap.innerHTML = '<div style="padding:40px;text-align:center;color:#78909C;">전수조사 데이터 로딩 중...</div>';
+            try {
+                const res = await fetch('/api/category-standard-audit');
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                _auditData = await res.json();
+                if (_auditData.error) { wrap.innerHTML = '<div style="padding:40px;text-align:center;color:#C62828;">' + _auditData.error + '</div>'; return; }
+            } catch (e) {
+                wrap.innerHTML = '<div style="padding:40px;text-align:center;color:#C62828;">오류: ' + e.message + '</div>'; return;
+            }
+        }
+        const d = _auditData;
+        const fmt = n => (n||0).toLocaleString();
+        let h = '<div style="padding:16px 20px;font-size:0.88em;line-height:1.7;">';
+
+        h += '<h2 style="font-size:1.2em;border-bottom:2px solid #455A64;padding-bottom:6px;margin-bottom:12px;">계정과목 표준 전수조사 결과</h2>';
+
+        // 1. 키워드 커버리지
+        h += '<h3 style="margin:16px 0 8px;color:#263238;">1. 키워드 커버리지</h3>';
+        h += '<table class="std-table" style="margin-bottom:12px;table-layout:fixed;"><colgroup><col style="width:75%"><col style="width:25%"></colgroup><thead><tr><th>구분</th><th>건수</th></tr></thead><tbody>';
+        h += `<tr><td>현행 계정과목 키워드</td><td style="text-align:right;">${fmt(d['현행키워드수'])}</td></tr>`;
+        h += `<tr><td>신규 표준 키워드</td><td style="text-align:right;">${fmt(d['신규키워드수'])}</td></tr>`;
+        h += `<tr><td>양쪽 모두 (카테고리 변경)</td><td style="text-align:right;">${fmt(d['변경'].length)}</td></tr>`;
+        h += `<tr><td>양쪽 동일 유지</td><td style="text-align:right;">${fmt(d['유지'])}</td></tr>`;
+        h += `<tr style="background:#FFF3E0;"><td><strong>현행에만 있음 (누락)</strong></td><td style="text-align:right;color:#E65100;"><strong>${fmt(d['누락'].length)}</strong></td></tr>`;
+        h += `<tr style="background:#E8F5E9;"><td>신규에만 있음 (추가)</td><td style="text-align:right;color:#2E7D32;">${fmt(d['추가'].length)}</td></tr>`;
+        h += '</tbody></table>';
+
+        if (d['누락'].length) {
+            h += '<p style="font-weight:600;color:#E65100;">▸ 누락 키워드:</p><ul style="margin:4px 0 12px 20px;">';
+            d['누락'].forEach(r => { h += `<li><code>${esc(r['키워드'])}</code> — 현행: ${esc(r['현행'])}</li>`; });
+            h += '</ul>';
+        }
+        if (d['추가'].length) {
+            h += '<p style="font-weight:600;color:#2E7D32;">▸ 추가 키워드:</p><ul style="margin:4px 0 12px 20px;">';
+            d['추가'].forEach(r => { h += `<li><code>${esc(r['키워드'])}</code> → ${esc(r['코드'])} ${esc(r['카테고리'])}</li>`; });
+            h += '</ul>';
+        }
+
+        // 2. 카테고리 변경 (요약 + 전체)
+        h += '<h3 style="margin:16px 0 8px;color:#263238;">2. 카테고리 변경 상세 (' + d['변경'].length + '건)</h3>';
+        if (d['변경'].length) {
+            const byOld = {};
+            d['변경'].forEach(r => {
+                const k = r['현행'];
+                if (!byOld[k]) byOld[k] = [];
+                byOld[k].push(r);
+            });
+            h += '<table class="std-table" style="table-layout:fixed;"><colgroup><col style="width:20%"><col style="width:10%"><col style="width:70%"></colgroup><thead><tr><th>현행 카테고리</th><th>건수</th><th>→ 신규 소분류 (대표)</th></tr></thead><tbody>';
+            for (const [old, items] of Object.entries(byOld).sort((a,b)=>b[1].length-a[1].length)) {
+                const newCats = {};
+                items.forEach(r => { const k = r['코드'] + ' ' + r['신규']; newCats[k] = (newCats[k]||0)+1; });
+                const topNew = Object.entries(newCats).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k,v])=>`${k}(${v})`).join(', ');
+                h += `<tr><td style="white-space:nowrap;">${esc(old)}</td><td style="text-align:right;white-space:nowrap;">${items.length}</td><td style="font-size:0.85em;white-space:nowrap;">${topNew}</td></tr>`;
+            }
+            h += '</tbody></table>';
+        }
+
+        // 3. 은행거래
+        const bk = d['은행'] || {};
+        h += '<h3 style="margin:20px 0 8px;color:#263238;">3. 은행거래 (bank_after.json) 매칭 결과</h3>';
+        h += '<table class="std-table" style="margin-bottom:12px;table-layout:fixed;"><colgroup><col style="width:75%"><col style="width:25%"></colgroup><thead><tr><th>구분</th><th>건수</th></tr></thead><tbody>';
+        h += `<tr><td>전체 거래</td><td style="text-align:right;">${fmt(bk['전체'])}</td></tr>`;
+        h += `<tr><td>고유 기타거래 값</td><td style="text-align:right;">${fmt(bk['고유기타거래'])}</td></tr>`;
+        h += `<tr style="background:#E8F5E9;"><td>매칭 성공</td><td style="text-align:right;">${fmt(bk['매칭'])} (${bk['고유기타거래']?((bk['매칭']/bk['고유기타거래']*100).toFixed(1)):0}%)</td></tr>`;
+        h += `<tr style="background:#FFF3E0;"><td><strong>미매칭</strong></td><td style="text-align:right;color:#E65100;"><strong>${fmt(bk['미매칭'])}</strong></td></tr>`;
+        h += `<tr style="background:#FFEBEE;"><td><strong>키워드 충돌 (미해결)</strong></td><td style="text-align:right;color:#C62828;"><strong>${fmt(bk['충돌수'])}</strong></td></tr>`;
+        h += `<tr style="background:#E8F5E9;"><td>키워드 충돌 (위험도 해결)</td><td style="text-align:right;color:#2E7D32;">${fmt(bk['해결수']||0)}</td></tr>`;
+        h += '</tbody></table>';
+
+        if ((bk['미매칭목록']||[]).length) {
+            h += '<p style="font-weight:600;color:#E65100;">▸ 미매칭 기타거래 (' + bk['미매칭'] + '건):</p>';
+            h += '<table class="std-table" style="font-size:0.82em;table-layout:fixed;"><colgroup><col style="width:3%"><col><col style="width:4%"><col style="width:8%"><col style="width:8%"><col style="width:9%"><col style="width:12%"></colgroup><thead><tr><th>No</th><th>기타거래</th><th>건수</th><th>입금</th><th>출금</th><th>현행</th><th>분류</th></tr></thead><tbody>';
+            (bk['미매칭목록']||[]).forEach((r, i) => {
+                const cls = (r['분류']||'').includes('입금') ? 'color:#1565C0;' : 'color:#E65100;';
+                h += `<tr><td style="text-align:center;">${i+1}</td><td style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(r['기타거래'])}</td><td style="text-align:right;">${r['건수']}</td><td style="text-align:right;">${fmt(r['입금'])}</td><td style="text-align:right;">${fmt(r['출금'])}</td><td style="white-space:nowrap;">${esc(r['현행'])}</td><td style="font-weight:600;white-space:nowrap;${cls}">${esc(r['분류']||'')}</td></tr>`;
+            });
+            h += '</tbody></table>';
+        }
+
+        if ((bk['해결목록']||[]).length) {
+            h += '<p style="font-weight:600;color:#2E7D32;margin-top:12px;">▸ 키워드 충돌 → 위험도 자동 해결 (' + fmt(bk['해결수']||0) + '건):</p>';
+            h += '<table class="std-table" style="font-size:0.82em;"><thead><tr><th style="width:3%;">No</th><th>기타거래</th><th>충돌 매칭</th><th style="width:15%;">→ 해결</th></tr></thead><tbody>';
+            (bk['해결목록']||[]).forEach((r, i) => {
+                const mc = r['매칭'].map((m, mi) => `<div style="padding:2px 0;${mi > 0 ? 'border-top:1px dashed #CFD8DC;margin-top:2px;padding-top:4px;' : ''}"><span class="code-badge code-${m['코드'].charAt(0)}" style="margin:1px 2px;">${m['코드']}</span> ${esc(m['카테고리'])} <span style="color:#90A4AE;">(${esc(m['키워드'])})</span></div>`).join('');
+                h += `<tr><td style="text-align:center;">${i+1}</td><td style="word-break:break-all;">${esc(r['기타거래'])}</td><td>${mc}</td><td style="font-weight:700;color:#2E7D32;"><span class="code-badge code-${(r['해결코드']||'X').charAt(0)}">${esc(r['해결코드']||'')}</span> ${esc(r['해결카테고리']||'')}</td></tr>`;
+            });
+            h += '</tbody></table>';
+        }
+
+        if ((bk['충돌목록']||[]).length) {
+            h += '<p style="font-weight:600;color:#C62828;margin-top:12px;">▸ 키워드 충돌 — 위험도 동일 (미해결 ' + fmt(bk['충돌수']) + '건):</p>';
+            h += '<table class="std-table" style="font-size:0.82em;"><thead><tr><th style="width:3%;">No</th><th>기타거래</th><th>충돌 매칭</th></tr></thead><tbody>';
+            (bk['충돌목록']||[]).forEach((r, i) => {
+                const mc = r['매칭'].map((m, mi) => `<div style="padding:2px 0;${mi > 0 ? 'border-top:1px dashed #CFD8DC;margin-top:2px;padding-top:4px;' : ''}"><span class="code-badge code-${m['코드'].charAt(0)}" style="margin:1px 2px;">${m['코드']}</span> ${esc(m['카테고리'])} <span style="color:#90A4AE;">(${esc(m['키워드'])})</span></div>`).join('');
+                h += `<tr><td style="text-align:center;">${i+1}</td><td style="word-break:break-all;">${esc(r['기타거래'])}</td><td>${mc}</td></tr>`;
+            });
+            h += '</tbody></table>';
+        }
+
+        // 4. 카드
+        const cd = d['카드'] || {};
+        h += '<h3 style="margin:20px 0 8px;color:#263238;">4. 신용카드 (card_after.json) 매칭 결과</h3>';
+        h += '<table class="std-table" style="margin-bottom:12px;table-layout:fixed;"><colgroup><col style="width:75%"><col style="width:25%"></colgroup><thead><tr><th>구분</th><th>건수</th></tr></thead><tbody>';
+        h += `<tr><td>전체 거래</td><td style="text-align:right;">${fmt(cd['전체'])}</td></tr>`;
+        h += `<tr><td>고유 키워드 값</td><td style="text-align:right;">${fmt(cd['고유키워드'])}</td></tr>`;
+        h += `<tr style="background:#E8F5E9;"><td>매칭 성공</td><td style="text-align:right;">${fmt(cd['매칭'])}</td></tr>`;
+        h += `<tr style="background:#FFF3E0;"><td>미매칭</td><td style="text-align:right;">${fmt(cd['미매칭'])}</td></tr>`;
+        h += '</tbody></table>';
+
+        if ((cd['미매칭목록']||[]).length) {
+            h += '<p style="font-weight:600;color:#E65100;">▸ 미매칭 키워드:</p>';
+            h += '<table class="std-table" style="font-size:0.82em;table-layout:fixed;"><colgroup><col style="width:3%"><col><col style="width:5%"><col style="width:10%"><col style="width:12%"></colgroup><thead><tr><th>No</th><th>키워드</th><th>건수</th><th>현행</th><th>분류</th></tr></thead><tbody>';
+            (cd['미매칭목록']||[]).forEach((r, i) => {
+                const cls = (r['분류']||'').includes('입금') ? 'color:#1565C0;' : 'color:#E65100;';
+                h += `<tr><td style="text-align:center;">${i+1}</td><td style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(r['키워드'])}</td><td style="text-align:right;">${r['건수']}</td><td style="white-space:nowrap;">${esc(r['현행'])}</td><td style="font-weight:600;white-space:nowrap;${cls}">${esc(r['분류']||'')}</td></tr>`;
+            });
+            h += '</tbody></table>';
+        }
+
+        // 5. 종합
+        h += '<h3 style="margin:20px 0 8px;color:#263238;">5. 종합</h3>';
+        h += '<table class="std-table" style="table-layout:fixed;"><colgroup><col style="width:3%"><col style="width:35%"><col style="width:8%"><col style="width:54%"></colgroup><thead><tr><th>No</th><th>항목</th><th>심각도</th><th>비고</th></tr></thead><tbody>';
+        const issues = [];
+        const conflictN = bk['충돌수'] || 0;
+        const unmatchBankN = bk['미매칭'] || 0;
+        const unmatchCardN = cd['미매칭'] || 0;
+        const missingN = d['누락'].length;
+        const addedN = d['추가'].length;
+        const changedN = d['변경'].length;
+        if (conflictN > 0) issues.push({ text: '은행 키워드 충돌 ' + fmt(conflictN) + '건', sev: '높음', sevColor: '#C62828', bg: '#FFEBEE', note: '매칭 우선순위 규칙 또는 전처리 제거 검토' });
+        if (unmatchBankN > 0) issues.push({ text: '은행 미매칭 ' + fmt(unmatchBankN) + '건', sev: unmatchBankN > 10 ? '중간' : '낮음', sevColor: unmatchBankN > 10 ? '#E65100' : '#90A4AE', bg: '', note: '이자/결산 등 서술형 — 필요 시 전처리 키워드 추가' });
+        if (unmatchCardN > 0) issues.push({ text: '카드 미매칭 ' + fmt(unmatchCardN) + '건', sev: unmatchCardN > 10 ? '중간' : '낮음', sevColor: unmatchCardN > 10 ? '#E65100' : '#90A4AE', bg: '', note: '필요 시 계정과목 키워드 추가' });
+        if (changedN > 0) issues.push({ text: '카테고리 변경 ' + fmt(changedN) + '건', sev: '참고', sevColor: '#1565C0', bg: '', note: '현행 → 신규 카테고리명 변경. 표준 적용 시 자동 반영' });
+        if (missingN > 0) issues.push({ text: '누락 키워드 ' + fmt(missingN) + '건', sev: '낮음', sevColor: '#90A4AE', bg: '', note: '현행에만 존재. 오타 또는 미사용 키워드 확인 후 삭제 가능' });
+        if (addedN > 0) issues.push({ text: '추가 키워드 ' + fmt(addedN) + '건', sev: '참고', sevColor: '#2E7D32', bg: '#E8F5E9', note: '표준에만 존재. 적용 시 신규 키워드로 등록' });
+        if (!issues.length) issues.push({ text: '문제 없음', sev: '-', sevColor: '#90A4AE', bg: '#E8F5E9', note: '전수조사 통과' });
+        issues.forEach((it, i) => {
+            h += `<tr${it.bg ? ' style="background:' + it.bg + ';"' : ''}><td style="text-align:center;">${i+1}</td><td>${it.text}</td><td style="text-align:center;color:${it.sevColor};font-weight:700;">${it.sev}</td><td>${it.note}</td></tr>`;
+        });
+        h += '</tbody></table>';
+
+        h += '</div>';
+        wrap.innerHTML = h;
+    }
+
+    function renderAccountTable(wrap) {
+        const items = _data['계정과목'] || [];
+        if (!items.length) { wrap.innerHTML = '<div style="padding:40px;text-align:center;color:#90A4AE;">데이터 없음</div>'; return; }
+
+        const majorColorCls = { 'I': 'major-I', 'II': 'major-II', 'III': 'major-III', 'IV': 'major-IV', 'V': 'major-V', 'VI': 'major-VI', 'VII': 'major-VII' };
+
+        let h = '<table class="std-table"><colgroup>';
+        h += '<col style="width:2.5%"><col style="width:3.5%"><col style="width:11%"><col style="width:5%"><col style="width:12%"><col style="width:66%">';
+        h += '</colgroup><thead><tr><th class="col-no">No</th><th>대분류</th><th>중분류</th><th class="col-code">코드</th><th class="col-cat">소분류</th><th class="col-kw">키워드</th></tr></thead><tbody>';
+
+        let prevMajor = '', prevMid = '';
+        let no = 0;
+
+        items.forEach((r) => {
+            const major = r['대분류'] || '';
+            const mid = r['중분류'] || '';
+            const code = r['코드'] || '';
+            const g = code.charAt(0);
+            const roman = (major.match(/^(I{1,3}V?|IV|V|VI{0,2}|VII)/) || [''])[0];
+            const mCls = majorColorCls[roman] || 'major-VII';
+
+            if (major !== prevMajor) {
+                const majorCount = items.filter(x => x['대분류'] === major).length;
+                const majorMids = new Set(items.filter(x => x['대분류'] === major).map(x => x['중분류'])).size;
+                const majorCodes = new Set(items.filter(x => x['대분류'] === major).map(x => x['코드'])).size;
+                h += `<tr class="group-major"><td colspan="6"><span class="major-badge ${mCls}">${esc(major)}</span>&nbsp;&nbsp;중분류 ${majorMids} · 소분류 ${majorCodes} · ${majorCount}행</td></tr>`;
+                prevMajor = major;
+                prevMid = '';
+            }
+
+            if (mid !== prevMid) {
+                const midCount = items.filter(x => x['대분류'] === major && x['중분류'] === mid).length;
+                const midCodes = new Set(items.filter(x => x['대분류'] === major && x['중분류'] === mid).map(x => x['코드'])).size;
+                h += `<tr class="group-mid"><td></td><td></td><td colspan="4" style="font-weight:600;">▸ ${esc(mid)} &nbsp;<span style="color:#78909C;font-weight:400;">소분류 ${midCodes} · ${midCount}행</span></td></tr>`;
+                prevMid = mid;
+            }
+
+            no++;
+            const codeCls = 'code-' + g;
+            const kwHtml = esc(r['키워드']).split('/').map(k => `<span style="display:inline-block;background:#ECEFF1;padding:1px 5px;border-radius:3px;margin:1px 2px;font-size:0.92em;">${k}</span>`).join('');
+            h += `<tr>`;
+            h += `<td class="col-no">${no}</td>`;
+            h += `<td class="col-major" style="color:#78909C;font-size:0.78em;">${esc(roman)}</td>`;
+            h += `<td class="col-mid" style="font-size:0.8em;color:#607D8B;">${esc(mid)}</td>`;
+            h += `<td class="col-code"><span class="code-badge ${codeCls}">${esc(code)}</span></td>`;
+            h += `<td class="col-cat">${esc(r['카테고리'])}</td>`;
+            h += `<td class="col-kw">${kwHtml}</td>`;
+            h += `</tr>`;
+        });
+
+        h += '</tbody></table>';
+        wrap.innerHTML = h;
+    }
+
+    function renderRiskTable(wrap, tab) {
+        const items = _data[tab] || [];
+        if (!items.length) { wrap.innerHTML = '<div style="padding:40px;text-align:center;color:#90A4AE;">데이터 없음</div>'; return; }
+
+        let h = '<table class="std-table"><colgroup><col style="width:3.5%"><col style="width:40%"><col style="width:20%"><col style="width:8%"><col style="width:10%"></colgroup>';
+        h += '<thead><tr><th class="col-no">No</th><th>키워드</th><th>카테고리</th><th class="col-risk">위험도</th><th class="col-biz">업종코드</th></tr></thead><tbody>';
+
+        items.forEach((r, i) => {
+            h += `<tr><td class="col-no">${i + 1}</td><td style="word-break:break-all;">${esc(r['키워드'])}</td><td>${esc(r['카테고리'])}</td><td class="col-risk">${esc(r['위험도'])}</td><td class="col-biz">${esc(r['업종코드'])}</td></tr>`;
+        });
+
+        h += '</tbody></table>';
+        wrap.innerHTML = h;
+    }
+
+    function renderSimpleTable(wrap, tab) {
+        const items = _data[tab] || [];
+        if (!items.length) { wrap.innerHTML = '<div style="padding:40px;text-align:center;color:#90A4AE;">데이터 없음</div>'; return; }
+
+        let h = '<table class="std-table"><colgroup><col style="width:5%"><col style="width:50%"><col style="width:45%"></colgroup>';
+        h += '<thead><tr><th class="col-no">No</th><th>키워드</th><th>카테고리</th></tr></thead><tbody>';
+
+        items.forEach((r, i) => {
+            h += `<tr><td class="col-no">${i + 1}</td><td style="word-break:break-all;">${esc(r['키워드'])}</td><td>${esc(r['카테고리'])}</td></tr>`;
+        });
+
+        h += '</tbody></table>';
+        wrap.innerHTML = h;
+    }
+
+    document.getElementById('tab-bar').addEventListener('click', function(e) {
+        if (e.target.tagName !== 'BUTTON') return;
+        const tab = e.target.getAttribute('data-tab');
+        if (!tab) return;
+        _currentTab = tab;
+        document.querySelectorAll('#tab-bar button').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        renderTable();
+    });
+
+    loadData();
+})();
+</script>
+</body>
+</html>
