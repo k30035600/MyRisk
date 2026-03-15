@@ -35,7 +35,6 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 from lib.shared_app_utils import safe_str, clean_amount, setup_win32_utf8
-from lib.excel_io import safe_write_excel
 from lib.category_table_io import normalize_주식회사_for_match, safe_write_category_table, load_category_table, normalize_category_df, CATEGORY_TABLE_COLUMNS
 from lib.path_config import get_data_dir, get_card_after_path, get_category_table_json_path, get_source_card_dir
 from lib.data_json_io import safe_write_data_json, safe_read_data_json

@@ -8,8 +8,11 @@ DataFrame을 UTF-8 JSON(records 형식)으로 저장·로드한다. datetime·nu
 """
 import os
 import json
+import logging
 import numpy as np
 import pandas as pd
+
+_logger = logging.getLogger(__name__)
 
 
 def _records_to_json_serializable(rec):
@@ -39,6 +42,7 @@ def safe_write_data_json(path, df):
             json.dump(rec, f, ensure_ascii=False, indent=2)
         return True
     except Exception:
+        _logger.exception('safe_write_data_json 실패: %s', path)
         return False
 
 
@@ -57,4 +61,5 @@ def safe_read_data_json(path, default_empty=True):
         df = pd.DataFrame(data)
         return df if df is not None else (pd.DataFrame() if default_empty else None)
     except Exception:
+        _logger.exception('safe_read_data_json 실패: %s', path)
         return pd.DataFrame() if default_empty else None

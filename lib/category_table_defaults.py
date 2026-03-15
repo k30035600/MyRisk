@@ -5,7 +5,10 @@
 get_default_rules(kind) — 모듈별 기본 카테고리 규칙 반환.
 sync_category_create_from_xlsx(json_path) — .source/category_table.xlsx → category_table.json 단방향 동기화.
 """
+import logging
 import os
+
+_logger = logging.getLogger(__name__)
 
 _DEFAULT_RULES = {
     'bank': [],
@@ -37,4 +40,4 @@ def sync_category_create_from_xlsx(json_path):
         df = normalize_category_df(df, extended=True)
         safe_write_category_table(json_path, df, extended=True)
     except Exception:
-        pass
+        _logger.exception('sync_category_create_from_xlsx 실패: %s', json_path)

@@ -264,11 +264,8 @@ def compute_by_category_monthly(
             if pd.notna(cat_group) and cat_group != '':
                 parts.append(str(cat_group))
         label = '_'.join(parts) if parts else '(빈값)'
-        md, mw = {}, {}
-        for _, row in gdf.iterrows():
-            m = row['거래월']
-            md[m] = _safe_int(row['입금액'])
-            mw[m] = _safe_int(row['출금액'])
+        md = dict(zip(gdf['거래월'], gdf['입금액'].apply(_safe_int)))
+        mw = dict(zip(gdf['거래월'], gdf['출금액'].apply(_safe_int)))
         dep = [md.get(m, 0) for m in all_months]
         wit = [mw.get(m, 0) for m in all_months]
         td, tw = sum(dep), sum(wit)
@@ -284,11 +281,15 @@ def compute_by_category_monthly(
 # ────────────────────────────────────────
 # 6. by-content
 # ────────────────────────────────────────
-def compute_by_content(df: pd.DataFrame) -> dict:
-    if df.empty or '내용' not in df.columns:
+def compute_by_content(df: pd.DataFrame, content_col: str = '내용') -> dict:
+    if df.empty:
         return {'deposit': [], 'withdraw': []}
-    dep = df.groupby('내용')['입금액'].sum().sort_values(ascending=False)
-    wit = df.groupby('내용')['출금액'].sum().sort_values(ascending=False)
+    if content_col not in df.columns:
+        content_col = '기타거래' if '기타거래' in df.columns else '적요'
+    if content_col not in df.columns:
+        return {'deposit': [], 'withdraw': []}
+    dep = df.groupby(content_col)['입금액'].sum().sort_values(ascending=False)
+    wit = df.groupby(content_col)['출금액'].sum().sort_values(ascending=False)
     return {
         'deposit': [{'content': idx if idx else '(빈값)', 'amount': int(val)} for idx, val in dep.items() if val > 0],
         'withdraw': [{'content': idx if idx else '(빈값)', 'amount': int(val)} for idx, val in wit.items() if val > 0],
@@ -332,11 +333,14 @@ def compute_by_bank(
     if include_count:
         bc = df.groupby(bank_col).size().reset_index(name='count')
         bank_stats = bank_stats.merge(bc, on=bank_col)
+    bs = bank_stats.copy()
+    bs['입금액'] = bs['입금액'].apply(_safe_int)
+    bs['출금액'] = bs['출금액'].apply(_safe_int)
     bank_data = []
-    for _, row in bank_stats.iterrows():
-        item = {'bank': row[bank_col], 'deposit': _safe_int(row['입금액']), 'withdraw': _safe_int(row['출금액'])}
+    for rec in bs.to_dict('records'):
+        item = {'bank': rec[bank_col], 'deposit': rec['입금액'], 'withdraw': rec['출금액']}
         if include_count:
-            item['count'] = _safe_int(row.get('count'))
+            item['count'] = _safe_int(rec.get('count'))
         bank_data.append(item)
 
     account_data = []
@@ -345,15 +349,17 @@ def compute_by_bank(
         if include_count:
             ac = df.groupby([bank_col, account_col]).size().reset_index(name='count')
             acc_stats = acc_stats.merge(ac, on=[bank_col, account_col])
-        for _, row in acc_stats.iterrows():
+        acc_stats['입금액'] = acc_stats['입금액'].apply(_safe_int)
+        acc_stats['출금액'] = acc_stats['출금액'].apply(_safe_int)
+        for rec in acc_stats.to_dict('records'):
             item = {
-                'bank': row[bank_col] if pd.notna(row[bank_col]) else '',
-                'account': str(row[account_col]).strip() if pd.notna(row[account_col]) else '',
-                'deposit': _safe_int(row['입금액']),
-                'withdraw': _safe_int(row['출금액']),
+                'bank': rec[bank_col] if pd.notna(rec[bank_col]) else '',
+                'account': str(rec[account_col]).strip() if pd.notna(rec[account_col]) else '',
+                'deposit': rec['입금액'],
+                'withdraw': rec['출금액'],
             }
             if include_count:
-                item['count'] = _safe_int(row.get('count'))
+                item['count'] = _safe_int(rec.get('count'))
             account_data.append(item)
     return {'bank': bank_data, 'account': account_data}
 
@@ -491,18 +497,22 @@ def compute_transactions(
 # ────────────────────────────────────────
 # 11. content-by-category
 # ────────────────────────────────────────
-def compute_content_by_category(df: pd.DataFrame, filter_col: str = '카테고리', category_filter: str = '') -> List[dict]:
+def compute_content_by_category(df: pd.DataFrame, filter_col: str = '카테고리', category_filter: str = '', content_col: str = '내용') -> List[dict]:
     if df.empty or not category_filter:
         return []
     if filter_col not in df.columns:
         filter_col = '적요' if '적요' in df.columns else '카테고리'
     if filter_col not in df.columns:
         return []
+    if content_col not in df.columns:
+        content_col = '기타거래' if '기타거래' in df.columns else '적요'
+    if content_col not in df.columns or '입금액' not in df.columns:
+        return []
     filtered = df[(df[filter_col].fillna('').astype(str).str.strip() == category_filter) & (df['입금액'] > 0)].copy()
     if filtered.empty:
         return []
-    stats = filtered.groupby('내용')['입금액'].sum().sort_values(ascending=False).reset_index()
-    return [{'content': _safe_label(r['내용'], '(빈값)'), 'amount': _safe_int(r['입금액'])} for _, r in stats.iterrows()]
+    stats = filtered.groupby(content_col)['입금액'].sum().sort_values(ascending=False).reset_index()
+    return [{'content': _safe_label(r[content_col], '(빈값)'), 'amount': _safe_int(r['입금액'])} for _, r in stats.iterrows()]
 
 
 # ────────────────────────────────────────

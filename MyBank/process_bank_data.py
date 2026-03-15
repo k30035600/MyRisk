@@ -614,7 +614,7 @@ def migrate_bank_category_file(category_filepath=None):
     migrated_df = category_df.loc[keep_mask].copy()
     계정과목_mask = (migrated_df['분류'].astype(str).str.strip() == CLASS_ACCOUNT)
     if not 계정과목_mask.any() or 계정과목_mask.sum() < 10:
-        account_rows = pd.DataFrame(_DEFAULT_BANK_ACCOUNT_RULES)
+        account_rows = pd.DataFrame(get_default_rules('bank'))
         existing_account = migrated_df[계정과목_mask] if 계정과목_mask.any() else pd.DataFrame(columns=(CATEGORY_TABLE_EXTENDED_COLUMNS if 'CATEGORY_TABLE_EXTENDED_COLUMNS' in dir() else ['분류', '키워드', '카테고리', '위험도', '위험지표']))
         other_rows = migrated_df[~계정과목_mask]
         combined = pd.concat([existing_account, account_rows], ignore_index=True).drop_duplicates(subset=CATEGORY_TABLE_COLUMNS, keep='first')

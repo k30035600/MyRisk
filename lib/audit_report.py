@@ -108,7 +108,8 @@ def _load_audit_data(root):
     if not os.path.exists(ct_path):
         return result
 
-    ct = json.load(open(ct_path, 'r', encoding='utf-8'))
+    with open(ct_path, 'r', encoding='utf-8') as _f:
+        ct = json.load(_f)
     old_kw_map = {}
     for r in ct:
         if r.get('분류') != CLASS_ACCOUNT:
@@ -123,7 +124,8 @@ def _load_audit_data(root):
     if not os.path.exists(md_path):
         return result
 
-    md_content = open(md_path, 'r', encoding='utf-8').read()
+    with open(md_path, 'r', encoding='utf-8') as _f:
+        md_content = _f.read()
     new_kw_map = {}
     current_section = None
     current_code = None

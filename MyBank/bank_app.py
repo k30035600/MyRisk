@@ -1127,7 +1127,7 @@ def print_analysis():
 
         major_summary = []
         try:
-            from category_table_io import load_category_table
+            from lib.category_table_io import load_category_table
             from lib.path_config import get_category_table_json_path
             ct_path = get_category_table_json_path()
             ct_df = load_category_table(ct_path)

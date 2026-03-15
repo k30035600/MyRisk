@@ -184,16 +184,6 @@ def _is_simya(거래시간_str, simya_range: Optional[Tuple[int, int]]) -> bool:
     return t >= start_m or t < end_m
 
 
-def compute_simya_series(거래시간_series: pd.Series, category_table_path: Optional[str]) -> pd.Series:
-    """거래시간 시리즈에 대해 심야 여부를 '심야' 또는 '' 로 반환. cash_after 표시용 파생 컬럼."""
-    if 거래시간_series is None or 거래시간_series.empty:
-        return pd.Series(dtype=object)
-    simya_range = _load_simya_range(category_table_path)
-    if simya_range is None:
-        return pd.Series([''] * len(거래시간_series), index=거래시간_series.index, dtype=object)
-    return 거래시간_series.apply(lambda t: '심야' if _is_simya(t, simya_range) else '')
-
-
 def _parse_min_out(위험지표) -> Optional[float]:
     """위험지표를 숫자로 파싱하여 최소 출금액(원) 반환. 실패 시 None."""
     if 위험지표 is None or (isinstance(위험지표, float) and pd.isna(위험지표)):
@@ -400,15 +390,3 @@ def apply_risk_indicators(df: pd.DataFrame, category_table_path: Optional[str] =
 
     if has_위험도:
         df['위험도'] = df['위험도'].apply(lambda v: max(DEFAULT_RISK, _num(v, DEFAULT_RISK)))
-
-
-def get_risk_indicators_document() -> str:
-    """위험도 지표 1~10호 요약 문서용 텍스트."""
-    lines = [
-        "1호. 분류제외지표: 금액제한 없음, 2~10호에 해당하지 않은 거래, 위험도 0.1",
-        "2호. 심야폐업지표: 폐업은 금액 무관, 심야구분은 출금액 10만원 이상일 때만, 위험도키워드 '폐업'/'심야', 위험도 0.5",
-        "3호. 자료소명지표: 출금 500만원 이상, 해당 행 키워드를 위험도키워드로 저장, 위험도 1.0",
-        "4호. 비정형지표: 출금만 최소출금액(위험지표) 이상, 동일 키워드 3회 이상, 위험도키워드=최소출금액+이상, 위험도 1.5",
-        "5~10호. 키워드 매칭: category_table 분류 '위험도분류' 행의 키워드로만 매칭. 출금액은 각 호 해당 위험지표(숫자) 이상일 때만 적용. 매칭 시 위험도분류/위험도키워드/위험도만 저장.",
-    ]
-    return "\n".join(lines)

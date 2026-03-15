@@ -2756,18 +2756,17 @@ def get_analysis_by_category_monthly():
 @app.route('/api/analysis/by-content')
 @ensure_working_directory
 def get_analysis_by_content():
-    """내용별 분석"""
+    """기타거래별 분석 (cash_after 기준)"""
     try:
-        df = load_processed_file()
+        df = load_category_file()
         if df.empty:
             return jsonify({'deposit': [], 'withdraw': []})
         
-        # 내용별 입금 (모든 거래처, 제한 없음)
-        deposit_by_content = df.groupby('내용')['입금액'].sum().sort_values(ascending=False)
+        content_col = '기타거래' if '기타거래' in df.columns else '내용'
+        deposit_by_content = df.groupby(content_col)['입금액'].sum().sort_values(ascending=False)
         deposit_data = [{'content': idx if idx else '(빈값)', 'amount': int(val)} for idx, val in deposit_by_content.items() if val > 0]
         
-        # 내용별 출금 (모든 거래처, 제한 없음)
-        withdraw_by_content = df.groupby('내용')['출금액'].sum().sort_values(ascending=False)
+        withdraw_by_content = df.groupby(content_col)['출금액'].sum().sort_values(ascending=False)
         withdraw_data = [{'content': idx if idx else '(빈값)', 'amount': int(val)} for idx, val in withdraw_by_content.items() if val > 0]
         
         response = jsonify({
@@ -2782,12 +2781,14 @@ def get_analysis_by_content():
 @app.route('/api/analysis/by-division')
 @ensure_working_directory
 def get_analysis_by_division():
-    """폐업별 분석"""
+    """폐업별 분석 (cash_after 기준)"""
     try:
-        df = load_processed_file()
+        df = load_category_file()
         if df.empty:
             return jsonify({'data': []})
         
+        if '폐업' not in df.columns:
+            return jsonify({'data': []})
         division_stats = df.groupby('폐업').agg({
             '입금액': 'sum',
             '출금액': 'sum',
@@ -2849,35 +2850,32 @@ def get_analysis_by_bank():
 @app.route('/api/analysis/transactions-by-content')
 @ensure_working_directory
 def get_transactions_by_content():
-    """거래처(내용)별 거래 내역"""
+    """거래처(기타거래)별 거래 내역 (cash_after 기준)"""
     try:
-        df = load_processed_file()
+        df = load_category_file()
         if df.empty:
-            return jsonify({'deposit': [], 'withdraw': []})
+            return jsonify({'data': []})
         
-        type_filter = request.args.get('type', 'deposit')  # 'deposit' or 'withdraw'
-        limit = int(request.args.get('limit', 10))  # 상위 N개 거래처
+        type_filter = request.args.get('type', 'deposit')
+        try:
+            limit = min(max(int(request.args.get('limit', 10)), 1), 100)
+        except (ValueError, TypeError):
+            limit = 10
         
-        if type_filter == 'deposit':
-            # 입금 상위 거래처
-            top_contents = df[df['입금액'] > 0].groupby('내용')['입금액'].sum().sort_values(ascending=False).head(limit)
-            top_content_list = top_contents.index.tolist()
-            
-            # 해당 거래처들의 모든 입금 거래 내역
-            transactions = df[(df['내용'].isin(top_content_list)) & (df['입금액'] > 0)].copy()
-            transactions = transactions.sort_values('입금액', ascending=False)
-            
-            transactions = transactions.where(pd.notna(transactions), None)
-            data = transactions[['거래일', '은행명', '입금액', '구분', '적요', '내용', '거래점']].to_dict('records')
-            data = _json_safe(data)
-        else:
-            top_contents = df[df['출금액'] > 0].groupby('내용')['출금액'].sum().sort_values(ascending=False).head(limit)
-            top_content_list = top_contents.index.tolist()
-            transactions = df[(df['내용'].isin(top_content_list)) & (df['출금액'] > 0)].copy()
-            transactions = transactions.sort_values('출금액', ascending=False)
-            transactions = transactions.where(pd.notna(transactions), None)
-            data = transactions[['거래일', '은행명', '출금액', '구분', '적요', '내용', '거래점']].to_dict('records')
-            data = _json_safe(data)
+        content_col = '기타거래' if '기타거래' in df.columns else '내용'
+        bank_col = '금융사' if '금융사' in df.columns else '은행명'
+        amt_col = '입금액' if type_filter == 'deposit' else '출금액'
+        
+        top_contents = df[df[amt_col] > 0].groupby(content_col)[amt_col].sum().sort_values(ascending=False).head(limit)
+        top_content_list = top_contents.index.tolist()
+        
+        transactions = df[(df[content_col].isin(top_content_list)) & (df[amt_col] > 0)].copy()
+        transactions = transactions.sort_values(amt_col, ascending=False)
+        transactions = transactions.where(pd.notna(transactions), None)
+        
+        out_cols = [c for c in ['거래일', bank_col, amt_col, '카테고리', content_col] if c in transactions.columns]
+        data = transactions[out_cols].to_dict('records') if out_cols else []
+        data = _json_safe(data)
         response = jsonify({'data': data})
 
         return response
@@ -2899,17 +2897,18 @@ def get_analysis_transactions():
         content_filter = request.args.get('content', '')  # 거래처 필터 (하위 호환성)
         bank_filter = request.args.get('bank', '')
         
-        # 적요 필터 우선, 없으면 거래처 필터 사용 (하위 호환성)
+        content_col = '기타거래' if '기타거래' in df.columns else ('적요' if '적요' in df.columns else '내용')
+        bank_col = '금융사' if '금융사' in df.columns else '은행명'
+        
         if category_filter:
-            filtered_df = df[df['적요'] == category_filter].copy()
+            filtered_df = df[df[content_col] == category_filter].copy()
         elif content_filter:
-            filtered_df = df[df['내용'] == content_filter].copy()
+            filtered_df = df[df[content_col] == content_filter].copy()
         else:
             return jsonify({'data': [], 'deposit_total': 0, 'withdraw_total': 0, 'balance': 0, 'deposit_count': 0, 'withdraw_count': 0})
         
-        # 은행 필터: 은행전체일 경우 전체 집계, 특정 은행 선택 시 해당 은행 집계
-        if bank_filter:
-            filtered_df = filtered_df[filtered_df['은행명'] == bank_filter].copy()
+        if bank_filter and bank_col in filtered_df.columns:
+            filtered_df = filtered_df[filtered_df[bank_col] == bank_filter].copy()
         
         # 카테고리 필터
         category_type = request.args.get('category_type', '')
@@ -2926,22 +2925,23 @@ def get_analysis_transactions():
         withdraw_count = len(filtered_df[filtered_df['출금액'] > 0]) if not filtered_df.empty else 0
         
         if transaction_type == 'detail':
-            # 상세 모드: 거래일, 은행명, 입금액, 출금액, 내용
-            detail_cols = ['거래일', '은행명', '입금액', '출금액']
-            if '내용' in filtered_df.columns:
-                detail_cols.append('내용')
+            detail_cols = ['거래일', bank_col, '입금액', '출금액']
+            if content_col in filtered_df.columns:
+                detail_cols.append(content_col)
             available_cols = [c for c in detail_cols if c in filtered_df.columns]
             result_df = filtered_df[available_cols].copy() if available_cols else filtered_df.copy()
         elif transaction_type == 'deposit':
             filtered_df = filtered_df[filtered_df['입금액'] > 0]
-            # 필요한 컬럼만 선택
-            result_df = filtered_df[['거래일', '은행명', '입금액', '구분', '적요', '내용', '거래점']].copy()
-            result_df.rename(columns={'입금액': '금액'}, inplace=True)
+            out_cols = [c for c in ['거래일', bank_col, '입금액', '카테고리', content_col] if c in filtered_df.columns]
+            result_df = filtered_df[out_cols].copy() if out_cols else filtered_df.copy()
+            if '입금액' in result_df.columns:
+                result_df.rename(columns={'입금액': '금액'}, inplace=True)
         elif transaction_type == 'withdraw':
             filtered_df = filtered_df[filtered_df['출금액'] > 0]
-            # 필요한 컬럼만 선택
-            result_df = filtered_df[['거래일', '은행명', '출금액', '구분', '적요', '내용', '거래점']].copy()
-            result_df.rename(columns={'출금액': '금액'}, inplace=True)
+            out_cols = [c for c in ['거래일', bank_col, '출금액', '카테고리', content_col] if c in filtered_df.columns]
+            result_df = filtered_df[out_cols].copy() if out_cols else filtered_df.copy()
+            if '출금액' in result_df.columns:
+                result_df.rename(columns={'출금액': '금액'}, inplace=True)
         else: # balance - 차액 상위순일 때는 입금과 출금 모두 표시
             # 입금과 출금이 모두 있는 행만 필터링
             deposit_df = filtered_df[filtered_df['입금액'] > 0].copy()
@@ -2983,30 +2983,29 @@ def get_analysis_transactions():
 @app.route('/api/analysis/content-by-category')
 @ensure_working_directory
 def get_content_by_category():
-    """적요별 거래처 목록 반환"""
+    """카테고리별 기타거래 목록 반환 (cash_after 기준)"""
     try:
-        df = load_processed_file()
+        df = load_category_file()
         if df.empty:
             return jsonify({'data': []})
         
         category_filter = request.args.get('category', '')
-        
         if not category_filter:
             return jsonify({'data': []})
         
-        # 적요별 입금 거래처 집계
-        filtered_df = df[(df['적요'] == category_filter) & (df['입금액'] > 0)].copy()
+        content_col = '기타거래' if '기타거래' in df.columns else ('적요' if '적요' in df.columns else '내용')
+        filtered_df = df[(df[content_col] == category_filter) & (df['입금액'] > 0)].copy()
         
         if filtered_df.empty:
             return jsonify({'data': []})
         
-        # 거래처별 입금액 합계
-        content_stats = filtered_df.groupby('내용')['입금액'].sum().sort_values(ascending=False).reset_index()
+        content_stats = filtered_df.groupby(content_col)['입금액'].sum().sort_values(ascending=False).reset_index()
         
         data = []
         for _, row in content_stats.iterrows():
+            val = row[content_col]
             data.append({
-                'content': row['내용'] if pd.notna(row['내용']) and row['내용'] != '' else '(빈값)',
+                'content': val if pd.notna(val) and val != '' else '(빈값)',
                 'amount': int(row['입금액']) if pd.notna(row['입금액']) else 0
             })
         
@@ -3048,13 +3047,12 @@ def get_cash_after_date_range():
 @app.route('/api/analysis/date-range')
 @ensure_working_directory
 def get_date_range():
-    """전처리후 데이터의 최소/최대 거래일 반환"""
+    """cash_after 데이터의 최소/최대 거래일 반환"""
     try:
-        df = load_processed_file()
+        df = load_category_file()
         if df.empty:
             return jsonify({'min_date': None, 'max_date': None})
         
-        # 거래일 컬럼 확인
         if '거래일' not in df.columns:
             return jsonify({'min_date': None, 'max_date': None})
         
