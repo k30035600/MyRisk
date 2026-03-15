@@ -1061,6 +1061,14 @@
             </div>
         </div>
     </div>
+    <!-- 카테고리 분류 현황 -->
+    <div id="cat-class-section" class="stats-section" style="margin-top:5px;margin-bottom:5px;background:var(--color-surface);border:1px solid var(--color-border);padding:8px 12px;border-radius:8px;display:none;">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <strong style="font-size:0.85em;white-space:nowrap;">분류 현황</strong>
+            <div id="cat-class-badges" style="display:flex;gap:6px;flex-wrap:wrap;flex:1;"></div>
+            <div id="cat-class-summary" style="font-size:0.78em;color:var(--color-text-muted);white-space:nowrap;"></div>
+        </div>
+    </div>
     <!-- 대체거래 박스 -->
     <div id="daechae-box" style="display:none; height:250px; margin-top:2px; margin-bottom:2px; background:#FFF5EE; border:1px solid #FFDBC8; border-radius:6px; padding:0; overflow:hidden; flex-direction:column; flex-shrink:0;">
         <div style="display:flex;align-items:center;gap:8px;padding:4px 10px;background:#FFCCBC;border-bottom:1px solid #FFDBC8;flex-shrink:0;">
@@ -1168,7 +1176,48 @@
         });
         // API 기본 경로 설정 (현재 페이지 경로 기반)
         const API_BASE = window.location.pathname.startsWith('/cash') ? '/cash' : '';
-        
+
+        const CAT_MAJOR_MAP = {
+            'M': { label: 'I_자금이동', en: 'Fund Transfer', color: 'var(--color-cat-M)' },
+            'L': { label: 'II_필수생활비', en: 'Essential Living', color: 'var(--color-cat-L)' },
+            'D': { label: 'III_재량소비', en: 'Discretionary', color: 'var(--color-cat-D)' },
+            'F': { label: 'IV_금융거래', en: 'Financial', color: 'var(--color-cat-F)' },
+            'P': { label: 'V_인적거래', en: 'Personal', color: 'var(--color-cat-P)' },
+            'H': { label: 'VI_고위험', en: 'High Risk', color: 'var(--color-cat-H)' },
+            'X': { label: '미분류', en: 'Unclassified', color: 'var(--color-cat-X)' }
+        };
+        function renderCatClassSection(rows) {
+            const sec = document.getElementById('cat-class-section');
+            if (!sec || !rows || !rows.length) return;
+            const groups = {};
+            let total = 0;
+            rows.forEach(row => {
+                const cat = String(row['카테고리분류'] || row['카테고리'] || '');
+                const code = cat.match(/^([A-Z])\d/) ? cat.charAt(0) : 'X';
+                if (!groups[code]) groups[code] = { count: 0, items: 0, deposit: 0, withdraw: 0 };
+                groups[code].count++;
+                groups[code].deposit += Number(row['입금액']) || 0;
+                groups[code].withdraw += Number(row['출금액']) || 0;
+                total++;
+            });
+            Object.values(groups).forEach(g => { g.items = 1; });
+            const order = ['M','L','D','F','P','H','X'];
+            let badges = '';
+            order.forEach(code => {
+                const g = groups[code];
+                if (!g) return;
+                const info = CAT_MAJOR_MAP[code] || { label: code, en: '', color: '#999' };
+                const pct = total > 0 ? (g.count / total * 100).toFixed(1) : '0.0';
+                badges += `<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:4px;font-size:0.78em;font-weight:600;color:#fff;background:${info.color};" title="${info.label} ${info.en}: ${g.count.toLocaleString()}건">${info.label.split('_')[1] || info.label} ${pct}%</span>`;
+            });
+            document.getElementById('cat-class-badges').innerHTML = badges;
+            const classified = total - (groups['X'] ? groups['X'].count : 0);
+            const classRate = total > 0 ? (classified / total * 100).toFixed(1) : '0.0';
+            document.getElementById('cat-class-summary').innerHTML =
+                `분류: <strong>${classified.toLocaleString()}</strong>/${total.toLocaleString()}건 (${classRate}%) · 위험도 + 키워드 매칭 기반`;
+            sec.style.display = '';
+        }
+
         // 금융정보 위험도 섹션 (위험도 0.1 이상, 위험도분류 기준)
         let riskCombinedChart = null;
         let riskSectionData = [];      // 위험도 0.1 이상 원본 행 배열
@@ -1398,6 +1447,7 @@
                 document.getElementById('risk-total-count').textContent = formatNumber(totalCount);
                 footer.style.display = tableHtml ? '' : 'none';
                 updateRiskChart();
+                renderCatClassSection(riskSectionData);
             } catch (err) {
                 console.error('loadRiskSection:', err);
                 tbody.innerHTML = '<tr><td colspan="5" style="padding: 20px; text-align: center; color: #C62828;">로딩 오류</td></tr>';

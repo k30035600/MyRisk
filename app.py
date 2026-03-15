@@ -178,6 +178,15 @@ if not _load_project_lib(_root):
             _root = _cwd_root  # 이후 서브앱 로드 시 동일 경로 사용
         except ImportError:
             pass
+from lib.category_constants import (
+    CLASS_PRE, CLASS_POST, CLASS_ACCOUNT, CLASS_APPLICANT, CLASS_NIGHT,
+    CLASS_RISK, CLASS_INDUSTRY,
+    BANK_DEFAULT_DEPOSIT, BANK_DEFAULT_WITHDRAWAL,
+    CARD_DEFAULT_DEPOSIT, CARD_DEFAULT_WITHDRAWAL,
+    DEFAULT_CATEGORY, UNCLASSIFIED, CARD_CASH_PROCESSING,
+    DIRECTION_CANCELLED, CANCELLED_TRANSACTION,
+    RISK_CODE_PRIORITY, get_template_constants,
+)
 try:
     from lib.path_config import DATA_DIR, get_data_dir, get_temp_dir, get_category_table_json_path
     CATEGORY_TABLE_PATH = get_category_table_json_path()
@@ -648,16 +657,279 @@ def help_page():
 def reset_page():
     """초기화 페이지: 전처리전/전처리후 선택 후 해당 JSON 삭제. 좌측 패널 헤더는 MYRISK_RESET_LEFT_HEADER 환경변수로 지정."""
     left_header = os.environ.get('MYRISK_RESET_LEFT_HEADER', '환경변수 관리').strip() or '환경변수 관리'
-    resp = make_response(render_template('reset.html', reset_left_header=left_header))
+    resp = make_response(render_template('reset.html', reset_left_header=left_header, **get_template_constants()))
     resp.headers.update(_no_cache_headers())
     return resp
 
 
 @app.route('/category-standard')
 def category_standard_page():
-    resp = make_response(render_template('category_standard.html'))
+    resp = make_response(render_template('category_standard.html', **get_template_constants()))
     resp.headers.update(_no_cache_headers())
     return resp
+
+
+@app.route('/category-audit-report-page')
+def category_audit_report_page():
+    from lib.audit_report import generate_report_html
+    content = generate_report_html(_root)
+    resp = make_response(content)
+    resp.headers.update(_no_cache_headers())
+    resp.headers['Content-Type'] = 'text/html; charset=utf-8'
+    return resp
+
+
+@app.route('/api/category-generate-md', methods=['POST'])
+def api_category_generate_md():
+    """전수조사: 기존 보고서 MD 삭제 → 현행 category_table.json 기준 카테고리_생성.md 저장."""
+    import json as _json
+    from datetime import datetime as _dt
+
+    memo_dir = os.path.join(_root, 'readme', '분석메모')
+    old_reports = [
+        os.path.join(memo_dir, f) for f in os.listdir(memo_dir)
+        if f.endswith('.md') and ('전수조사' in f or '검수보고서' in f or '카테고리_생성' in f)
+    ] if os.path.isdir(memo_dir) else []
+    removed = []
+    for p in old_reports:
+        try:
+            os.remove(p)
+            removed.append(os.path.basename(p))
+        except OSError:
+            pass
+
+    ct_path = os.path.join(_root, 'data', 'category_table.json')
+    if not os.path.exists(ct_path):
+        return jsonify({'success': False, 'error': 'category_table.json 없음'}), 404
+
+    with open(ct_path, 'r', encoding='utf-8') as f:
+        ct = _json.load(f)
+
+    now = _dt.now().strftime('%Y-%m-%d %H:%M')
+    lines = [f'# 카테고리 생성 현황', '', f'> 생성일: {now}  ', f'> 총 {len(ct)}건', '']
+
+    by_class = {}
+    for r in ct:
+        cls = r.get('분류', '') or '(미분류)'
+        by_class.setdefault(cls, []).append(r)
+
+    for cls in sorted(by_class.keys()):
+        rows = by_class[cls]
+        lines.append(f'## {cls} ({len(rows)}건)')
+        lines.append('')
+        lines.append('| 키워드 | 카테고리 | 위험도 | 위험지표 |')
+        lines.append('|--------|----------|--------|----------|')
+        for r in rows:
+            kw = r.get('키워드', '')
+            cat = r.get('카테고리', '')
+            risk = r.get('위험도', '')
+            biz = r.get('위험지표', '')
+            lines.append(f'| {kw} | {cat} | {risk} | {biz} |')
+        lines.append('')
+
+    md_content = '\n'.join(lines)
+    os.makedirs(memo_dir, exist_ok=True)
+    out_path = os.path.join(memo_dir, '카테고리_생성.md')
+    with open(out_path, 'w', encoding='utf-8') as f:
+        f.write(md_content)
+
+    return jsonify({
+        'success': True,
+        'removed': removed,
+        'path': out_path,
+        'count': len(ct),
+        'md': md_content
+    })
+
+
+@app.route('/api/category-inspection-report', methods=['POST'])
+def api_category_inspection_report():
+    """검수보고서: 현재 상태 기준 계정과목 표준 전수조사 보고서 생성."""
+    import json as _json
+    from datetime import datetime as _dt
+
+    ct_path = os.path.join(_root, 'data', 'category_table.json')
+    md_path = os.path.join(_root, 'readme', '가이드', '계정과목_표준.md')
+    bank_path = os.path.join(_root, 'data', 'bank_after.json')
+    card_path = os.path.join(_root, 'data', 'card_after.json')
+
+    if not os.path.exists(ct_path):
+        return jsonify({'success': False, 'error': 'category_table.json 없음'}), 404
+
+    with open(ct_path, 'r', encoding='utf-8') as f:
+        ct = _json.load(f)
+
+    now = _dt.now().strftime('%Y-%m-%d %H:%M')
+    lines = ['# 계정과목 표준 전수조사 보고서', '', f'> 기준일: {now}', '']
+
+    by_class = {}
+    for r in ct:
+        cls = r.get('분류', '') or '(미분류)'
+        by_class.setdefault(cls, []).append(r)
+
+    lines.append('## 1. 카테고리 테이블 현황')
+    lines.append('')
+    lines.append(f'- 총 행수: **{len(ct)}건**')
+    lines.append('')
+    lines.append('| 분류 | 건수 |')
+    lines.append('|------|------|')
+    for cls in sorted(by_class.keys()):
+        lines.append(f'| {cls} | {len(by_class[cls])} |')
+    lines.append('')
+
+    acc_rows = [r for r in ct if r.get('분류') == CLASS_ACCOUNT]
+    kw_count = sum(len(r.get('키워드', '').split('/')) for r in acc_rows)
+    cats = set(r.get('카테고리', '') for r in acc_rows)
+    lines.append('## 2. 계정과목 상세')
+    lines.append('')
+    lines.append(f'- 계정과목 행: **{len(acc_rows)}건**, 개별 키워드: **{kw_count}개**, 카테고리: **{len(cats)}종**')
+    lines.append('')
+
+    has_std = os.path.exists(md_path)
+    lines.append('## 3. 계정과목_표준.md 대비 검증')
+    lines.append('')
+    if not has_std:
+        lines.append('- 계정과목_표준.md 파일 없음 — 비교 불가')
+    else:
+        import re as _re
+        with open(md_path, 'r', encoding='utf-8') as f:
+            md_content = f.read()
+        old_kw_map = {}
+        for r in acc_rows:
+            cat = r.get('카테고리', '')
+            for kw in r.get('키워드', '').split('/'):
+                kw = kw.strip()
+                if kw:
+                    old_kw_map[kw] = cat
+        new_kw_map = {}
+        current_section = None
+        current_code = None
+        current_cat = None
+        current_mid = ''
+        major_map = {
+            'I': 'I_자금이동', 'II': 'II_필수생활비', 'III': 'III_재량소비',
+            'IV': 'IV_금융거래', 'V': 'V_인적거래', 'VI': 'VI_고위험항목',
+        }
+        for line in md_content.split('\n'):
+            ls = line.strip()
+            if ls.startswith('## 5. 계정과목'):
+                current_section = CLASS_ACCOUNT; continue
+            elif ls.startswith('## 6.') or ls.startswith('## 7.') or ls.startswith('## 부록'):
+                current_section = None; continue
+            elif ls.startswith('## '):
+                if current_section == CLASS_ACCOUNT:
+                    current_section = None
+                continue
+            if current_section == CLASS_ACCOUNT:
+                hm = _re.match(r'^###\s+(?:(I{1,3}V?|IV|V|VI{0,2}|VII)\.?\s+)?(.+?)(?:\s*—\s*(.+))?$', ls)
+                if hm and not ls.startswith('####'):
+                    mid_part = hm.group(3)
+                    current_mid = mid_part.strip() if mid_part else hm.group(2).strip()
+                    continue
+                m = _re.match(r'^####\s+([A-Z]\d+)\s+(.+)$', ls)
+                if m:
+                    current_code = m.group(1)
+                    current_cat = m.group(2).strip()
+                    continue
+                if current_code and ls.startswith('| ') and not ls.startswith('| 키워드') and not ls.startswith('|---'):
+                    cols = [c.strip() for c in ls.split('|')[1:-1]]
+                    if cols and cols[0]:
+                        for kw in cols[0].split('/'):
+                            kw = kw.strip()
+                            if kw:
+                                new_kw_map[kw] = f'{current_code[0]}_{current_mid}'
+
+        old_set = set(old_kw_map.keys())
+        new_set = set(new_kw_map.keys())
+        both = old_set & new_set
+        changed = sum(1 for kw in both if old_kw_map[kw] != new_kw_map[kw])
+        same = len(both) - changed
+
+        lines.append(f'- 카테고리 테이블 키워드: **{len(old_set)}개**')
+        lines.append(f'- 계정과목 표준 키워드: **{len(new_set)}개**')
+        lines.append(f'- 양쪽 동일: **{same}개**')
+        lines.append(f'- 카테고리 변경: **{changed}건**')
+        lines.append(f'- 테이블에만 있음: **{len(old_set - new_set)}건**')
+        lines.append(f'- 표준에만 있음: **{len(new_set - old_set)}건**')
+    lines.append('')
+
+    lines.append('## 4. 거래 데이터 매칭 현황')
+    lines.append('')
+
+    def _parse_amt(v):
+        try:
+            return int(float(str(v).replace(',', '') or '0'))
+        except Exception:
+            return 0
+
+    if os.path.exists(bank_path):
+        with open(bank_path, 'r', encoding='utf-8') as f:
+            bank = _json.load(f)
+        kita = set(r.get('기타거래', '').strip() for r in bank if r.get('기타거래', '').strip())
+        matched_b = sum(1 for v in kita if any(kw in v for kw in old_kw_map)) if has_std else 0
+        lines.append(f'### 은행거래 (bank_after.json)')
+        lines.append(f'- 전체: {len(bank)}건, 고유 기타거래: {len(kita)}건')
+        if has_std:
+            lines.append(f'- 키워드 매칭: {matched_b}건, 미매칭: {len(kita) - matched_b}건')
+    else:
+        lines.append('### 은행거래: bank_after.json 없음')
+    lines.append('')
+
+    if os.path.exists(card_path):
+        with open(card_path, 'r', encoding='utf-8') as f:
+            card = _json.load(f)
+        kw_set = set(r.get('키워드', '').strip() for r in card if r.get('키워드', '').strip())
+        matched_c = sum(1 for v in kw_set if any(kw in v for kw in old_kw_map)) if has_std else 0
+        lines.append(f'### 신용카드 (card_after.json)')
+        lines.append(f'- 전체: {len(card)}건, 고유 키워드: {len(kw_set)}건')
+        if has_std:
+            lines.append(f'- 키워드 매칭: {matched_c}건, 미매칭: {len(kw_set) - matched_c}건')
+    else:
+        lines.append('### 신용카드: card_after.json 없음')
+    lines.append('')
+
+    pre_rows = [r for r in ct if r.get('분류') == CLASS_PRE]
+    post_rows = [r for r in ct if r.get('분류') == CLASS_POST]
+    risk_rows = [r for r in ct if r.get('분류') == CLASS_RISK]
+    ind_rows = [r for r in ct if r.get('분류') == CLASS_INDUSTRY]
+
+    lines.append('## 5. 기타 분류 현황')
+    lines.append('')
+    lines.append(f'- 전처리: {len(pre_rows)}건')
+    lines.append(f'- 후처리: {len(post_rows)}건')
+    lines.append(f'- 위험도분류: {len(risk_rows)}건')
+    lines.append(f'- 업종분류: {len(ind_rows)}건')
+    lines.append('')
+
+    lines.append('## 6. 판정')
+    lines.append('')
+    ok_items = []
+    if len(ct) > 0:
+        ok_items.append('카테고리 테이블 존재')
+    all_5col = all(all(k in r for k in ['분류', '위험도', '카테고리', '위험지표', '키워드']) for r in ct)
+    if all_5col:
+        ok_items.append('5컬럼 구조 정상')
+    if len(acc_rows) > 0:
+        ok_items.append(f'계정과목 {len(acc_rows)}건 등록')
+    if len(risk_rows) > 0:
+        ok_items.append(f'위험도분류 {len(risk_rows)}건 등록')
+
+    for item in ok_items:
+        lines.append(f'- [x] {item}')
+    lines.append('')
+
+    md_content = '\n'.join(lines)
+    memo_dir = os.path.join(_root, 'readme', '분석메모')
+    os.makedirs(memo_dir, exist_ok=True)
+    out_path = os.path.join(memo_dir, '계정과목_표준_전수조사_보고서.md')
+    with open(out_path, 'w', encoding='utf-8') as f:
+        f.write(md_content)
+
+    return jsonify({
+        'success': True,
+        'path': out_path,
+        'md': md_content
+    })
 
 
 @app.route('/api/category-standard-data')
@@ -671,8 +943,8 @@ def category_standard_data():
         content = f.read()
 
     sections_map = {
-        '전처리': [], '후처리': [], '신청인': [], '심야구분': [],
-        '위험도분류': [], '업종분류': [],
+        CLASS_PRE: [], CLASS_POST: [], CLASS_APPLICANT: [], CLASS_NIGHT: [],
+        CLASS_RISK: [], CLASS_INDUSTRY: [],
     }
     account_items = []
 
@@ -683,45 +955,51 @@ def category_standard_data():
     current_mid = ''
 
     major_map = {
-        'I': 'I. 자금이동', 'II': 'II. 필수생활비', 'III': 'III. 재량소비',
-        'IV': 'IV. 고위험항목', 'V': 'V. 금융거래', 'VI': 'VI. 인적거래', 'VII': 'VII. 미분류',
+        'I': 'I_자금이동', 'II': 'II_필수생활비', 'III': 'III_재량소비',
+        'IV': 'IV_금융거래', 'V': 'V_인적거래', 'VI': 'VI_고위험항목',
     }
 
     for line in content.split('\n'):
         ls = line.strip()
         if ls.startswith('## 1. 전처리'):
-            current_section = '전처리'; current_code = None; continue
+            current_section = CLASS_PRE; current_code = None; continue
         elif ls.startswith('## 2. 후처리'):
-            current_section = '후처리'; current_code = None; continue
+            current_section = CLASS_POST; current_code = None; continue
         elif ls.startswith('## 3. 신청인'):
-            current_section = '신청인'; current_code = None; continue
+            current_section = CLASS_APPLICANT; current_code = None; continue
         elif ls.startswith('## 4. 심야구분'):
-            current_section = '심야구분'; current_code = None; continue
+            current_section = CLASS_NIGHT; current_code = None; continue
         elif ls.startswith('## 5. 계정과목'):
-            current_section = '계정과목'; current_code = None; continue
+            current_section = CLASS_ACCOUNT; current_code = None; continue
         elif ls.startswith('## 6. 위험도분류'):
-            current_section = '위험도분류'; current_code = None; continue
+            current_section = CLASS_RISK; current_code = None; continue
         elif ls.startswith('## 7. 업종분류'):
-            current_section = '업종분류'; current_code = None; continue
+            current_section = CLASS_INDUSTRY; current_code = None; continue
         elif ls.startswith('## 부록'):
             current_section = None; continue
 
-        if current_section in ('전처리', '후처리', '신청인', '심야구분'):
+        if current_section in (CLASS_PRE, CLASS_POST, CLASS_APPLICANT, CLASS_NIGHT):
             if ls.startswith('| ') and not ls.startswith('| 키워드') and not ls.startswith('|---'):
                 cols = [c.strip() for c in ls.split('|')[1:-1]]
                 if len(cols) >= 2 and cols[0]:
                     sections_map[current_section].append({
                         '분류': current_section, '키워드': cols[0], '카테고리': cols[1],
-                        '위험도': '', '업종코드': ''
+                        '위험도': '', '위험지표': ''
                     })
 
-        elif current_section == '계정과목':
-            hm = re.match(r'^###\s+(I{1,3}V?|IV|V|VI{0,2}|VII)\.?\s+(.+?)(?:\s*—\s*(.+))?$', ls)
-            if hm:
-                roman = hm.group(1)
-                current_major = major_map.get(roman, roman + '. ' + hm.group(2).strip())
+        elif current_section == CLASS_ACCOUNT:
+            hm = re.match(r'^###\s+(?:(I{1,3}V?|IV|V|VI{0,2}|VII)\.?\s+)?(.+?)(?:\s*—\s*(.+))?$', ls)
+            if hm and not ls.startswith('####'):
+                roman = hm.group(1) or ''
+                name = hm.group(2).strip()
+                if roman:
+                    current_major = major_map.get(roman, roman + '_' + name)
+                elif '미분류' in name:
+                    current_major = '미분류'
+                else:
+                    current_major = name
                 mid_part = hm.group(3)
-                current_mid = mid_part.strip() if mid_part else hm.group(2).strip()
+                current_mid = mid_part.strip() if mid_part else name
                 continue
             m = re.match(r'^####\s+([A-Z]\d+)\s+(.+)$', ls)
             if m:
@@ -732,34 +1010,38 @@ def category_standard_data():
                 cols = [c.strip() for c in ls.split('|')[1:-1]]
                 if cols and cols[0]:
                     account_items.append({
-                        '분류': '계정과목', '코드': current_code, '카테고리': current_cat,
+                        '분류': CLASS_ACCOUNT, '코드': current_code,
+                        '소분류': current_cat,
+                        '카테고리': f'{current_code[0]}_{current_mid}',
                         '대분류': current_major, '중분류': current_mid,
-                        '키워드': cols[0], '위험도': '', '업종코드': ''
+                        '키워드': cols[0],
+                        '위험도': current_major,
+                        '위험지표': current_code,
                     })
 
-        elif current_section in ('위험도분류', '업종분류'):
+        elif current_section in (CLASS_RISK, CLASS_INDUSTRY):
             if ls.startswith('| ') and not ls.startswith('| 키워드') and not ls.startswith('|---'):
                 cols = [c.strip() for c in ls.split('|')[1:-1]]
                 if len(cols) >= 4 and cols[0]:
                     sections_map[current_section].append({
                         '분류': current_section, '키워드': cols[0], '카테고리': cols[1],
-                        '위험도': cols[2], '업종코드': cols[3]
+                        '위험도': cols[2], '위험지표': cols[3]
                     })
 
     return jsonify({
-        '전처리': sections_map['전처리'],
-        '후처리': sections_map['후처리'],
-        '신청인': sections_map['신청인'],
-        '심야구분': sections_map['심야구분'],
-        '계정과목': account_items,
-        '위험도분류': sections_map['위험도분류'],
-        '업종분류': sections_map['업종분류'],
+        CLASS_PRE: sections_map[CLASS_PRE],
+        CLASS_POST: sections_map[CLASS_POST],
+        CLASS_APPLICANT: sections_map[CLASS_APPLICANT],
+        CLASS_NIGHT: sections_map[CLASS_NIGHT],
+        CLASS_ACCOUNT: account_items,
+        CLASS_RISK: sections_map[CLASS_RISK],
+        CLASS_INDUSTRY: sections_map[CLASS_INDUSTRY],
     })
 
 
 @app.route('/api/category-standard-audit')
 def category_standard_audit():
-    """신규 표준 vs 현행 데이터 전수조사 결과 JSON."""
+    """카테고리 테이블 vs 계정과목 표준 대비 전수조사 결과 JSON."""
     import re as _re
     import json as _json
 
@@ -767,7 +1049,7 @@ def category_standard_audit():
     bank_path = os.path.join(_root, 'data', 'bank_after.json')
     card_path = os.path.join(_root, 'data', 'card_after.json')
 
-    result = {'현행키워드수': 0, '신규키워드수': 0, '누락': [], '추가': [],
+    result = {'테이블키워드수': 0, '표준키워드수': 0, '테이블전용': [], '표준전용': [],
               '변경': [], '유지': 0, '은행': {}, '카드': {}, '충돌': []}
 
     if not os.path.exists(ct_path):
@@ -777,14 +1059,14 @@ def category_standard_audit():
         ct = _json.load(f)
     old_kw_map = {}
     for r in ct:
-        if r.get('분류') != '계정과목':
+        if r.get('분류') != CLASS_ACCOUNT:
             continue
         cat = r.get('카테고리', '')
         for kw in r.get('키워드', '').split('/'):
             kw = kw.strip()
             if kw:
                 old_kw_map[kw] = cat
-    result['현행키워드수'] = len(old_kw_map)
+    result['테이블키워드수'] = len(old_kw_map)
 
     md_path = os.path.join(_root, 'readme', '가이드', '계정과목_표준.md')
     if not os.path.exists(md_path):
@@ -801,24 +1083,24 @@ def category_standard_audit():
     current_major = ''
     current_mid = ''
     major_map = {
-        'I': 'I. 자금이동', 'II': 'II. 필수생활비', 'III': 'III. 재량소비',
-        'IV': 'IV. 고위험항목', 'V': 'V. 금융거래', 'VI': 'VI. 인적거래', 'VII': 'VII. 미분류',
+        'I': 'I_자금이동', 'II': 'II_필수생활비', 'III': 'III_재량소비',
+        'IV': 'IV_금융거래', 'V': 'V_인적거래', 'VI': 'VI_고위험항목',
     }
 
     for line in md_content.split('\n'):
         ls = line.strip()
         if ls.startswith('## 1. 전처리'):
-            current_section = '전처리'; continue
+            current_section = CLASS_PRE; continue
         elif ls.startswith('## 2. 후처리'):
-            current_section = '후처리'; continue
+            current_section = CLASS_POST; continue
         elif ls.startswith('## 5. 계정과목'):
-            current_section = '계정과목'; continue
+            current_section = CLASS_ACCOUNT; continue
         elif ls.startswith('## 6.') or ls.startswith('## 7.') or ls.startswith('## 부록'):
             current_section = None; continue
         elif ls.startswith('## 3.') or ls.startswith('## 4.'):
             current_section = None; continue
 
-        if current_section == '전처리':
+        if current_section == CLASS_PRE:
             if ls.startswith('| ') and not ls.startswith('| 키워드') and not ls.startswith('|---'):
                 cols = [c.strip() for c in ls.split('|')[1:-1]]
                 if len(cols) >= 2 and cols[0]:
@@ -827,13 +1109,19 @@ def category_standard_audit():
                         if kw:
                             pre_map[kw] = cols[1]
 
-        elif current_section == '계정과목':
-            hm = _re.match(r'^###\s+(I{1,3}V?|IV|V|VI{0,2}|VII)\.?\s+(.+?)(?:\s*—\s*(.+))?$', ls)
-            if hm:
-                roman = hm.group(1)
-                current_major = major_map.get(roman, roman)
+        elif current_section == CLASS_ACCOUNT:
+            hm = _re.match(r'^###\s+(?:(I{1,3}V?|IV|V|VI{0,2}|VII)\.?\s+)?(.+?)(?:\s*—\s*(.+))?$', ls)
+            if hm and not ls.startswith('####'):
+                roman = hm.group(1) or ''
+                name = hm.group(2).strip()
+                if roman:
+                    current_major = major_map.get(roman, roman + '_' + name)
+                elif '미분류' in name:
+                    current_major = '미분류'
+                else:
+                    current_major = name
                 mid_part = hm.group(3)
-                current_mid = mid_part.strip() if mid_part else hm.group(2).strip()
+                current_mid = mid_part.strip() if mid_part else name
                 continue
             m = _re.match(r'^####\s+([A-Z]\d+)\s+(.+)$', ls)
             if m:
@@ -846,14 +1134,15 @@ def category_standard_audit():
                     for kw in cols[0].split('/'):
                         kw = kw.strip()
                         if kw:
-                            new_kw_map[kw] = {'code': current_code, 'cat': current_cat, 'major': current_major, 'mid': current_mid}
+                            cat_mid = f'{current_code[0]}_{current_mid}'
+                            new_kw_map[kw] = {'code': current_code, 'cat': cat_mid, 'sub': current_cat, 'major': current_major, 'mid': current_mid}
 
-    result['신규키워드수'] = len(new_kw_map)
+    result['표준키워드수'] = len(new_kw_map)
 
     old_set = set(old_kw_map.keys())
     new_set = set(new_kw_map.keys())
-    result['누락'] = [{'키워드': kw, '현행': old_kw_map[kw]} for kw in sorted(old_set - new_set)]
-    result['추가'] = [{'키워드': kw, '코드': new_kw_map[kw]['code'], '카테고리': new_kw_map[kw]['cat']} for kw in sorted(new_set - old_set)]
+    result['테이블전용'] = [{'키워드': kw, '테이블카테고리': old_kw_map[kw]} for kw in sorted(old_set - new_set)]
+    result['표준전용'] = [{'키워드': kw, '코드': new_kw_map[kw]['code'], '카테고리': new_kw_map[kw]['cat']} for kw in sorted(new_set - old_set)]
 
     changed = []
     same_cnt = 0
@@ -861,7 +1150,7 @@ def category_standard_audit():
         old_cat = old_kw_map[kw]
         ni = new_kw_map[kw]
         if old_cat != ni['cat']:
-            changed.append({'키워드': kw, '현행': old_cat, '코드': ni['code'], '신규': ni['cat']})
+            changed.append({'키워드': kw, '테이블카테고리': old_cat, '코드': ni['code'], '표준카테고리': ni['cat']})
         else:
             same_cnt += 1
     result['변경'] = changed
@@ -882,15 +1171,19 @@ def category_standard_audit():
             if v:
                 kita_set.add(v)
 
-        # 코드 첫 글자 기반 위험도 우선순위 (높을수록 우선)
-        _risk_priority = {'H': 6, 'D': 5, 'F': 4, 'P': 3, 'L': 2, 'M': 1, 'X': 0}
+        _risk_priority = RISK_CODE_PRIORITY
+
+        def _kw_match(kw, val):
+            if kw.startswith('re:'):
+                return bool(_re.search(kw[3:], val))
+            return kw in val
 
         matched_list = []
         unmatched_list = []
         for val in sorted(kita_set):
             hit = None
             for kw, info in new_kw_map.items():
-                if kw in val:
+                if _kw_match(kw, val):
                     hit = info
                     break
             txns = [r for r in bank if r.get('기타거래', '').strip() == val]
@@ -898,13 +1191,18 @@ def category_standard_audit():
             total_out = sum(_parse_amt(r.get('출금액', 0)) for r in txns)
             entry = {'기타거래': val, '건수': len(txns),
                      '입금': total_in, '출금': total_out,
-                     '현행': txns[0].get('카테고리', '') if txns else ''}
+                     '테이블카테고리': txns[0].get('카테고리', '') if txns else ''}
             if hit:
                 entry['매칭코드'] = hit['code']
                 entry['매칭카테고리'] = hit['cat']
                 matched_list.append(entry)
+            elif total_in > 0 and total_out == 0 and total_in <= 10:
+                entry['매칭코드'] = 'M01'
+                entry['매칭카테고리'] = 'M_계좌이동'
+                entry['비고'] = '소액입금(계좌인증)'
+                matched_list.append(entry)
             else:
-                entry['분류'] = '기타은행입금' if (total_in > 0 and total_out == 0) else '기타은행출금'
+                entry['분류'] = BANK_DEFAULT_DEPOSIT if (total_in > 0 and total_out == 0) else BANK_DEFAULT_WITHDRAWAL
                 unmatched_list.append(entry)
 
         # 충돌 감지 + 위험도 자동 해결
@@ -913,7 +1211,7 @@ def category_standard_audit():
         for val in sorted(kita_set):
             matches = {}
             for kw, info in new_kw_map.items():
-                if kw in val:
+                if _kw_match(kw, val):
                     c = info['code']
                     if c not in matches:
                         matches[c] = {'cat': info['cat'], 'kw': kw}
@@ -923,9 +1221,23 @@ def category_standard_audit():
                 max_p = max(priorities)
                 top_codes = [c for c, v in matches.items() if _risk_priority.get(c[0], 0) == max_p]
                 if len(top_codes) == 1:
-                    resolved_list.append({'기타거래': val, '매칭': items, '해결코드': top_codes[0], '해결카테고리': matches[top_codes[0]]['cat']})
+                    resolved_list.append({'기타거래': val, '매칭': items, '해결코드': top_codes[0], '해결카테고리': matches[top_codes[0]]['cat'], '해결방법': '위험도'})
                 else:
-                    conflict_list.append({'기타거래': val, '매칭': items})
+                    # 타이브레이커: 같은 카테고리 → 자동 해결
+                    top_cats = set(matches[c]['cat'] for c in top_codes)
+                    if len(top_cats) == 1:
+                        winner = max(top_codes)
+                        resolved_list.append({'기타거래': val, '매칭': items, '해결코드': winner, '해결카테고리': matches[winner]['cat'], '해결방법': '동일카테고리'})
+                    else:
+                        # 타이브레이커: 긴 키워드(구체적 매칭) 우선
+                        longest_len = max(len(matches[c]['kw']) for c in top_codes)
+                        longest_codes = [c for c in top_codes if len(matches[c]['kw']) == longest_len]
+                        if len(longest_codes) == 1:
+                            winner = longest_codes[0]
+                            resolved_list.append({'기타거래': val, '매칭': items, '해결코드': winner, '해결카테고리': matches[winner]['cat'], '해결방법': '키워드구체성'})
+                        else:
+                            winner = max(longest_codes)
+                            resolved_list.append({'기타거래': val, '매칭': items, '해결코드': winner, '해결카테고리': matches[winner]['cat'], '해결방법': '코드순서'})
 
         result['은행'] = {'전체': len(bank), '고유기타거래': len(kita_set),
                          '매칭': len(matched_list), '미매칭': len(unmatched_list),
@@ -941,24 +1253,29 @@ def category_standard_audit():
             v = r.get('키워드', '').strip()
             if v:
                 kw_set.add(v)
+        def _kw_match_card(kw, val):
+            if kw.startswith('re:'):
+                return bool(_re.search(kw[3:], val))
+            return kw in val
+
         card_matched = []
         card_unmatched = []
         for val in sorted(kw_set):
             hit = None
             for kw, info in new_kw_map.items():
-                if kw in val:
+                if _kw_match_card(kw, val):
                     hit = info
                     break
             txns = [r for r in card if r.get('키워드', '').strip() == val]
             total_in = sum(_parse_amt(r.get('입금액', 0)) for r in txns)
             total_out = sum(_parse_amt(r.get('출금액', 0)) for r in txns)
-            entry = {'키워드': val, '건수': len(txns), '현행': txns[0].get('카테고리', '') if txns else ''}
+            entry = {'키워드': val, '건수': len(txns), '테이블카테고리': txns[0].get('카테고리', '') if txns else ''}
             if hit:
                 entry['매칭코드'] = hit['code']
                 entry['매칭카테고리'] = hit['cat']
                 card_matched.append(entry)
             else:
-                entry['분류'] = '기타카드입금' if (total_in > 0 and total_out == 0) else '기타카드출금'
+                entry['분류'] = CARD_DEFAULT_DEPOSIT if (total_in > 0 and total_out == 0) else CARD_DEFAULT_WITHDRAWAL
                 card_unmatched.append(entry)
 
         result['카드'] = {'전체': len(card), '고유키워드': len(kw_set),
@@ -966,6 +1283,200 @@ def category_standard_audit():
                          '미매칭목록': card_unmatched}
 
     return jsonify(result)
+
+
+@app.route('/api/category-audit-report')
+def category_audit_report():
+    """계정과목 표준 검수 보고서 — 리팩토링 후 코드 전수검사 (2차)."""
+    import json as _json, re as _re
+
+    def _read(rel):
+        p = os.path.join(_root, rel)
+        if not os.path.exists(p):
+            return ''
+        try:
+            with open(p, 'r', encoding='utf-8') as f:
+                return f.read()
+        except Exception:
+            return ''
+
+    report = {}
+
+    # ── 1. category_table.json 현황 ──
+    ct_path = os.path.join(_root, 'data', 'category_table.json')
+    ct = []
+    if os.path.exists(ct_path):
+        try:
+            with open(ct_path, 'r', encoding='utf-8') as f:
+                ct = _json.load(f)
+        except Exception:
+            pass
+    by_cls = {}
+    cat_set = set()
+    kw_total = 0
+    for r in ct:
+        s = r.get('분류', '')
+        by_cls[s] = by_cls.get(s, 0) + 1
+        v = r.get('카테고리', '').strip()
+        if v:
+            cat_set.add(v)
+        kw = r.get('키워드', '').strip()
+        if kw:
+            kw_total += len([k for k in kw.split('/') if k.strip()])
+    report['현황'] = {
+        '총행수': len(ct), '분류별': by_cls,
+        '카테고리수': len(cat_set), '키워드수': kw_total,
+    }
+
+    # ── 파일 목록 ──
+    py_files = [
+        'MyBank/process_bank_data.py', 'MyBank/bank_app.py',
+        'MyCard/process_card_data.py', 'MyCard/card_app.py',
+        'MyCash/process_cash_data.py', 'MyCash/cash_app.py',
+        'lib/category_table_io.py',
+    ]
+    tpl_files = [
+        'MyBank/templates/index.html', 'MyBank/templates/category.html',
+        'MyCard/templates/index.html', 'MyCard/templates/category.html',
+        'MyCash/templates/index.html', 'MyCash/templates/category.html',
+    ]
+
+    # ── 2. 코드 표준화 현황 ──
+    py_status = []
+    for fp in py_files:
+        content = _read(fp)
+        has = bool(_re.search(r'from lib\.category_constants import', content))
+        py_status.append({'파일': fp, '적용': has})
+
+    tpl_status = []
+    for fp in tpl_files:
+        content = _read(fp)
+        checks = {
+            'VALID_CHASU': '{{ VALID_CHASU' in content,
+            'COLUMN_CHASU_MAP': '{{ COLUMN_CHASU_MAP' in content,
+            'CHASU_ORDER': '{{ CHASU_ORDER' in content,
+            'CHASU_1_CODES': '{{ CHASU_1_CODES' in content,
+        }
+        tpl_status.append({'파일': fp, '적용수': sum(v for v in checks.values()), '상세': checks})
+    report['표준화'] = {'Python': py_status, '템플릿': tpl_status}
+
+    # ── 3. Python 하드코딩 전수검사 ──
+    scan_pats = [
+        (DIRECTION_CANCELLED, 'DIRECTION_CANCELLED'),
+        (CANCELLED_TRANSACTION, 'CANCELLED_TRANSACTION'),
+        (CLASS_NIGHT, 'CLASS_NIGHT'),
+        (CLASS_INDUSTRY, 'CLASS_INDUSTRY'),
+        (CLASS_RISK, 'CLASS_RISK'),
+        (CLASS_PRE, 'CLASS_PRE'),
+        (CLASS_POST, 'CLASS_POST'),
+    ]
+    py_hard = []
+    for fp in py_files:
+        lines = _read(fp).split('\n')
+        for i, ln in enumerate(lines):
+            s = ln.strip()
+            if not s or s.startswith('#') or s.startswith('"""') or s.startswith("'''") or 'import ' in s:
+                continue
+            code = ln.split('#')[0] if '#' in ln else ln
+            for pat, const in scan_pats:
+                q1, q2 = "'" + pat + "'", '"' + pat + '"'
+                if q1 not in code and q2 not in code:
+                    continue
+                if pat == DIRECTION_CANCELLED and ('취소된' in code or '취소_' in code):
+                    continue
+                col_ref = ("[" + q1 + "]") in code or ("[" + q2 + "]") in code
+                col_ref = col_ref or (".get(" + q1) in code or (".get(" + q2) in code
+                col_ref = col_ref or ("columns" in code.lower() and pat in code)
+                if col_ref:
+                    continue
+                py_hard.append({
+                    '파일': fp, '줄': i + 1,
+                    '값': pat, '권장상수': const,
+                    '코드': s[:140],
+                })
+    report['Python잔존'] = py_hard
+
+    # ── 4. 템플릿 하드코딩 전수검사 ──
+    tpl_pats = [
+        CLASS_PRE, CLASS_POST, CLASS_ACCOUNT, CLASS_NIGHT, CLASS_INDUSTRY, CLASS_RISK,
+        UNCLASSIFIED, DEFAULT_CATEGORY, CARD_CASH_PROCESSING, CANCELLED_TRANSACTION,
+        BANK_DEFAULT_DEPOSIT, BANK_DEFAULT_WITHDRAWAL, CARD_DEFAULT_DEPOSIT, CARD_DEFAULT_WITHDRAWAL,
+    ]
+    tpl_hard = []
+    for fp in tpl_files:
+        lines = _read(fp).split('\n')
+        for i, ln in enumerate(lines):
+            if '{{' in ln and 'tojson' in ln:
+                continue
+            for pat in tpl_pats:
+                if ("'" + pat + "'") in ln or ('"' + pat + '"') in ln or ('value="' + pat + '"') in ln or ('>' + pat + '</option>') in ln:
+                    tpl_hard.append({
+                        '파일': fp, '줄': i + 1,
+                        '값': pat, '코드': ln.strip()[:140],
+                    })
+                    break
+    report['템플릿잔존'] = tpl_hard
+
+    # ── 5. 위험도 상수 분산 ──
+    risk_consts = {
+        'RISK_CLASS_TO_VALUE': ['lib/category_constants.py', 'lib/category_table_io.py'],
+        'RISK_GUIDELINES_FIXED': ['MyCash/cash_app.py'],
+        'RISK_DISPLAY_PRINT': ['MyCash/cash_app.py'],
+        'RISK_DISPLAY_MAP': ['MyCash/templates/analysis_basic.html'],
+        'RISK_CHART_LABELS': ['MyCash/templates/analysis_basic.html'],
+        'SUGGESTION_TEMPLATES': ['MyCash/cash_app.py'],
+        'LEGAL_REFERENCES': ['MyCash/cash_app.py'],
+    }
+    risk_findings = []
+    for name, files in risk_consts.items():
+        for fp in files:
+            if name in _read(fp):
+                risk_findings.append({'상수': name, '파일': fp})
+    report['위험도상수'] = risk_findings
+
+    # ── 6. 필터 특수값 ──
+    filter_map = {}
+    for fp in tpl_files:
+        for m in _re.findall(r'__(\w{2,})__', _read(fp)):
+            fv = '__' + m + '__'
+            if fv not in filter_map:
+                filter_map[fv] = []
+            if fp not in filter_map[fv]:
+                filter_map[fv].append(fp)
+    report['필터특수값'] = [{'값': k, '파일': v} for k, v in sorted(filter_map.items())]
+
+    # ── 7. 파편화 현황 (상수화 진행 상태 포함) ──
+    report['파편화'] = [
+        {'의미': '미매칭 입금', '은행': BANK_DEFAULT_DEPOSIT, '카드': CARD_DEFAULT_DEPOSIT, '금융종합': '(없음)', '상수화': 'O'},
+        {'의미': '미매칭 출금', '은행': BANK_DEFAULT_WITHDRAWAL, '카드': CARD_DEFAULT_WITHDRAWAL, '금융종합': '(없음)', '상수화': 'O'},
+        {'의미': '미매칭 기본값', '은행': '기타거래', '카드': '기타거래', '금융종합': '기타거래', '상수화': 'O'},
+        {'의미': '미분류 상태', '은행': '미분류/미분류입금/출금', '카드': '미분류/미분류입금/출금', '금융종합': '미분류', '상수화': 'O'},
+        {'의미': '카드 입금 특수', '은행': '—', '카드': '현금처리', '금융종합': '—', '상수화': 'O'},
+        {'의미': '취소 거래', '은행': f'{DIRECTION_CANCELLED}/{CANCELLED_TRANSACTION}', '카드': DIRECTION_CANCELLED, '금융종합': DIRECTION_CANCELLED, '상수화': '△'},
+        {'의미': '분류체계', '은행': '전처리/후처리/계정과목', '카드': '전처리/후처리/계정과목', '금융종합': '전처리/후처리/계정과목', '상수화': '△'},
+    ]
+
+    # ── 8. 종합 ──
+    py_ok = sum(1 for s in py_status if s['적용'])
+    tpl_ok = sum(1 for s in tpl_status if s['적용수'] > 0)
+    py_by_p = {}
+    for h in py_hard:
+        py_by_p[h['값']] = py_by_p.get(h['값'], 0) + 1
+    tpl_by_p = {}
+    for h in tpl_hard:
+        tpl_by_p[h['값']] = tpl_by_p.get(h['값'], 0) + 1
+    report['종합'] = {
+        'Python적용': f'{py_ok}/{len(py_files)}',
+        'Jinja적용': f'{tpl_ok}/{len(tpl_files)}',
+        'Python잔존수': len(py_hard),
+        'Python잔존패턴': py_by_p,
+        '템플릿잔존수': len(tpl_hard),
+        '템플릿잔존패턴': tpl_by_p,
+        '위험도상수수': len(risk_findings),
+        '필터특수값수': len(report['필터특수값']),
+    }
+
+    return jsonify(report)
 
 
 @app.route('/shutdown')
@@ -1048,11 +1559,10 @@ def api_verify_applicant():
         for col in ('분류', '키워드', '카테고리'):
             if col not in df.columns:
                 return jsonify({'ok': False, 'message': '카테고리 테이블 형식이 올바르지 않습니다.'}), 200
-        users = df[df['분류'] == '신청인']
+        users = df[df['분류'] == CLASS_APPLICANT]
 
         if users.empty:
-            # 분류 "신청인" 없으면 생성 후 동일인 처리 (5컬럼 유지)
-            new_row = pd.DataFrame([{'분류': '신청인', '키워드': email, '카테고리': username, '위험도': '', '업종코드': ''}])
+            new_row = pd.DataFrame([{'분류': CLASS_APPLICANT, '키워드': email, '카테고리': username, '위험도': '', '위험지표': ''}])
             df = pd.concat([df, new_row], ignore_index=True)
             safe_write_category_table(path, df, extended=True)
         else:
@@ -1148,6 +1658,223 @@ def api_category_json_to_xlsx():
         return jsonify({'success': False, 'error': err or '내보내기 실패'}), 400
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/category-json-to-md', methods=['POST'])
+def category_json_to_md():
+    """category_table.json → readme/가이드/계정과목_표준.md (계정과목 섹션만 재생성)."""
+    import json as _json
+    import re as _re
+
+    json_path = os.path.join(_root, 'data', 'category_table.json')
+    md_path = os.path.join(_root, 'readme', '가이드', '계정과목_표준.md')
+
+    if not os.path.isfile(json_path):
+        return jsonify({'success': False, 'error': 'category_table.json not found'}), 404
+
+    with open(json_path, 'r', encoding='utf-8') as f:
+        ct = _json.load(f)
+
+    # --- 1. 기존 MD 읽기 → 헤더(## 5 이전) / 후미(## 6 이후) / 코드→소분류명·면책성격 매핑 파싱 ---
+    header_lines = []
+    footer_lines = []
+    code_name_map = {}       # e.g. 'M01' → '자기계좌이체'
+    code_desc_map = {}       # e.g. 'M01' → '본인 계좌 간 이동, 뱅킹 수수료 등. 실질 소비 아님.'
+    code_immunity_map = {}   # e.g. 'M01' → '비소비성 — 실질 소비에서 분리'
+
+    if os.path.isfile(md_path):
+        with open(md_path, 'r', encoding='utf-8') as f:
+            existing = f.read()
+        lines = existing.split('\n')
+        section = 'header'
+        current_code = None
+        for line in lines:
+            ls = line.strip()
+            if ls.startswith('## 5. 계정과목'):
+                section = 'account'
+                continue
+            if section == 'account' and (ls.startswith('## 6.') or ls.startswith('## 6 ')):
+                section = 'footer'
+                footer_lines.append(line)
+                continue
+            if section == 'header':
+                header_lines.append(line)
+            elif section == 'footer':
+                footer_lines.append(line)
+            elif section == 'account':
+                m = _re.match(r'^####\s+([A-Z]\d+)\s+(.+)$', ls)
+                if m:
+                    current_code = m.group(1)
+                    code_name_map[current_code] = m.group(2).strip()
+                    continue
+                if current_code and ls.startswith('>'):
+                    code_desc_map[current_code] = ls.lstrip('> ').strip()
+
+        # 분류 체계 요약 테이블에서 면책 심사 성격 파싱
+        in_summary = False
+        for line in lines:
+            ls = line.strip()
+            if '면책 심사 성격' in ls:
+                in_summary = True
+                continue
+            if in_summary and ls.startswith('|---'):
+                continue
+            if in_summary and ls.startswith('| '):
+                cols = [c.strip() for c in ls.split('|')[1:-1]]
+                if len(cols) >= 5:
+                    code_col = cols[2].strip()
+                    immunity_col = cols[4].strip()
+                    if _re.match(r'^[A-Z]\d+$', code_col) and immunity_col:
+                        code_immunity_map[code_col] = immunity_col
+            elif in_summary and not ls.startswith('|'):
+                in_summary = False
+    else:
+        header_lines = [
+            '# 계정과목 표준 (Category Table Standard)',
+            '',
+            '> **용도**: 이 문서의 각 섹션을 파싱하여 `data/category_table.json`을 생성한다.',
+            '',
+            '---',
+        ]
+
+    # --- 2. JSON 데이터를 분류별로 그룹화 ---
+    account_rows = [r for r in ct if r.get('분류') == CLASS_ACCOUNT]
+
+    roman_order = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII']
+    roman_name_map = {
+        'I': '자금이동', 'II': '필수생활비', 'III': '재량소비',
+        'IV': '고위험항목', 'V': '금융거래', 'VI': '인적거래', 'VII': '미분류',
+    }
+
+    def _extract_roman(risk_str):
+        """'V_금융거래' → ('V', '금융거래')"""
+        if not risk_str:
+            return ('', '')
+        m = _re.match(r'^(VII|VI|IV|V|III|II|I)[._\s]*(.*)', risk_str)
+        if m:
+            return (m.group(1), m.group(2).strip())
+        return ('', risk_str)
+
+    def _extract_mid(cat_str):
+        """'F_금융' → '금융'"""
+        if '_' in cat_str:
+            return cat_str.split('_', 1)[1]
+        return cat_str
+
+    # 위험도(대분류) → 카테고리(중분류) → 위험지표(소분류코드) → [rows]
+    from collections import OrderedDict
+    struct = OrderedDict()
+    for row in account_rows:
+        risk = row.get('위험도', '')
+        cat = row.get('카테고리', '')
+        code = row.get('위험지표', '')
+        roman, _ = _extract_roman(risk)
+        if roman not in struct:
+            struct[roman] = OrderedDict()
+        if cat not in struct[roman]:
+            struct[roman][cat] = OrderedDict()
+        if code not in struct[roman][cat]:
+            struct[roman][cat][code] = []
+        struct[roman][cat][code].append(row)
+
+    # roman 순서 정렬
+    sorted_struct = OrderedDict()
+    for r in roman_order:
+        if r in struct:
+            sorted_struct[r] = struct[r]
+    for r in struct:
+        if r not in sorted_struct:
+            sorted_struct[r] = struct[r]
+
+    # --- 3. 분류 체계 요약 테이블 생성 ---
+    summary_lines = []
+    summary_lines.append('### 분류 체계: 대분류 %d → 중분류 %d → 소분류 %d' % (
+        len(sorted_struct),
+        sum(len(cats) for cats in sorted_struct.values()),
+        sum(len(codes) for cats in sorted_struct.values() for codes in cats.values()),
+    ))
+    summary_lines.append('')
+    summary_lines.append('| 대분류 | 중분류 | 소분류 코드 | 소분류명 | 면책 심사 성격 |')
+    summary_lines.append('|--------|--------|------------|---------|--------------|')
+
+    for roman, cats in sorted_struct.items():
+        roman_label = '%s. %s' % (roman, roman_name_map.get(roman, ''))
+        first_roman = True
+        for cat, codes in cats.items():
+            mid_name = _extract_mid(cat)
+            first_mid = True
+            for code in sorted(codes.keys()):
+                sub_name = code_name_map.get(code, '')
+                immunity = code_immunity_map.get(code, '')
+                r_col = roman_label if first_roman else ''
+                m_col = mid_name if first_mid else ''
+                summary_lines.append('| %s | %s | %s | %s | %s |' % (r_col, m_col, code, sub_name, immunity))
+                first_roman = False
+                first_mid = False
+
+    # --- 4. 각 소분류별 상세 섹션 생성 ---
+    detail_lines = []
+    prev_roman = None
+    prev_cat = None
+
+    for roman, cats in sorted_struct.items():
+        for cat, codes in cats.items():
+            mid_name = _extract_mid(cat)
+            roman_label = '%s. %s' % (roman, roman_name_map.get(roman, ''))
+
+            if roman != prev_roman or cat != prev_cat:
+                if prev_roman is not None:
+                    detail_lines.append('')
+                    detail_lines.append('---')
+                detail_lines.append('')
+                detail_lines.append('### %s — %s' % (roman_label, mid_name))
+
+            for code in sorted(codes.keys()):
+                sub_name = code_name_map.get(code, code)
+                detail_lines.append('')
+                detail_lines.append('#### %s %s' % (code, sub_name))
+
+                desc = code_desc_map.get(code, '')
+                if desc:
+                    detail_lines.append('')
+                    detail_lines.append('> %s' % desc)
+
+                detail_lines.append('')
+                detail_lines.append('| 키워드 |')
+                detail_lines.append('|--------|')
+                for row in codes[code]:
+                    kw = row.get('키워드', '')
+                    if kw:
+                        detail_lines.append('| %s |' % kw)
+
+            prev_roman = roman
+            prev_cat = cat
+
+    detail_lines.append('')
+    detail_lines.append('---')
+
+    # --- 5. 최종 조합: 헤더 + ## 5 계정과목 + 후미 ---
+    output_parts = []
+    output_parts.append('\n'.join(header_lines))
+    output_parts.append('')
+    output_parts.append('## 5. 계정과목')
+    output_parts.append('')
+    output_parts.append('\n'.join(summary_lines))
+    output_parts.append('')
+    output_parts.append('\n'.join(detail_lines))
+    output_parts.append('')
+    if footer_lines:
+        output_parts.append('\n'.join(footer_lines))
+
+    final = '\n'.join(output_parts)
+    # 연속 빈줄 3개 이상 → 2개로 정리
+    final = _re.sub(r'\n{4,}', '\n\n\n', final)
+
+    os.makedirs(os.path.dirname(md_path), exist_ok=True)
+    with open(md_path, 'w', encoding='utf-8') as f:
+        f.write(final)
+
+    return jsonify({'success': True, 'path': md_path})
 
 
 @app.route('/api/category-xlsx-to-json', methods=['POST'])
@@ -1310,9 +2037,9 @@ def api_reset_form_data():
         if df is not None and not (hasattr(df, 'empty') and df.empty):
             df = df.fillna('')
             df['분류'] = df['분류'].astype(str).str.strip()
-            u = df[df['분류'] == '신청인']
+            u = df[df['분류'] == CLASS_APPLICANT]
             has_user = not u.empty and str(u.iloc[0].get('카테고리', '') or '').strip() != ''
-            s = df[df['분류'] == '심야구분']
+            s = df[df['분류'] == CLASS_NIGHT]
             if not s.empty:
                 kw = str(s.iloc[0].get('키워드', '') or '').strip()
                 if '/' in kw:
@@ -1343,7 +2070,7 @@ def api_reset_form_lookup():
         이메일 = ''
         if name and df is not None and not (hasattr(df, 'empty') and df.empty):
             df = df.fillna('')
-            u = df[df['분류'].astype(str).str.strip() == '신청인']
+            u = df[df['분류'].astype(str).str.strip() == CLASS_APPLICANT]
             if not u.empty:
                 row = u.iloc[0]
                 저장_성명 = str(row.get('카테고리', '') or '').strip()
@@ -1386,21 +2113,21 @@ def api_reset_form_save():
 
         # 분류 "신청인": 키워드=이메일/연락처 (슬래시 구분), 카테고리=성명 (1행만 유지, 5컬럼 유지)
         키워드_신청인 = '/'.join([이메일, 연락처]).strip('/')  # 이메일/연락처
-        idx_user = df[df['분류'] == '신청인'].index
+        idx_user = df[df['분류'] == CLASS_APPLICANT].index
         if len(idx_user) > 0:
             df.loc[idx_user[0], '키워드'] = 키워드_신청인
             df.loc[idx_user[0], '카테고리'] = 사용자명
         else:
-            df = pd.concat([df, pd.DataFrame([{'분류': '신청인', '키워드': 키워드_신청인, '카테고리': 사용자명, '위험도': '', '업종코드': ''}])], ignore_index=True)
+            df = pd.concat([df, pd.DataFrame([{'분류': CLASS_APPLICANT, '키워드': 키워드_신청인, '카테고리': 사용자명, '위험도': '', '위험지표': ''}])], ignore_index=True)
 
         # 심야구분 (5컬럼 유지)
         심야키워드 = (심야시작 + '/' + 심야종료) if (심야시작 or 심야종료) else ''
-        idx_simya = df[df['분류'] == '심야구분'].index
+        idx_simya = df[df['분류'] == CLASS_NIGHT].index
         if len(idx_simya) > 0:
             df.loc[idx_simya[0], '키워드'] = 심야키워드
-            df.loc[idx_simya[0], '카테고리'] = df.loc[idx_simya[0], '카테고리'] if '카테고리' in df.columns else '심야구분'
+            df.loc[idx_simya[0], '카테고리'] = df.loc[idx_simya[0], '카테고리'] if '카테고리' in df.columns else CLASS_NIGHT
         else:
-            df = pd.concat([df, pd.DataFrame([{'분류': '심야구분', '키워드': 심야키워드, '카테고리': '심야구분', '위험도': '', '업종코드': ''}])], ignore_index=True)
+            df = pd.concat([df, pd.DataFrame([{'분류': CLASS_NIGHT, '키워드': 심야키워드, '카테고리': CLASS_NIGHT, '위험도': '', '위험지표': ''}])], ignore_index=True)
 
         safe_write_category_table(path, df, extended=True)
         if 사용자명 and 이메일:

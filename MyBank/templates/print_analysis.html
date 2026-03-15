@@ -859,6 +859,44 @@
             </div>
         </div>
     </div>
+    {% if major_summary is defined and major_summary|length > 0 %}
+    <div class="section" style="margin-top:16px; padding:10px; border:1px solid #BBDEFB; border-radius:4px; background:rgba(227,242,253,0.4);">
+        <div class="section-title" style="margin-bottom:6px;">카테고리 분류 현황 (대분류별)</div>
+        <p style="font-size:8pt; color:#546E7A; margin-bottom:6px;">카테고리는 계정과목 표준에 따라 대분류 7 → 중분류 13 → 소분류 34 구조로 분류됩니다. 키워드 매칭 시 5단계 캐스케이드(키워드 길이 → 위험도 → 텍스트 위치 → 소분류 코드 → 기존 유지)로 충돌을 해결합니다.</p>
+        <table style="width:100%; border-collapse:collapse; font-size:9pt;">
+            <thead><tr>
+                <th style="border:1px solid #BBDEFB; padding:3px 6px; background:#B3D4FC; color:#1565C0; text-align:left;">대분류</th>
+                <th style="border:1px solid #BBDEFB; padding:3px 6px; background:#B3D4FC; color:#1565C0; text-align:center;">건수</th>
+                <th style="border:1px solid #BBDEFB; padding:3px 6px; background:#B3D4FC; color:#1565C0; text-align:right;">입금액</th>
+                <th style="border:1px solid #BBDEFB; padding:3px 6px; background:#B3D4FC; color:#1565C0; text-align:right;">출금액</th>
+                <th style="border:1px solid #BBDEFB; padding:3px 6px; background:#B3D4FC; color:#1565C0; text-align:right;">차액</th>
+            </tr></thead>
+            <tbody>
+                {% set ns_m = namespace(t_cnt=0, t_dep=0, t_wit=0) %}
+                {% for m in major_summary %}
+                {% set bal = (m['입금액']|int) - (m['출금액']|int) %}
+                {% set ns_m.t_cnt = ns_m.t_cnt + m['건수']|int %}
+                {% set ns_m.t_dep = ns_m.t_dep + m['입금액']|int %}
+                {% set ns_m.t_wit = ns_m.t_wit + m['출금액']|int %}
+                <tr>
+                    <td style="border:1px solid #BBDEFB; padding:3px 6px;">{{ m['대분류'] }}</td>
+                    <td style="border:1px solid #BBDEFB; padding:3px 6px; text-align:center;">{{ '{:,}'.format(m['건수']|int) }}</td>
+                    <td style="border:1px solid #BBDEFB; padding:3px 6px; text-align:right; color:#1565C0;">{{ '{:,}'.format(m['입금액']|int) }}</td>
+                    <td style="border:1px solid #BBDEFB; padding:3px 6px; text-align:right; color:#C62828;">{{ '{:,}'.format(m['출금액']|int) }}</td>
+                    <td style="border:1px solid #BBDEFB; padding:3px 6px; text-align:right; color:{{ '#1565C0' if bal >= 0 else '#C62828' }};">{{ '{:,}'.format(bal) }}</td>
+                </tr>
+                {% endfor %}
+                <tr style="background:#E3F2FD; font-weight:bold;">
+                    <td style="border:1px solid #BBDEFB; padding:3px 6px;">합계</td>
+                    <td style="border:1px solid #BBDEFB; padding:3px 6px; text-align:center;">{{ '{:,}'.format(ns_m.t_cnt) }}</td>
+                    <td style="border:1px solid #BBDEFB; padding:3px 6px; text-align:right; color:#1565C0;">{{ '{:,}'.format(ns_m.t_dep) }}</td>
+                    <td style="border:1px solid #BBDEFB; padding:3px 6px; text-align:right; color:#C62828;">{{ '{:,}'.format(ns_m.t_wit) }}</td>
+                    <td style="border:1px solid #BBDEFB; padding:3px 6px; text-align:right; color:{{ '#1565C0' if (ns_m.t_dep - ns_m.t_wit) >= 0 else '#C62828' }};">{{ '{:,}'.format(ns_m.t_dep - ns_m.t_wit) }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
     {% if daechae_total_count is defined and daechae_total_count > 0 %}
     <div class="section" style="margin-top:16px; padding:10px; border:1px solid #FFDBC8; border-radius:4px; background:rgba(255,245,238,0.5);">
         <div class="section-title" style="margin-bottom:6px;">대체거래 현황</div>

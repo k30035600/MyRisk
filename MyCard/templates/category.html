@@ -219,17 +219,17 @@
         
         #category-definition-table th:nth-child(1),
         #category-definition-table td:nth-child(1) {
-            width: 15%;
+            width: 13.33%;
         }
-        
+
         #category-definition-table th:nth-child(2),
         #category-definition-table td:nth-child(2) {
-            width: 40%;
+            width: 18.67%;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
-        
+
         #category-definition-table th:nth-child(3),
         #category-definition-table td:nth-child(3) {
             width: 20%;
@@ -239,14 +239,14 @@
         }
         #category-definition-table th:nth-child(4),
         #category-definition-table td:nth-child(4) {
-            width: 15%;
+            width: 8%;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
         #category-definition-table th:nth-child(5),
         #category-definition-table td:nth-child(5) {
-            width: 10%;
+            width: 40%;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -713,6 +713,20 @@
     </div>
 
     <script>
+        const CAT = {
+            CANCELLED: {{ DIRECTION_CANCELLED | tojson }},
+            CANCELLED_TX: {{ CANCELLED_TRANSACTION | tojson }},
+            ACCOUNT: {{ CLASS_ACCOUNT | tojson }},
+            PRE: {{ CLASS_PRE | tojson }},
+            POST: {{ CLASS_POST | tojson }},
+            NIGHT: {{ CLASS_NIGHT | tojson }},
+            RISK: {{ CLASS_RISK | tojson }},
+            INDUSTRY: {{ CLASS_INDUSTRY | tojson }},
+            APPLICANT: {{ CLASS_APPLICANT | tojson }},
+            DEFAULT: {{ DEFAULT_CATEGORY | tojson }},
+            UNCLASSIFIED: {{ UNCLASSIFIED | tojson }}
+        };
+
         // API 기본 경로 설정 (현재 페이지 경로 기반)
         const API_BASE = window.location.pathname.startsWith('/card') ? '/card' : '';
         let _simyaRangesCache = [];
@@ -965,8 +979,7 @@
                 return;
             }
             
-            // 정렬: 계정과목/카테고리 순(전처리·후처리는 뒤로), 동일 분류 내 카테고리 → 키워드
-            const CHASU_ORDER = { '계정과목': 0, '전처리': 998, '후처리': 999 };
+            const CHASU_ORDER = {{ CHASU_ORDER | tojson }};
             filteredData.sort((a, b) => {
                 const 분류A = (a['분류'] || '').toString();
                 const 분류B = (b['분류'] || '').toString();
@@ -994,7 +1007,7 @@
                 const 분류 = item['분류'] || '';
                 const 키워드 = item['키워드'] || '';
                 const 카테고리 = item['카테고리'] || '';
-                const 업종코드 = (function(v){ if (v == null || v === '') return ''; if (typeof v === 'number') { if (v !== v) return ''; return (v === Math.floor(v)) ? String(Math.floor(v)) : String(v); } return String(v); })(item['업종코드']);
+                const 위험지표 = (function(v){ if (v == null || v === '') return ''; if (typeof v === 'number') { if (v !== v) return ''; return (v === Math.floor(v)) ? String(Math.floor(v)) : String(v); } return String(v); })(item['위험지표']);
                 const 위험도 = item['위험도'] != null && item['위험도'] !== '' ? String(item['위험도']) : '';
                 
                 // 전처리후 테이블과 동일한 방식: 짝수 행에 주황색 배경 적용
@@ -1005,12 +1018,12 @@
                 const cursorStyle = 'cursor: pointer;';
                 const hoverStyle = 'hover:bg-yellow-100';
                 
-                tableHtml += `<tr class="category-table-row" data-i="${index}" data-chasu="${(분류 || '').toString().replace(/"/g, '&quot;')}" data-keyword="${(키워드 || '').toString().replace(/"/g, '&quot;')}" data-category="${(카테고리 || '').toString().replace(/"/g, '&quot;')}" data-업종코드="${(업종코드 || '').toString().replace(/"/g, '&quot;')}" data-위험도="${(위험도 || '').toString().replace(/"/g, '&quot;')}" style="border-bottom: 1px solid #DFC4E8;${rowBgColor ? ` background-color: ${rowBgColor};` : ''}${cursorStyle}" onclick="selectCategoryRow(this)">
+                tableHtml += `<tr class="category-table-row" data-i="${index}" data-chasu="${(분류 || '').toString().replace(/"/g, '&quot;')}" data-keyword="${(키워드 || '').toString().replace(/"/g, '&quot;')}" data-category="${(카테고리 || '').toString().replace(/"/g, '&quot;')}" data-위험지표="${(위험지표 || '').toString().replace(/"/g, '&quot;')}" data-위험도="${(위험도 || '').toString().replace(/"/g, '&quot;')}" style="border-bottom: 1px solid #DFC4E8;${rowBgColor ? ` background-color: ${rowBgColor};` : ''}${cursorStyle}" onclick="selectCategoryRow(this)">
                     <td style="border: 1px solid #DFC4E8; padding: 2px;">${분류}</td>
-                    <td style="border: 1px solid #DFC4E8; padding: 2px;">${키워드}</td>
+                    <td style="border: 1px solid #DFC4E8; padding: 2px;">${item['위험도'] != null && item['위험도'] !== '' ? String(item['위험도']) : ''}</td>
                     <td style="border: 1px solid #DFC4E8; padding: 2px;">${카테고리}</td>
-                    <td style="text-align: center; border: 1px solid #DFC4E8; padding: 2px;">${(function(v){ if (v == null || v === '') return ''; if (typeof v === 'number') { if (v !== v) return ''; return (v === Math.floor(v)) ? String(Math.floor(v)) : String(v); } return String(v); })(item['업종코드'])}</td>
-                    <td style="text-align: center; border: 1px solid #DFC4E8; padding: 2px;">${item['위험도'] != null && item['위험도'] !== '' ? String(item['위험도']) : ''}</td>
+                    <td style="border: 1px solid #DFC4E8; padding: 2px;">${(function(v){ if (v == null || v === '') return ''; if (typeof v === 'number') { if (v !== v) return ''; return (v === Math.floor(v)) ? String(Math.floor(v)) : String(v); } return String(v); })(item['위험지표'])}</td>
+                    <td style="border: 1px solid #DFC4E8; padding: 2px;">${키워드}</td>
                 </tr>`;
             });
             
@@ -1020,12 +1033,11 @@
             updateDropdownOptions();
         }
 
-        // 분류 입력 검증 (계정과목/업종분류만 허용)
+        const VALID_CHASU_VALUES = {{ VALID_CHASU | tojson }};
         function validateChasuInput(input) {
             const value = input.value.trim();
-            const validValues = ['계정과목'];
-            if (value && !validValues.includes(value)) {
-                alert('분류는 계정과목만 입력할 수 있습니다.');
+            if (value && !VALID_CHASU_VALUES.includes(value)) {
+                alert('분류는 ' + VALID_CHASU_VALUES.join(', ') + '만 입력할 수 있습니다.');
                 input.value = '';
                 return false;
             }
@@ -1064,7 +1076,7 @@
                     분류: rowElement.getAttribute('data-chasu') || '',
                     키워드: rowElement.getAttribute('data-keyword') || '',
                     카테고리: rowElement.getAttribute('data-category') || '',
-                    업종코드: rowElement.getAttribute('data-업종코드') ?? '',
+                    위험지표: rowElement.getAttribute('data-위험지표') ?? '',
                     위험도: rowElement.getAttribute('data-위험도') ?? ''
                 };
             }
@@ -1075,7 +1087,7 @@
             const currentAction = (document.getElementById('new-category-chasu')?.value || '').trim();
             const isEditMode = ['입력', '수정', '삭제'].includes(currentAction);
             if (!isEditMode && typeof showRowTooltip === 'function') {
-                showRowTooltip(selectedRowData, rowElement, ['분류', '키워드', '카테고리', '업종코드', '위험도']);
+                showRowTooltip(selectedRowData, rowElement, ['분류', '키워드', '카테고리', '위험지표', '위험도']);
             }
         }
 
@@ -1119,14 +1131,33 @@
                 return;
             }
             
-            // 분류 검증 (계정과목/업종분류만)
-            const validValues = ['계정과목'];
-            if (!validValues.includes(chasuInput)) {
-                alert('분류는 계정과목만 입력할 수 있습니다.');
+            // 분류 검증
+            if (!VALID_CHASU_VALUES.includes(chasuInput)) {
+                alert('분류는 ' + VALID_CHASU_VALUES.join(', ') + '만 입력할 수 있습니다.');
                 document.getElementById('new-category-chasu-input').value = '';
                 return;
             }
             
+            // 중복 키워드 검증 (입력/수정 시)
+            if (action === '입력' || action === '수정') {
+                const inputKeywords = keywordInput.split('/').map(k => k.trim()).filter(k => k);
+                const existingKeywords = [];
+                (allCategoryTableData || []).forEach(row => {
+                    const rowKws = (row['키워드'] || '').split('/').map(k => k.trim()).filter(k => k);
+                    if (action === '수정' && selectedRowData &&
+                        row['분류'] === selectedRowData.분류 && row['키워드'] === selectedRowData.키워드) return;
+                    rowKws.forEach(k => existingKeywords.push({ keyword: k, 분류: row['분류'] || '', 카테고리: row['카테고리'] || '', 위험지표: row['위험지표'] || '' }));
+                });
+                const duplicates = [];
+                inputKeywords.forEach(ik => {
+                    const found = existingKeywords.filter(e => e.keyword === ik);
+                    found.forEach(f => duplicates.push(`"${ik}" → ${f.분류}/${f.카테고리}/${f.위험지표}`));
+                });
+                if (duplicates.length > 0) {
+                    if (!confirm('중복 키워드가 있습니다:\n' + duplicates.join('\n') + '\n\n계속 진행하시겠습니까?')) return;
+                }
+            }
+
             // 수정/삭제 모드일 때는 선택된 행이 있어야 함
             if ((action === '수정' || action === '삭제') && !selectedRowData) {
                 alert('수정 또는 삭제할 행을 먼저 선택해주세요.');
@@ -1140,6 +1171,10 @@
                     '키워드': keywordInput,
                     '카테고리': categoryInput
                 };
+                if (selectedRowData) {
+                    requestBody['위험도'] = selectedRowData.위험도 || '';
+                    requestBody['위험지표'] = selectedRowData.위험지표 || '';
+                }
                 
                 // 수정/삭제의 경우 원본 데이터 추가
                 if (action === '수정' || action === '삭제') {
@@ -1192,38 +1227,31 @@
                 return;
             }
             
-            // 차수, 카테고리, 키워드 순으로 정렬
+            const ROMAN = ['I','II','III','IV','V','VI','VII','VIII','IX','X'];
+            function romanIdx(s) { const v = s || ''; if (v === '미분류' || v.startsWith('미분류')) return -1; const c = v.split('_')[0]; const i = ROMAN.indexOf(c); return i >= 0 ? i : 99; }
+            function codeSort(s) { const m = (s || '').match(/^([A-Z]+)(\d+)$/); return m ? [m[1], parseInt(m[2])] : [s || 'ZZZ', 999]; }
             const sortedData = [...allCategoryTableData].sort((a, b) => {
-                // 1순위: 차수 (숫자 추출하여 비교)
-                const 차수A = parseInt((a['차수'] || '').replace('차', '')) || 999;
-                const 차수B = parseInt((b['차수'] || '').replace('차', '')) || 999;
-                if (차수A !== 차수B) {
-                    return 차수A - 차수B;
-                }
-                
-                // 2순위: 카테고리
-                const 카테고리A = (a['카테고리'] || '').toString();
-                const 카테고리B = (b['카테고리'] || '').toString();
-                if (카테고리A !== 카테고리B) {
-                    return 카테고리A.localeCompare(카테고리B, 'ko');
-                }
-                
-                // 3순위: 키워드
-                const 키워드A = (a['키워드'] || '').toString();
-                const 키워드B = (b['키워드'] || '').toString();
-                return 키워드A.localeCompare(키워드B, 'ko');
+                const sA = (a['분류'] || ''), sB = (b['분류'] || '');
+                if (sA !== sB) return sA.localeCompare(sB, 'ko');
+                const rA = romanIdx(a['위험도']), rB = romanIdx(b['위험도']);
+                if (rA !== rB) return rA - rB;
+                const [pA, nA] = codeSort(a['위험지표']), [pB, nB] = codeSort(b['위험지표']);
+                if (pA !== pB) return pA.localeCompare(pB);
+                if (nA !== nB) return nA - nB;
+                return (a['키워드'] || '').localeCompare(b['키워드'] || '', 'ko');
             });
-            
+
             // 프린터 출력용 새 창 생성
             const printWindow = window.open('', '_blank');
             const printDate = new Date().toLocaleString('ko-KR');
+            const _fmtNoDec = function(v){ if (v == null || v === '') return ''; if (typeof v === 'number') { if (v !== v) return ''; return (v === Math.floor(v)) ? String(Math.floor(v)) : String(v); } return String(v); };
             const tableRows = sortedData.map(item => {
                 return '<tr>' +
-                    '<td style="text-align: center;">' + (item['분류'] || '') + '</td>' +
-                    '<td>' + (item['키워드'] || '') + '</td>' +
+                    '<td>' + (item['분류'] || '') + '</td>' +
+                    '<td>' + (item['위험도'] != null && item['위험도'] !== '' ? String(item['위험도']) : '') + '</td>' +
+                    '<td>' + (_fmtNoDec(item['위험지표'])) + '</td>' +
                     '<td>' + (item['카테고리'] || '') + '</td>' +
-                    '<td style="text-align: center;">' + ((function(v){ if (v == null || v === '') return ''; if (typeof v === 'number') { if (v !== v) return ''; return (v === Math.floor(v)) ? String(Math.floor(v)) : String(v); } return String(v); })(item['업종코드'])) + '</td>' +
-                    '<td style="text-align: center;">' + (item['위험도'] != null && item['위험도'] !== '' ? String(item['위험도']) : '') + '</td>' +
+                    '<td>' + (item['키워드'] || '') + '</td>' +
                     '</tr>';
             }).join('');
             
@@ -1260,11 +1288,11 @@
                 '</div>' +
                 '<table>' +
                 '<thead><tr>' +
-                '<th style="width: 15%;">분류</th>' +
-                '<th style="width: 40%;">키워드</th>' +
-                '<th style="width: 20%;">카테고리</th>' +
-                '<th style="width: 15%; text-align: center;">업종코드</th>' +
-                '<th style="width: 10%; text-align: center;">위험도</th>' +
+                '<th style="width: 12%;">분류</th>' +
+                '<th style="width: 12%;">위험도</th>' +
+                '<th style="width: 8%;">위험지표</th>' +
+                '<th style="width: 18%;">카테고리</th>' +
+                '<th style="width: 50%;">키워드</th>' +
                 '</tr></thead>' +
                 '<tbody>' + tableRows + '</tbody>' +
                 '</table>' +

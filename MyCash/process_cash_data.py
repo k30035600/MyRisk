@@ -24,6 +24,10 @@ if PROJECT_ROOT not in sys.path:
 from lib.shared_app_utils import setup_win32_utf8, safe_str, clean_amount
 from lib.excel_io import safe_write_excel
 from lib.category_table_defaults import get_default_rules
+from lib.category_constants import (
+    DEFAULT_CATEGORY, UNCLASSIFIED, CHASU_TO_CLASS, CLASS_PRE,
+    DIRECTION_CANCELLED, CANCELLED_TRANSACTION,
+)
 from lib.category_table_io import (
     load_category_table as load_category_table_io,
     normalize_category_df,
@@ -78,10 +82,10 @@ def classify_1st_category(row):
     before_text = safe_str(row.get("before_text", ""))
     구분 = safe_str(row.get("폐업", row.get("구분", "")))
 
-    if "취소" in before_text or "취소된 거래" in before_text:
-        return "취소"
-    if "취소" in 구분 or "취소된 거래" in 구분:
-        return "취소"
+    if DIRECTION_CANCELLED in before_text or CANCELLED_TRANSACTION in before_text:
+        return DIRECTION_CANCELLED
+    if DIRECTION_CANCELLED in 구분 or CANCELLED_TRANSACTION in 구분:
+        return DIRECTION_CANCELLED
 
     in_amt = row.get("입금액", 0) or 0
     out_amt = row.get("출금액", 0) or 0
@@ -103,8 +107,8 @@ def classify_etc(row_idx, df, category_tables):
         return ""
 
     result = ""
-    if "기타거래" in category_tables:
-        category_table = category_tables["기타거래"]
+    if DEFAULT_CATEGORY in category_tables:
+        category_table = category_tables[DEFAULT_CATEGORY]
         category_rows_list = list(category_table.iterrows())
         sorted_rows = sorted(category_rows_list, key=lambda x: len(str(x[1].get("키워드", ""))), reverse=True)
 
@@ -144,7 +148,7 @@ def classify_etc(row_idx, df, category_tables):
     excluded_texts = []
 
     branch = safe_str(row.get("거래지점", ""))
-    if branch and branch != "미분류":
+    if branch and branch != UNCLASSIFIED:
         excluded_texts.append(branch)
         bracket_matches = re.findall(r'\(([^)]+)\)', branch)
         excluded_texts.extend(bracket_matches)
@@ -181,17 +185,11 @@ def load_category_table():
     category_df = normalize_category_df(category_df)
     category_tables = {}
     분류_컬럼명 = '분류' if '분류' in category_df.columns else '차수'
-    차수_분류_매핑 = {
-        '1차': '입출금',
-        '2차': '전처리',
-        '6차': '기타거래'
-    }
-
     for 값 in category_df[분류_컬럼명].unique():
         if pd.notna(값):
             값_str = str(값).strip()
-            if 분류_컬럼명 == '차수' and 값_str in 차수_분류_매핑:
-                분류명 = 차수_분류_매핑[값_str]
+            if 분류_컬럼명 == '차수' and 값_str in CHASU_TO_CLASS:
+                분류명 = CHASU_TO_CLASS[값_str]
             else:
                 분류명 = 값_str
             category_tables[분류명] = category_df[category_df[분류_컬럼명] == 값].copy()

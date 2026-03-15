@@ -1742,7 +1742,7 @@
                                     <th style="text-align: left; border: 1px solid #FFDBC8; padding: 2px 2px; white-space: nowrap; color: #E65100;">분류</th>
                                     <th style="text-align: left; border: 1px solid #FFDBC8; padding: 2px 2px; white-space: nowrap; color: #E65100;">키워드</th>
                                     <th style="text-align: left; border: 1px solid #FFDBC8; padding: 2px 2px; white-space: nowrap; color: #E65100;">카테고리</th>
-                                    <th style="text-align: center; border: 1px solid #FFDBC8; padding: 2px 2px; white-space: nowrap; color: #E65100;">업종코드</th>
+                                    <th style="text-align: center; border: 1px solid #FFDBC8; padding: 2px 2px; white-space: nowrap; color: #E65100;">위험지표</th>
                                     <th style="text-align: center; border: 1px solid #FFDBC8; padding: 2px 2px; white-space: nowrap; color: #E65100;">위험도</th>
                                 </tr>
                                 <tr style="background-color: #FFCCBC; color: #1A1A1A;">
@@ -1752,12 +1752,12 @@
                                             <option value="입력">입력</option>
                                             <option value="수정">수정</option>
                                             <option value="삭제">삭제</option>
-                                            <option value="심야구분">심야구분</option>
+                                            <option value="{{ CLASS_NIGHT }}">심야구분</option>
                                             <option value="신용카드">신용카드</option>
                                             <option value="가상자산">가상자산</option>
                                             <option value="증권투자">증권투자</option>
                                             <option value="해외송금">해외송금</option>
-                                            <option value="업종분류">업종분류</option>
+                                            <option value="{{ CLASS_INDUSTRY }}">업종분류</option>
                                         </select>
                                     </td>
                                     <td style="border: 1px solid #FFDBC8; padding: 2px 2px;">
@@ -1789,8 +1789,8 @@
                                             <option value="가상자산">가상자산</option>
                                             <option value="증권투자">증권투자</option>
                                             <option value="해외송금">해외송금</option>
-                                            <option value="심야구분">심야구분</option>
-                                            <option value="업종분류">업종분류</option>
+                                            <option value="{{ CLASS_NIGHT }}">심야구분</option>
+                                            <option value="{{ CLASS_INDUSTRY }}">업종분류</option>
                                         </select>
                                     </td>
                                     <td style="border: 1px solid #FFDBC8; padding: 2px 2px;">
@@ -1800,7 +1800,7 @@
                                         <input type="text" id="new-category-name-input" placeholder="카테고리 직접 입력" style="padding: 1px 2px; width: 100%; font-size: 11px; border: 1px solid #FFDBC8; border-radius: 2px; box-sizing: border-box; background-color: #FFFFFF; color: #1A1A1A;">
                                     </td>
                                     <td style="border: 1px solid #FFDBC8; padding: 2px 2px;">
-                                        <input type="text" id="new-category-biz-input" placeholder="업종코드" style="padding: 1px 2px; width: 100%; font-size: 11px; border: 1px solid #FFDBC8; border-radius: 2px; box-sizing: border-box; background-color: #FFFFFF; color: #1A1A1A;">
+                                        <input type="text" id="new-category-biz-input" placeholder="위험지표" style="padding: 1px 2px; width: 100%; font-size: 11px; border: 1px solid #FFDBC8; border-radius: 2px; box-sizing: border-box; background-color: #FFFFFF; color: #1A1A1A;">
                                     </td>
                                     <td style="border: 1px solid #FFDBC8; padding: 2px 2px;">
                                         <input type="text" id="new-category-risk-input" placeholder="위험도" style="padding: 1px 2px; width: 100%; font-size: 11px; border: 1px solid #FFDBC8; border-radius: 2px; box-sizing: border-box; background-color: #FFFFFF; color: #1A1A1A;">
@@ -1849,6 +1849,20 @@
     </div>
     
     <script>
+        const CAT = {
+            CANCELLED: {{ DIRECTION_CANCELLED | tojson }},
+            CANCELLED_TX: {{ CANCELLED_TRANSACTION | tojson }},
+            ACCOUNT: {{ CLASS_ACCOUNT | tojson }},
+            PRE: {{ CLASS_PRE | tojson }},
+            POST: {{ CLASS_POST | tojson }},
+            NIGHT: {{ CLASS_NIGHT | tojson }},
+            RISK: {{ CLASS_RISK | tojson }},
+            INDUSTRY: {{ CLASS_INDUSTRY | tojson }},
+            APPLICANT: {{ CLASS_APPLICANT | tojson }},
+            DEFAULT: {{ DEFAULT_CATEGORY | tojson }},
+            UNCLASSIFIED: {{ UNCLASSIFIED | tojson }}
+        };
+
         // API 기본 경로 설정 (현재 페이지 경로 기반)
         const API_BASE = window.location.pathname.startsWith('/cash') ? '/cash' : '';
         // 심야구분 필터: category_table 분류=심야구분 키워드(시작/종료) 범위, 00:00:00 제외
@@ -2177,7 +2191,7 @@
                 if (withdrawValue > 0) row['입출금'] = (row['입출금'] || '') + (row['입출금'] ? ' ' : '') + '출금';
                 if (row.hasOwnProperty('폐업')) {
                     const val = row['폐업'];
-                    if (val != null && String(val).trim().includes('취소된 거래')) row['폐업'] = '취소';
+                    if (val != null && String(val).trim().includes(CAT.CANCELLED_TX)) row['폐업'] = CAT.CANCELLED;
                 }
             }
         }
@@ -2478,8 +2492,8 @@
                                 const val = row['폐업'];
                                 if (val !== null && val !== undefined) {
                                     const valStr = String(val).trim();
-                                    if (valStr.includes('취소된 거래')) {
-                                        row['폐업'] = '취소';
+                                    if (valStr.includes(CAT.CANCELLED_TX)) {
+                                        row['폐업'] = CAT.CANCELLED;
                                     }
                                 }
                             }
@@ -2780,7 +2794,7 @@
             if (categoryRow && categoryTableData.length > 0) {
                 const idx = parseInt(categoryRow.getAttribute('data-tx-index'), 10);
                 if (!isNaN(idx) && categoryTableData[idx]) {
-                    const columnOrder = ['분류', '키워드', '카테고리', '업종코드', '위험도'];
+                    const columnOrder = ['분류', '키워드', '카테고리', '위험지표', '위험도'];
                     showRowTooltip(categoryTableData[idx], categoryRow, columnOrder);
                 }
             }
@@ -2834,24 +2848,9 @@
             });
         });
         
-        // 카테고리 차수별 분류 매핑
-        const CATEGORY_CHASU_MAPPING = {
-            '입출금': '1차',
-            '거래유형': '2차',
-            '카테고리': '3차',
-            '기타거래': '5차'
-        };
-        
-        // 차수별 컬럼 이름 매핑 (역방향)
-        const CHASU_COLUMN_MAPPING = {
-            '1차': '입출금',
-            '2차': '거래유형',
-            '3차': '카테고리',
-            '5차': '기타거래'
-        };
-        
-        // 1차분류 코드 (입출금 구분)
-        const CHASU_1_CODES = ['입금', '출금'];
+        const CATEGORY_CHASU_MAPPING = {{ COLUMN_CHASU_MAP | tojson }};
+        const CHASU_COLUMN_MAPPING = {{ CHASU_COLUMN_MAP | tojson }};
+        const CHASU_1_CODES = {{ CHASU_1_CODES | tojson }};
         
         // 카테고리 테이블 전체 데이터 저장
         let allCategoryTableData = [];
@@ -3035,7 +3034,7 @@
             }
 
             function _fmtNoDec(v) { if (v == null || v === '') return ''; if (typeof v === 'number') { if (v !== v) return ''; return (v === Math.floor(v)) ? String(Math.floor(v)) : String(v); } return String(v); }
-            const bizCodes = [...new Set(allCategoryTableData.map(item => _fmtNoDec(item['업종코드'])).filter(c => c))].sort();
+            const bizCodes = [...new Set(allCategoryTableData.map(item => _fmtNoDec(item['위험지표'])).filter(c => c))].sort();
             const bizFilterSelect = document.getElementById('new-category-biz-filter');
             if (bizFilterSelect) {
                 const currentValue = bizFilterSelect.value;
@@ -3112,7 +3111,7 @@
             }
 
             if (bizFilter && bizFilter !== '' && bizFilter !== '전체') {
-                filteredData = filteredData.filter(item => _fmtNoDec(item['업종코드']) === bizFilter);
+                filteredData = filteredData.filter(item => _fmtNoDec(item['위험지표']) === bizFilter);
             }
 
             if (riskFilter && riskFilter !== '' && riskFilter !== '전체') {
@@ -3160,18 +3159,18 @@
                 const 키워드 = item['키워드'] || '';
                 const 카테고리 = item['카테고리'] || '';
                 function _fmtNoDec(v) { if (v == null || v === '') return ''; if (typeof v === 'number') { if (v !== v) return ''; return (v === Math.floor(v)) ? String(Math.floor(v)) : String(v); } return String(v); }
-                const 업종코드 = _fmtNoDec(item['업종코드']);
+                const 위험지표 = _fmtNoDec(item['위험지표']);
                 const 위험도 = item['위험도'] != null && item['위험도'] !== '' ? String(item['위험도']) : '';
                 
                 const isEvenRow = index % 2 === 1;
                 const rowBgColor = isEvenRow ? '#F7F8FA' : '';
                 const cursorStyle = 'cursor: pointer;';
                 
-                tableHtml += `<tr class="bank_category-row" data-i="${index}" data-chasu="${(분류 || '').toString().replace(/"/g, '&quot;')}" data-keyword="${(키워드 || '').toString().replace(/"/g, '&quot;')}" data-category="${(카테고리 || '').toString().replace(/"/g, '&quot;')}" data-업종코드="${(업종코드 || '').toString().replace(/"/g, '&quot;')}" data-위험도="${(위험도 || '').toString().replace(/"/g, '&quot;')}" style="border-bottom: 1px solid #FFDBC8;${rowBgColor ? ` background-color: ${rowBgColor};` : ''}${cursorStyle}" onclick="selectCategoryRow(this)">
+                tableHtml += `<tr class="bank_category-row" data-i="${index}" data-chasu="${(분류 || '').toString().replace(/"/g, '&quot;')}" data-keyword="${(키워드 || '').toString().replace(/"/g, '&quot;')}" data-category="${(카테고리 || '').toString().replace(/"/g, '&quot;')}" data-위험지표="${(위험지표 || '').toString().replace(/"/g, '&quot;')}" data-위험도="${(위험도 || '').toString().replace(/"/g, '&quot;')}" style="border-bottom: 1px solid #FFDBC8;${rowBgColor ? ` background-color: ${rowBgColor};` : ''}${cursorStyle}" onclick="selectCategoryRow(this)">
                     <td style="border: 1px solid #FFDBC8; padding: 2px;">${분류}</td>
                     <td style="border: 1px solid #FFDBC8; padding: 2px;">${키워드}</td>
                     <td style="border: 1px solid #FFDBC8; padding: 2px;">${카테고리}</td>
-                    <td style="border: 1px solid #FFDBC8; padding: 2px;">${업종코드}</td>
+                    <td style="border: 1px solid #FFDBC8; padding: 2px;">${위험지표}</td>
                     <td style="border: 1px solid #FFDBC8; padding: 2px;">${위험도}</td>
                 </tr>`;
             });
@@ -3195,12 +3194,11 @@
             if (withdrawCountEl) withdrawCountEl.textContent = '';
         }
 
-        // 분류 입력 검증 (전처리/후처리/계정과목만, 거래방법/거래지점 미사용)
-        const VALID_CHASU_VALUES = ['전처리', '후처리', '계정과목', '신용카드', '가상자산', '증권투자', '해외송금', '심야구분', '업종분류'];
+        const VALID_CHASU_VALUES = {{ VALID_CHASU | tojson }};
         function validateChasuInput(input) {
             const value = (input.value || '').toString().trim();
             if (value && !VALID_CHASU_VALUES.includes(value)) {
-                alert('분류는 전처리, 후처리, 계정과목, 신용카드, 가상자산, 증권투자, 해외송금, 심야구분, 업종분류만 입력할 수 있습니다.');
+                alert('분류는 ' + VALID_CHASU_VALUES.join(', ') + '만 입력할 수 있습니다.');
                 if (input.tagName === 'SELECT') input.value = ''; else input.value = '';
                 return false;
             }
@@ -3244,7 +3242,7 @@
                     분류: rowElement.getAttribute('data-chasu') || '',
                     키워드: rowElement.getAttribute('data-keyword') || '',
                     카테고리: rowElement.getAttribute('data-category') || '',
-                    업종코드: rowElement.getAttribute('data-업종코드') ?? '',
+                    위험지표: rowElement.getAttribute('data-위험지표') ?? '',
                     위험도: rowElement.getAttribute('data-위험도') ?? ''
                 };
             }
@@ -3253,13 +3251,13 @@
             document.getElementById('new-category-keyword-input').value = selectedRowData.키워드 || '';
             document.getElementById('new-category-name-input').value = selectedRowData.카테고리 || '';
             const bizInputEl = document.getElementById('new-category-biz-input');
-            if (bizInputEl) bizInputEl.value = selectedRowData.업종코드 || '';
+            if (bizInputEl) bizInputEl.value = selectedRowData.위험지표 || '';
             const riskInputEl = document.getElementById('new-category-risk-input');
             if (riskInputEl) riskInputEl.value = selectedRowData.위험도 || '';
             const currentAction = (document.getElementById('new-category-chasu')?.value || '').trim();
             const isEditMode = ['입력', '수정', '삭제'].includes(currentAction);
             if (!isEditMode && typeof showRowTooltip === 'function') {
-                showRowTooltip(selectedRowData, rowElement, ['분류', '키워드', '카테고리', '업종코드', '위험도']);
+                showRowTooltip(selectedRowData, rowElement, ['분류', '키워드', '카테고리', '위험지표', '위험도']);
             }
         }
 
@@ -3398,7 +3396,7 @@
                     '분류': chasuInput,
                     '키워드': keywordInput,
                     '카테고리': categoryInput,
-                    '업종코드': bizInput.trim(),
+                    '위험지표': bizInput.trim(),
                     '위험도': riskInput.trim()
                 };
                 // add 액션: 백엔드 apply_category_action은 rows 배열을 읽으므로 함께 전송
@@ -3408,7 +3406,7 @@
                         '키워드': keywordInput,
                         '카테고리': categoryInput,
                         '위험도': riskInput.trim(),
-                        '업종코드': bizInput.trim()
+                        '위험지표': bizInput.trim()
                     }];
                 }
                 if (action === '수정') {
@@ -3460,16 +3458,20 @@
                 return;
             }
             function _fmtNoDec(v) { if (v == null || v === '') return ''; if (typeof v === 'number') { if (v !== v) return ''; return (v === Math.floor(v)) ? String(Math.floor(v)) : String(v); } return String(v); }
-            const EXCLUDE_CHASU = ['계정과목', '전처리', '후처리'];
+            const EXCLUDE_CHASU = [CAT.ACCOUNT, CAT.PRE, CAT.POST];
             const filteredData = allCategoryTableData.filter(item => !EXCLUDE_CHASU.includes((item['분류'] || '').toString().trim()));
+            const ROMAN = ['I','II','III','IV','V','VI','VII','VIII','IX','X'];
+            function romanIdx(s) { const v = s || ''; if (v === '미분류' || v.startsWith('미분류')) return -1; const c = v.split('_')[0]; const i = ROMAN.indexOf(c); return i >= 0 ? i : 99; }
+            function codeSort(s) { const m = (s || '').match(/^([A-Z]+)(\d+)$/); return m ? [m[1], parseInt(m[2])] : [s || 'ZZZ', 999]; }
             const sortedData = [...filteredData].sort((a, b) => {
-                const 분류A = (a['분류'] || '').toString();
-                const 분류B = (b['분류'] || '').toString();
-                const cmp = 분류A.localeCompare(분류B, 'ko');
-                if (cmp !== 0) return cmp;
-                const 키워드A = (a['키워드'] || '').toString();
-                const 키워드B = (b['키워드'] || '').toString();
-                return 키워드A.localeCompare(키워드B, 'ko');
+                const sA = (a['분류'] || ''), sB = (b['분류'] || '');
+                if (sA !== sB) return sA.localeCompare(sB, 'ko');
+                const rA = romanIdx(a['위험도']), rB = romanIdx(b['위험도']);
+                if (rA !== rB) return rA - rB;
+                const [pA, nA] = codeSort(a['위험지표']), [pB, nB] = codeSort(b['위험지표']);
+                if (pA !== pB) return pA.localeCompare(pB);
+                if (nA !== nB) return nA - nB;
+                return (a['키워드'] || '').localeCompare(b['키워드'] || '', 'ko');
             });
             const printWindow = window.open('', '_blank');
             if (!printWindow) {
@@ -3479,14 +3481,14 @@
             const printDate = new Date().toLocaleString('ko-KR');
             const tableRows = sortedData.map(item => {
                 return '<tr>' +
-                    '<td style="text-align: center;">' + (item['분류'] || '') + '</td>' +
-                    '<td>' + (item['키워드'] || '') + '</td>' +
+                    '<td>' + (item['분류'] || '') + '</td>' +
+                    '<td>' + (item['위험도'] != null && item['위험도'] !== '' ? String(item['위험도']) : '') + '</td>' +
+                    '<td>' + _fmtNoDec(item['위험지표']) + '</td>' +
                     '<td>' + (item['카테고리'] || '') + '</td>' +
-                    '<td style="text-align: center;">' + _fmtNoDec(item['업종코드']) + '</td>' +
-                    '<td style="text-align: center;">' + (item['위험도'] != null && item['위험도'] !== '' ? String(item['위험도']) : '') + '</td>' +
+                    '<td>' + (item['키워드'] || '') + '</td>' +
                     '</tr>';
             }).join('');
-            // 컬럼 너비 비율 1:5:2:1:1 (분류:키워드:카테고리:업종코드:위험도)
+            // 컬럼 너비 비율 1:5:2:1:1 (분류:키워드:카테고리:위험지표:위험도)
             printWindow.document.write('<!DOCTYPE html><html><head>' +
                 '<title>카테고리 테이블 출력 (금융정보)</title>' +
                 '<meta charset="UTF-8">' +
@@ -3509,12 +3511,12 @@
                 'table { border-collapse: collapse; width: 100%; margin-top: 10px; font-size: 11px; table-layout: fixed; }' +
                 'th, td { border: 1px solid #333; padding: 6px; text-align: left; }' +
                 'th { background-color: #FFCCBC; color: #E65100; font-weight: bold; text-align: center; }' +
-                '/* 컬럼 너비 비율 1:5:2:1:1 (분류:키워드:카테고리:업종코드:위험도) */' +
-                'th:nth-child(1), td:nth-child(1) { width: 10%; }' +
-                'th:nth-child(2), td:nth-child(2) { width: 50%; }' +
-                'th:nth-child(3), td:nth-child(3) { width: 20%; }' +
-                'th:nth-child(4), td:nth-child(4) { width: 10%; }' +
-                'th:nth-child(5), td:nth-child(5) { width: 10%; }' +
+                '/* 컬럼 너비 비율 (분류:위험도:위험지표:카테고리:키워드) */' +
+                'th:nth-child(1), td:nth-child(1) { width: 12%; }' +
+                'th:nth-child(2), td:nth-child(2) { width: 12%; }' +
+                'th:nth-child(3), td:nth-child(3) { width: 8%; }' +
+                'th:nth-child(4), td:nth-child(4) { width: 18%; }' +
+                'th:nth-child(5), td:nth-child(5) { width: 50%; }' +
                 'tr:nth-child(even) { background-color: #F7F8FA; }' +
                 '.header-info { text-align: center; margin-bottom: 15px; font-size: 12px; color: #1A1A1A; }' +
                 '</style>' +
@@ -3526,10 +3528,10 @@
                 '<table>' +
                 '<thead><tr>' +
                 '<th>분류</th>' +
-                '<th>키워드</th>' +
+                '<th>위험도</th>' +
+                '<th>위험지표</th>' +
                 '<th>카테고리</th>' +
-                '<th style="text-align: center;">업종코드</th>' +
-                '<th style="text-align: center;">위험도</th>' +
+                '<th>키워드</th>' +
                 '</tr></thead>' +
                 '<tbody>' + tableRows + '</tbody>' +
                 '</table>' +
@@ -3554,8 +3556,8 @@
                 }
                 const data = Array.isArray(result) ? result : (result.data || result.rows || []);
                 categoryTableData = data;
-                const colKeys = ['분류', '키워드', '카테고리', '업종코드', '위험도'];
-                const colLabels = ['분류', '키워드', '카테고리', '업종코드', '위험도'];
+                const colKeys = ['분류', '키워드', '카테고리', '위험지표', '위험도'];
+                const colLabels = ['분류', '키워드', '카테고리', '위험지표', '위험도'];
                 if (data.length === 0) {
                     categoryTableData = [];
                     contentEl.innerHTML = '<div style="padding: 20px; text-align: center; color: #1A1A1A;">카테고리 데이터가 없습니다. data/category_table.json을 확인하세요.</div>';
@@ -3565,15 +3567,15 @@
                 let html = '<div class="split-table-scroll"><table id="category-table-table" style="background-color: white; table-layout: fixed; width: 100%; font-size: 11px; border-collapse: collapse;"><colgroup>';
                 colWidths.forEach((w) => { html += '<col style="width:' + w + '">'; });
                 html += '</colgroup><thead><tr>';
-                colLabels.forEach((label) => { const align = (label === '업종코드' || label === '위험도') ? 'center' : 'left'; html += '<th style="text-align: ' + align + '; border: 1px solid #FFDBC8;">' + label + '</th>'; });
+                colLabels.forEach((label) => { const align = (label === '위험지표' || label === '위험도') ? 'center' : 'left'; html += '<th style="text-align: ' + align + '; border: 1px solid #FFDBC8;">' + label + '</th>'; });
                 html += '</tr></thead><tbody>';
                 data.forEach((row, i) => {
                     const isEven = i % 2 === 1;
                     const bg = isEven ? ' background-color: #F7F8FA;' : '';
                     html += '<tr class="category-table-row" data-tx-index="' + i + '" style="cursor: pointer;' + bg + '">';
                     colKeys.forEach((key) => {
-                        const align = (key === '업종코드' || key === '위험도') ? 'center' : 'left';
-                        const v = (key === '업종코드') ? fmtNoDecimal(row[key]) : ((row[key] != null && row[key] !== '') ? String(row[key]) : '');
+                        const align = (key === '위험지표' || key === '위험도') ? 'center' : 'left';
+                        const v = (key === '위험지표') ? fmtNoDecimal(row[key]) : ((row[key] != null && row[key] !== '') ? String(row[key]) : '');
                         html += '<td style="text-align: ' + align + '; border: 1px solid #FFDBC8;" title="' + v.replace(/"/g, '&quot;') + '">' + (v.replace(/</g, '&lt;').replace(/>/g, '&gt;')) + '</td>';
                     });
                     html += '</tr>';
@@ -4064,7 +4066,7 @@
                             if (!isTimeInSimyaRanges(timeVal, _simyaRangesCache)) showRow = false;
                         } else if (col === '카테고리' && filterValue === '__미분류__') {
                             const cat = String(cellValue || '').trim();
-                            if (cat !== '' && cat !== '미분류') showRow = false;
+                            if (cat !== '' && cat !== CAT.UNCLASSIFIED) showRow = false;
                         } else if (col === '기타거래' && filterValue === '__기타거래없음__') {
                             const etc = cellValue === '' || cellValue === null || cellValue === undefined || String(cellValue).trim() === '';
                             if (!etc) showRow = false;

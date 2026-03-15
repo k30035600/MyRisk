@@ -58,8 +58,35 @@
     --color-border-card:  #D5DAE0;
 
     /* Status */
+    --color-success:      #2E7D32; /* Green 800 — 적합·매칭·정상 */
+    --color-success-bg:   #E8F5E9; /* Green 50 */
     --color-warning:      #E67E22; /* Muted Orange */
+    --color-warning-bg:   #FFF3E0; /* Orange 50 */
+    --color-error:        #C62828; /* Red 800 — 오류·미매칭·충돌 */
+    --color-error-bg:     #FFEBEE; /* Red 50 */
     --color-gold:         #F39C12;
+    --color-info:         #1565C0; /* Blue 800 */
+    --color-info-bg:      #E3F2FD; /* Blue 50 */
+    --color-muted:        #78909C; /* Blue Grey 400 */
+    --color-muted-light:  #90A4AE; /* Blue Grey 300 */
+
+    /* 카테고리 코드 색상 — 은행/카드/금융/계정과목 검수 공통 */
+    --color-cat-M: #546E7A; /* Blue Grey 600 — 계좌이동 (Fund Transfer) */
+    --color-cat-L: #2E7D32; /* Green 800 — 생활비 (Essential Living) */
+    --color-cat-D: #E65100; /* Deep Orange 900 — 재량소비 (Discretionary) */
+    --color-cat-H: #C62828; /* Red 800 — 고위험 (High Risk) */
+    --color-cat-F: #1565C0; /* Blue 800 — 금융 (Financial) */
+    --color-cat-P: #6A1B9A; /* Purple 900 — 인적 (Personal) */
+    --color-cat-X: #90A4AE; /* Blue Grey 300 — 미분류 (Unclassified) */
+
+    /* 대분류(Major) 배지 — 위험도 등급별 */
+    --color-major-I:   #546E7A; /* I_자금이동 */
+    --color-major-II:  #2E7D32; /* II_필수생활비 */
+    --color-major-III: #E65100; /* III_재량소비 */
+    --color-major-IV:  #1565C0; /* IV_금융거래 */
+    --color-major-V:   #6A1B9A; /* V_인적거래 */
+    --color-major-VI:  #C62828; /* VI_고위험항목 */
+    --color-major-none:#90A4AE; /* 미분류 */
 
     /* Radius */
     --radius-sm:  4px;

@@ -1112,6 +1112,15 @@
         </div>
     </div>
 
+    <!-- 카테고리 분류 현황 -->
+    <div id="cat-class-section" class="stats-section" style="margin-top:5px;margin-bottom:10px;background:var(--color-surface);border:1px solid var(--color-border);padding:8px 12px;border-radius:8px;display:none;">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <strong style="font-size:0.85em;white-space:nowrap;">분류 현황</strong>
+            <div id="cat-class-badges" style="display:flex;gap:6px;flex-wrap:wrap;flex:1;"></div>
+            <div id="cat-class-summary" style="font-size:0.78em;color:var(--color-text-muted);white-space:nowrap;"></div>
+        </div>
+    </div>
+
     <div class="charts-grid bottom-stats-grid bottom-section" style="grid-template-columns: 3fr 3fr 4fr; align-items: stretch;">
         <div class="chart-card bank-stats-card" style="display: flex; flex-direction: column; padding: 10px; min-width: 0; overflow: hidden;">
             <h2 style="margin: 0; margin-bottom: 5px; padding-bottom: 3px; flex-shrink: 0;">은행별 집계</h2>
@@ -1641,6 +1650,7 @@
                 
                 // 카테고리별 원그래프 업데이트 (전체 데이터)
                 updateCategoryChart(allCategoryData);
+                renderCatClassSection(allCategoryData);
                 
                 // 스크롤 이벤트 리스너 추가
                 const container = document.querySelector('.category-table-container');
@@ -1836,7 +1846,48 @@
 
         // API 기본 경로 설정 (현재 페이지 경로 기반)
         const API_BASE = window.location.pathname.startsWith('/bank') ? '/bank' : '';
-        
+
+        const CAT_MAJOR_MAP = {
+            'M': { label: 'I_자금이동', en: 'Fund Transfer', color: 'var(--color-cat-M)' },
+            'L': { label: 'II_필수생활비', en: 'Essential Living', color: 'var(--color-cat-L)' },
+            'D': { label: 'III_재량소비', en: 'Discretionary', color: 'var(--color-cat-D)' },
+            'F': { label: 'IV_금융거래', en: 'Financial', color: 'var(--color-cat-F)' },
+            'P': { label: 'V_인적거래', en: 'Personal', color: 'var(--color-cat-P)' },
+            'H': { label: 'VI_고위험', en: 'High Risk', color: 'var(--color-cat-H)' },
+            'X': { label: '미분류', en: 'Unclassified', color: 'var(--color-cat-X)' }
+        };
+        function renderCatClassSection(catData) {
+            const sec = document.getElementById('cat-class-section');
+            if (!sec || !catData || !catData.length) return;
+            const groups = {};
+            let total = 0;
+            catData.forEach(item => {
+                const cat = String(item.category || '');
+                const code = cat.match(/^([A-Z])\d/) ? cat.charAt(0) : 'X';
+                if (!groups[code]) groups[code] = { count: 0, items: 0, deposit: 0, withdraw: 0 };
+                groups[code].count += (item.count || 0);
+                groups[code].items++;
+                groups[code].deposit += (item.deposit || 0);
+                groups[code].withdraw += (item.withdraw || 0);
+                total += (item.count || 0);
+            });
+            const order = ['M','L','D','F','P','H','X'];
+            let badges = '';
+            order.forEach(code => {
+                const g = groups[code];
+                if (!g) return;
+                const info = CAT_MAJOR_MAP[code] || { label: code, en: '', color: '#999' };
+                const pct = total > 0 ? (g.count / total * 100).toFixed(1) : '0.0';
+                badges += `<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:4px;font-size:0.78em;font-weight:600;color:#fff;background:${info.color};" title="${info.label} ${info.en}: ${g.items}카테고리, ${g.count.toLocaleString()}건">${info.label.split('_')[1] || info.label} ${pct}%</span>`;
+            });
+            document.getElementById('cat-class-badges').innerHTML = badges;
+            const classified = total - (groups['X'] ? groups['X'].count : 0);
+            const classRate = total > 0 ? (classified / total * 100).toFixed(1) : '0.0';
+            document.getElementById('cat-class-summary').innerHTML =
+                `분류: <strong>${classified.toLocaleString()}</strong>/${total.toLocaleString()}건 (${classRate}%) · 키워드 매칭 기반`;
+            sec.style.display = '';
+        }
+
         // 페이지 로드 시 데이터 로드
         window.addEventListener('DOMContentLoaded', () => {
             loadBankList(); // 카드사 목록 로드

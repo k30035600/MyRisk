@@ -13,6 +13,11 @@ from typing import Dict, List, Optional, Tuple
 
 import pandas as pd
 
+import sys as _sys
+_PROJECT_ROOT_RI = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+if _PROJECT_ROOT_RI not in _sys.path:
+    _sys.path.insert(0, _PROJECT_ROOT_RI)
+from lib.category_constants import CLASS_NIGHT, CLASS_RISK
 
 DEFAULT_RISK = 0.1  # 1호 기본 위험도
 CLASS_1호 = '분류제외지표'
@@ -145,7 +150,7 @@ def _load_simya_range(category_table_path: Optional[str] = None, *, data: Option
     for item in data:
         if not isinstance(item, dict):
             continue
-        if _str(item.get('분류')) != '심야구분':
+        if _str(item.get('분류')) != CLASS_NIGHT:
             continue
         kw = _str(item.get('키워드', ''))
         if '/' not in kw:
@@ -189,11 +194,11 @@ def compute_simya_series(거래시간_series: pd.Series, category_table_path: Op
     return 거래시간_series.apply(lambda t: '심야' if _is_simya(t, simya_range) else '')
 
 
-def _parse_min_out(업종코드) -> Optional[float]:
-    """업종코드를 숫자로 파싱하여 최소 출금액(원) 반환. 실패 시 None."""
-    if 업종코드 is None or (isinstance(업종코드, float) and pd.isna(업종코드)):
+def _parse_min_out(위험지표) -> Optional[float]:
+    """위험지표를 숫자로 파싱하여 최소 출금액(원) 반환. 실패 시 None."""
+    if 위험지표 is None or (isinstance(위험지표, float) and pd.isna(위험지표)):
         return None
-    s = str(업종코드).strip()
+    s = str(위험지표).strip()
     if not s:
         return None
     try:
@@ -207,7 +212,7 @@ def _load_위험도분류_keywords(category_table_path: Optional[str] = None, *,
     """category_table.json에서 분류='위험도분류'인 행만 추려,
     - 카테고리(5~10호)별 { 'keywords': [...], '위험도': float, 'min_out': float } 반환,
     - 전체 호별 최소 출금액(원) dict: { 카테고리: min_out }.
-    매칭 시 출금액 >= 해당 호의 min_out(업종코드)일 때만 적용. 업종코드 없으면 0(금액 조건 없음)."""
+    매칭 시 출금액 >= 해당 호의 min_out(위험지표)일 때만 적용. 위험지표 없으면 0(금액 조건 없음)."""
     result: Dict[str, dict] = {cls: {'keywords': [], '위험도': 0.0, 'min_out': 0.0} for cls in RISK_CLASSES_5_10}
     default_risk = {CLASS_5호: 2.0, CLASS_6호: 2.5, CLASS_7호: 3.0, CLASS_8호: 3.5, CLASS_9호: 4.0, CLASS_10호: 5.0}
     for cls in RISK_CLASSES_5_10:
@@ -220,7 +225,7 @@ def _load_위험도분류_keywords(category_table_path: Optional[str] = None, *,
     for item in data:
         if not isinstance(item, dict):
             continue
-        if _str(item.get('분류')) != '위험도분류':
+        if _str(item.get('분류')) != CLASS_RISK:
             continue
         cat = _str(item.get('카테고리', ''))
         kw_raw = item.get('키워드', '')
@@ -232,7 +237,7 @@ def _load_위험도분류_keywords(category_table_path: Optional[str] = None, *,
             r = float(위험도_val) if 위험도_val is not None and str(위험도_val).strip() != '' else None
         except (TypeError, ValueError):
             r = None
-        parsed_min = _parse_min_out(item.get('업종코드'))
+        parsed_min = _parse_min_out(item.get('위험지표'))
         if parsed_min is not None:
             min_out_by_cat[cat] = min(min_out_by_cat.get(cat, 1e12), parsed_min)
         if cat not in result:
@@ -268,7 +273,7 @@ def apply_risk_indicators(df: pd.DataFrame, category_table_path: Optional[str] =
 
     분류_col = '위험도분류' if '위험도분류' in df.columns else ('업종분류' if '업종분류' in df.columns else None)
     has_업종 = 분류_col is not None
-    if has_업종 and 분류_col != '위험도분류':
+    if has_업종 and 분류_col != CLASS_RISK:
         df['위험도분류'] = df[분류_col].fillna('')
     elif not has_업종:
         df['위험도분류'] = ''
@@ -282,8 +287,8 @@ def apply_risk_indicators(df: pd.DataFrame, category_table_path: Optional[str] =
     if '위험도키워드' not in df.columns:
         if '업종키워드' in df.columns:
             df['위험도키워드'] = df['업종키워드'].fillna('').astype(str).str.strip()
-        elif '업종코드' in df.columns:
-            df['위험도키워드'] = df['업종코드'].fillna('').astype(str).str.strip()
+        elif '위험지표' in df.columns:
+            df['위험도키워드'] = df['위험지표'].fillna('').astype(str).str.strip()
         else:
             df['위험도키워드'] = ''
 
@@ -297,8 +302,8 @@ def apply_risk_indicators(df: pd.DataFrame, category_table_path: Optional[str] =
     if sort_1:
         df.sort_values(by=sort_1, ascending=True, inplace=True, na_position='last')
 
-    # ---------- 2호: 심야폐업지표 0.5 — 폐업은 금액 무관, 심야구분은 출금액 >= 위험도분류 해당 호 업종코드(숫자) ----------
-    # 심야구분: category_table 분류='심야구분' 행의 키워드로 시간 구간 로드. 최소 출금액 = 분류 '위험도분류' 해당 호 업종코드(숫자), 없으면 0.
+    # ---------- 2호: 심야폐업지표 0.5 — 폐업은 금액 무관, 심야구분은 출금액 >= 위험도분류 해당 호 위험지표(숫자) ----------
+    # 심야구분: category_table 분류='심야구분' 행의 키워드로 시간 구간 로드. 최소 출금액 = 분류 '위험도분류' 해당 호 위험지표(숫자), 없으면 0.
     # 폐업: cash_after의 '폐업' 컬럼이 '폐업'인 행. 금액 무관. 2호 해당 행은 3~10호 조건을 보지 않음.
     if '거래시간' not in df.columns:
         df['거래시간'] = ''
@@ -403,7 +408,7 @@ def get_risk_indicators_document() -> str:
         "1호. 분류제외지표: 금액제한 없음, 2~10호에 해당하지 않은 거래, 위험도 0.1",
         "2호. 심야폐업지표: 폐업은 금액 무관, 심야구분은 출금액 10만원 이상일 때만, 위험도키워드 '폐업'/'심야', 위험도 0.5",
         "3호. 자료소명지표: 출금 500만원 이상, 해당 행 키워드를 위험도키워드로 저장, 위험도 1.0",
-        "4호. 비정형지표: 출금만 최소출금액(업종코드) 이상, 동일 키워드 3회 이상, 위험도키워드=최소출금액+이상, 위험도 1.5",
-        "5~10호. 키워드 매칭: category_table 분류 '위험도분류' 행의 키워드로만 매칭. 출금액은 각 호 해당 업종코드(숫자) 이상일 때만 적용. 매칭 시 위험도분류/위험도키워드/위험도만 저장.",
+        "4호. 비정형지표: 출금만 최소출금액(위험지표) 이상, 동일 키워드 3회 이상, 위험도키워드=최소출금액+이상, 위험도 1.5",
+        "5~10호. 키워드 매칭: category_table 분류 '위험도분류' 행의 키워드로만 매칭. 출금액은 각 호 해당 위험지표(숫자) 이상일 때만 적용. 매칭 시 위험도분류/위험도키워드/위험도만 저장.",
     ]
     return "\n".join(lines)

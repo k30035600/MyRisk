@@ -40,6 +40,11 @@ from lib.category_table_io import normalize_주식회사_for_match, safe_write_c
 from lib.path_config import get_data_dir, get_card_after_path, get_category_table_json_path, get_source_card_dir
 from lib.data_json_io import safe_write_data_json, safe_read_data_json
 from lib.category_table_defaults import get_default_rules
+from lib.category_constants import (
+    DEFAULT_CATEGORY, UNCLASSIFIED, UNCLASSIFIED_DEPOSIT, UNCLASSIFIED_WITHDRAWAL,
+    CARD_DEFAULT_DEPOSIT, CARD_DEFAULT_WITHDRAWAL, CARD_CASH_PROCESSING,
+    CLASS_PRE, CLASS_POST, CLASS_ACCOUNT, DIRECTION_CANCELLED, RISK_CODE_PRIORITY,
+)
 
 setup_win32_utf8()
 
@@ -511,9 +516,9 @@ def _load_prepost_rules(category_path=None):
             카테고리 = str(row.get('카테고리', '')).strip()
             if not 키워드:
                 continue
-            if 분류 == '전처리':
+            if 분류 == CLASS_PRE:
                 전처리.append({'키워드': 키워드, '카테고리': 카테고리})
-            elif 분류 == '후처리':
+            elif 분류 == CLASS_POST:
                 후처리.append({'키워드': 키워드, '카테고리': 카테고리})
         # 긴 키워드 먼저 적용 (부분 치환 방지)
         전처리.sort(key=lambda x: len(x['키워드']), reverse=True)
@@ -656,14 +661,14 @@ def integrate_card_excel(output_file=None, base_dir=None, skip_write=False):
             has_cancel_col = '취소여부' in extract_df.columns
             if has_cancel_col:
                 cancel_flag = extract_df['취소여부'].astype(str).str.strip()
-                is_cancel_by_flag = (cancel_flag.str.upper() == 'Y') | (cancel_flag == '취소')
+                is_cancel_by_flag = (cancel_flag.str.upper() == 'Y') | (cancel_flag == DIRECTION_CANCELLED)
             else:
                 is_cancel_by_flag = pd.Series(False, index=extract_df.index)
             # 신한카드: 취소여부 없을 때만 음수면 취소
             is_cancel_shinhan = ~has_cancel_col & (amt < 0)
             is_cancel = is_cancel_by_flag | is_cancel_shinhan
             # 입금액: 취소면 절대값, 취소 아닌데 음수면 포인트/할인 절대값, 나머지 0
-            extract_df['취소'] = np.where(is_cancel, '취소', '')
+            extract_df['취소'] = np.where(is_cancel, DIRECTION_CANCELLED, '')
             # 취소 컬럼은 문자만: 0/NaN이 들어가지 않도록 문자열로 통일 (Excel에 0으로 보이는 것 방지)
             extract_df['취소'] = extract_df['취소'].astype(str).replace('nan', '').replace('0', '')
             extract_df['입금액'] = np.where(is_cancel, amt.abs(), np.where(amt < 0, amt.abs(), 0))
@@ -745,8 +750,8 @@ def _normalize_cancel_value_card(v, empty_means_cancel_only=False):
     if s in ('', '0', '0.0', 'nan'):
         return ''
     if empty_means_cancel_only:
-        return '취소' if s else ''
-    return '취소' if '취소' in s else s
+        return DIRECTION_CANCELLED if s else ''
+    return DIRECTION_CANCELLED if DIRECTION_CANCELLED in s else s
 
 
 def classify_and_save(input_df=None):
@@ -808,7 +813,7 @@ def classify_and_save(input_df=None):
         if '입금액' in df_card.columns:
             입금 = pd.to_numeric(df_card['입금액'], errors='coerce').fillna(0) > 0
             if 입금.any():
-                df_card.loc[입금, '카테고리'] = '현금처리'
+                df_card.loc[입금, '카테고리'] = CARD_CASH_PROCESSING
 
         if had_category_file and CATEGORY_TABLE_FILE:
             try:
@@ -831,15 +836,14 @@ def classify_and_save(input_df=None):
         _출금 = pd.to_numeric(df_card['출금액'].fillna(0).astype(str).str.replace(',', ''), errors='coerce').fillna(0) if '출금액' in df_card.columns else pd.Series(0, index=df_card.index)
         _is_deposit = (_입금 > 0) & (_출금 == 0)
         # 키워드 매칭된 미분류 → 미분류입금/미분류출금
-        _미분류_mask = df_card['카테고리'].isin(['미분류', '미분류출금', '미분류입금'])
+        _미분류_mask = df_card['카테고리'].isin([UNCLASSIFIED, UNCLASSIFIED_WITHDRAWAL, UNCLASSIFIED_DEPOSIT])
         if _미분류_mask.any():
-            df_card.loc[_미분류_mask & _is_deposit, '카테고리'] = '미분류입금'
-            df_card.loc[_미분류_mask & ~_is_deposit, '카테고리'] = '미분류출금'
-        # 키워드 미매칭(빈값/기타거래) → 기타카드입금/기타카드출금
-        _기타_mask = df_card['카테고리'].isin(['', '기타거래'])
+            df_card.loc[_미분류_mask & _is_deposit, '카테고리'] = UNCLASSIFIED_DEPOSIT
+            df_card.loc[_미분류_mask & ~_is_deposit, '카테고리'] = UNCLASSIFIED_WITHDRAWAL
+        _기타_mask = df_card['카테고리'].isin(['', DEFAULT_CATEGORY])
         if _기타_mask.any():
-            df_card.loc[_기타_mask & _is_deposit, '카테고리'] = '기타카드입금'
-            df_card.loc[_기타_mask & ~_is_deposit, '카테고리'] = '기타카드출금'
+            df_card.loc[_기타_mask & _is_deposit, '카테고리'] = CARD_DEFAULT_DEPOSIT
+            df_card.loc[_기타_mask & ~_is_deposit, '카테고리'] = CARD_DEFAULT_WITHDRAWAL
 
         if not df_card.empty and '카드번호' in df_card.columns:
             def _card_no_str(v):
@@ -956,7 +960,7 @@ def apply_category_from_merchant(df, category_df):
     if not all(c in category_df.columns for c in need_cols):
         return df
     # 계정과목만 사용. 행별 최대 키워드 길이 기준 정렬(긴 것 먼저). 매칭된 키워드가 더 긴 경우에만 덮어씀.
-    account_mask = (category_df['분류'].astype(str).str.strip() == '계정과목')
+    account_mask = (category_df['분류'].astype(str).str.strip() == CLASS_ACCOUNT)
     account_df = category_df.loc[account_mask].copy()
     if account_df.empty:
         return df
@@ -968,41 +972,83 @@ def apply_category_from_merchant(df, category_df):
     df = df.copy()
     df['카테고리'] = df['카테고리'].astype(object)
     df['키워드'] = df['키워드'].astype(object)
-    df['카테고리'] = '기타거래'
-    df['키워드'] = ''
-    df['_matched_kw_len'] = 0
+    _preserve_mask = df['카테고리'].isin([CARD_CASH_PROCESSING])
+    df.loc[~_preserve_mask, '카테고리'] = DEFAULT_CATEGORY
+    df.loc[~_preserve_mask, '키워드'] = ''
+
+    _risk_pri = RISK_CODE_PRIORITY
+
+    df['_m_len'] = 0
+    df['_m_risk'] = 0
+    df['_m_pos'] = 999999
+    df['_m_code'] = ''
     merchants = df['가맹점명'].fillna('').astype(str).apply(safe_str)
     for _, cat_row in account_df.iterrows():
-        cat_val = safe_str(cat_row.get('카테고리', '')).strip() or '기타거래'
+        cat_val = safe_str(cat_row.get('카테고리', '')).strip() or DEFAULT_CATEGORY
         keywords_str = safe_str(cat_row.get('키워드', ''))
         if not keywords_str:
             continue
-        keywords = [k.strip() for k in keywords_str.split('/') if k.strip()]
-        if not keywords:
+        code = safe_str(cat_row.get('위험지표', '')).strip()
+        risk_val = _risk_pri.get(code[0] if code else '', 0)
+
+        raw_keywords = [k.strip() for k in keywords_str.split('/') if k.strip()]
+        plain_kw = [k for k in raw_keywords if not k.startswith('re:')]
+        regex_kw = [k[3:] for k in raw_keywords if k.startswith('re:')]
+        if not plain_kw and not regex_kw:
             continue
-        # 키워드도 주식회사→(주) 정규화해 매칭 (데이터는 이미 safe_str로 정규화됨)
-        keywords_norm = [normalize_주식회사_for_match(k) for k in keywords if k]
-        if not keywords_norm:
-            continue
+        keywords_norm = [normalize_주식회사_for_match(k) for k in plain_kw if k]
         rule_match = pd.Series(False, index=df.index)
         for kw in keywords_norm:
             if kw:
-                rule_match |= merchants.str.contains(re.escape(kw), regex=False, na=False)
-        # 행별로 매칭된 키워드 중 가장 긴 것의 길이 (정규화된 키워드 기준)
-        def longest_matched(m):
-            matched = [k for k in keywords_norm if k and k in str(m)]
-            return max(matched, key=len) if matched else ''
-        matched_kw = merchants.apply(longest_matched)
-        matched_len = matched_kw.str.len()
-        # 기타거래(초기)이거나, 새로 매칭된 키워드가 기존보다 길 때만 덮어씀
+                rule_match |= merchants.str.contains(kw, regex=False, na=False)
+        for pat in regex_kw:
+            try:
+                rule_match |= merchants.str.contains(pat, regex=True, na=False)
+            except re.error:
+                pass
+
+        def _best_match(m):
+            t = str(m)
+            results = []
+            for k in keywords_norm:
+                if k and k in t:
+                    results.append((k, len(k), t.find(k)))
+            for pat in regex_kw:
+                try:
+                    mx = re.search(pat, t)
+                    if mx:
+                        results.append((mx.group(0), len(mx.group(0)), mx.start()))
+                except re.error:
+                    pass
+            if not results:
+                return ('', 0, 999999)
+            return max(results, key=lambda x: (x[1], -x[2]))
+
+        info = merchants.apply(_best_match)
+        matched_kw = info.apply(lambda x: x[0])
+        matched_len = info.apply(lambda x: x[1]).astype(int)
+        matched_pos = info.apply(lambda x: x[2]).astype(int)
+
+        is_default = (df['카테고리'].fillna('').astype(str) == DEFAULT_CATEGORY)
+        longer = (matched_len > df['_m_len'])
+        same_len = (matched_len == df['_m_len']) & (matched_len > 0)
+        higher_risk = same_len & (risk_val > df['_m_risk'])
+        same_risk = same_len & (risk_val == df['_m_risk'])
+        earlier_pos = same_risk & (matched_pos < df['_m_pos'])
+        same_pos = same_risk & (matched_pos == df['_m_pos'])
+        higher_code = same_pos & (code > df['_m_code'])
+
         fill_mask = rule_match & (
-            (df['카테고리'].fillna('').astype(str) == '기타거래') | (matched_len > df['_matched_kw_len'])
+            is_default | longer | higher_risk | earlier_pos | higher_code
         )
         if fill_mask.any():
             df.loc[fill_mask, '카테고리'] = cat_val
             df.loc[fill_mask, '키워드'] = matched_kw.loc[fill_mask]
-            df.loc[fill_mask, '_matched_kw_len'] = matched_len.loc[fill_mask]
-    df = df.drop(columns=['_matched_kw_len'], errors='ignore')
+            df.loc[fill_mask, '_m_len'] = matched_len.loc[fill_mask]
+            df.loc[fill_mask, '_m_risk'] = risk_val
+            df.loc[fill_mask, '_m_pos'] = matched_pos.loc[fill_mask]
+            df.loc[fill_mask, '_m_code'] = code
+    df = df.drop(columns=['_m_len', '_m_risk', '_m_pos', '_m_code'], errors='ignore')
     return df
 
 

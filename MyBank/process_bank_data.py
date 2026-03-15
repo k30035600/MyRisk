@@ -27,6 +27,13 @@ from lib.shared_app_utils import (
 )
 from lib.excel_io import safe_write_excel
 from lib.category_table_defaults import get_default_rules
+from lib.category_constants import (
+    DEFAULT_CATEGORY, UNCLASSIFIED, UNCLASSIFIED_DEPOSIT, UNCLASSIFIED_WITHDRAWAL,
+    BANK_DEFAULT_DEPOSIT, BANK_DEFAULT_WITHDRAWAL, APPLICANT_SELF, NO_ENTRY,
+    DIRECTION_DEPOSIT, DIRECTION_WITHDRAWAL, DIRECTION_CANCELLED, CANCELLED_TRANSACTION,
+    CLASS_PRE, CLASS_POST, CLASS_ACCOUNT, CLASS_APPLICANT, EXCLUDED_CLASSES,
+    CHASU_TO_CLASS, RISK_CODE_PRIORITY,
+)
 from lib.category_table_io import (
     safe_write_category_table,
     load_category_table,
@@ -523,7 +530,7 @@ def integrate_bank_transactions(output_file=None):
 
     # 취소 컬럼에 "취소된 거래"는 "취소"로 변경 (bank_after에서 검색 문자열로 사용)
     if '취소' in combined_df.columns:
-        combined_df['취소'] = combined_df['취소'].astype(str).str.replace('취소된 거래', '취소', regex=False)
+        combined_df['취소'] = combined_df['취소'].astype(str).str.replace(CANCELLED_TRANSACTION, DIRECTION_CANCELLED, regex=False)
 
     # 전처리: before 저장 전에만 수행. category_table '전처리' 규칙으로 적요·내용·송금메모·거래점 치환 (예: 초록마을→초록증권)
     try:
@@ -603,12 +610,12 @@ def migrate_bank_category_file(category_filepath=None):
     if category_df.empty:
         return
     분류_col = category_df['분류'].astype(str).str.strip()
-    keep_mask = ~분류_col.isin(['거래방법', '거래지점'])
+    keep_mask = ~분류_col.isin(EXCLUDED_CLASSES)
     migrated_df = category_df.loc[keep_mask].copy()
-    계정과목_mask = (migrated_df['분류'].astype(str).str.strip() == '계정과목')
+    계정과목_mask = (migrated_df['분류'].astype(str).str.strip() == CLASS_ACCOUNT)
     if not 계정과목_mask.any() or 계정과목_mask.sum() < 10:
         account_rows = pd.DataFrame(_DEFAULT_BANK_ACCOUNT_RULES)
-        existing_account = migrated_df[계정과목_mask] if 계정과목_mask.any() else pd.DataFrame(columns=(CATEGORY_TABLE_EXTENDED_COLUMNS if 'CATEGORY_TABLE_EXTENDED_COLUMNS' in dir() else ['분류', '키워드', '카테고리', '위험도', '업종코드']))
+        existing_account = migrated_df[계정과목_mask] if 계정과목_mask.any() else pd.DataFrame(columns=(CATEGORY_TABLE_EXTENDED_COLUMNS if 'CATEGORY_TABLE_EXTENDED_COLUMNS' in dir() else ['분류', '키워드', '카테고리', '위험도', '위험지표']))
         other_rows = migrated_df[~계정과목_mask]
         combined = pd.concat([existing_account, account_rows], ignore_index=True).drop_duplicates(subset=CATEGORY_TABLE_COLUMNS, keep='first')
         migrated_df = pd.concat([other_rows, combined], ignore_index=True)
@@ -658,7 +665,7 @@ def apply_신청인본인_from_신청인(df, 신청인_df):
         if 성명:
             match_mask |= search_series.str.contains(re.escape(성명), regex=False, na=False)
         if match_mask.any():
-            df.loc[match_mask, '카테고리'] = '신청인본인'
+            df.loc[match_mask, '카테고리'] = APPLICANT_SELF
             if '키워드' in df.columns:
                 # 키워드 = 성명(category_table의 카테고리)
                 df.loc[match_mask, '키워드'] = 성명
@@ -666,7 +673,9 @@ def apply_신청인본인_from_신청인(df, 신청인_df):
 
 
 def apply_category_from_bank(df, category_df):
-    """계정과목 규칙 적용: before_text만 사용해 키워드 매칭. 매칭되면 해당 계정과목으로 덮어씀."""
+    """계정과목 규칙 적용: before_text 키워드 매칭 → 5단계 충돌 해결 캐스케이드.
+    1) 긴 키워드 우선  2) 위험도 우선  3) 텍스트 앞쪽 위치 우선
+    4) 소분류 코드 순  5) 해결 불가 시 기존 유지"""
     if df is None or df.empty or category_df is None or category_df.empty:
         return df
     need_cols = ['분류', '키워드', '카테고리']
@@ -674,8 +683,7 @@ def apply_category_from_bank(df, category_df):
     category_df.columns = [str(c).strip() for c in category_df.columns]
     if not all(c in category_df.columns for c in need_cols):
         return df
-    # 계정과목만 사용
-    account_df = category_df[category_df['분류'].astype(str).str.strip() == '계정과목'].copy()
+    account_df = category_df[category_df['분류'].astype(str).str.strip() == CLASS_ACCOUNT].copy()
     if account_df.empty:
         return df
     if '카테고리' not in df.columns:
@@ -690,46 +698,88 @@ def apply_category_from_bank(df, category_df):
         return df
     search_series = df['before_text'].fillna('').astype(str)
 
-    # 1단계: 먼저 전체를 '기타거래'로 할당
-    df['카테고리'] = '기타거래'
+    df['카테고리'] = DEFAULT_CATEGORY
 
-    # 2단계: 행별 최대 키워드 길이 기준 정렬(긴 것 먼저). 매칭된 키워드가 더 긴 경우에만 덮어씀.
+    _risk_pri = RISK_CODE_PRIORITY
+
     account_df = account_df.copy()
-
     def _max_kw_len(s):
         parts = [k.strip() for k in str(s).split('/') if k.strip()]
         return max(len(k) for k in parts) if parts else 0
     account_df['_max_klen'] = account_df['키워드'].apply(_max_kw_len)
     account_df = account_df.sort_values('_max_klen', ascending=False).drop(columns=['_max_klen'], errors='ignore')
 
-    df['_matched_kw_len'] = 0
+    df['_m_len'] = 0
+    df['_m_risk'] = 0
+    df['_m_pos'] = 999999
+    df['_m_code'] = ''
+
     for _, cat_row in account_df.iterrows():
-        cat_val = safe_str(cat_row.get('카테고리', '')).strip() or '기타거래'
+        cat_val = safe_str(cat_row.get('카테고리', '')).strip() or DEFAULT_CATEGORY
         keywords_str = safe_str(cat_row.get('키워드', ''))
         if not keywords_str:
             continue
-        keywords = [re.sub(r'\s+', ' ', k.strip()) for k in keywords_str.split('/') if k.strip()]
-        if not keywords:
+        code = safe_str(cat_row.get('위험지표', '')).strip()
+        risk_val = _risk_pri.get(code[0] if code else '', 0)
+
+        raw_keywords = [k.strip() for k in keywords_str.split('/') if k.strip()]
+        plain_kw = [re.sub(r'\s+', ' ', k) for k in raw_keywords if not k.startswith('re:')]
+        regex_kw = [k[3:] for k in raw_keywords if k.startswith('re:')]
+        if not plain_kw and not regex_kw:
             continue
+
         rule_match = pd.Series(False, index=df.index)
-        for kw in keywords:
+        for kw in plain_kw:
             if kw:
-                rule_match |= search_series.str.contains(re.escape(kw), regex=False, na=False)
-        # 행별로 매칭된 키워드 중 가장 긴 것
-        def longest_matched(text):
+                rule_match |= search_series.str.contains(kw, regex=False, na=False)
+        for pat in regex_kw:
+            try:
+                rule_match |= search_series.str.contains(pat, regex=True, na=False)
+            except re.error:
+                pass
+
+        def _best_match(text):
             t = str(text)
-            matched = [k for k in keywords if k and k in t]
-            return max(matched, key=len) if matched else ''
-        matched_kw = search_series.apply(longest_matched)
-        matched_len = matched_kw.str.len()
+            results = []
+            for k in plain_kw:
+                if k and k in t:
+                    results.append((k, len(k), t.find(k)))
+            for pat in regex_kw:
+                try:
+                    m = re.search(pat, t)
+                    if m:
+                        results.append((m.group(0), len(m.group(0)), m.start()))
+                except re.error:
+                    pass
+            if not results:
+                return ('', 0, 999999)
+            return max(results, key=lambda x: (x[1], -x[2]))
+
+        info = search_series.apply(_best_match)
+        matched_kw = info.apply(lambda x: x[0])
+        matched_len = info.apply(lambda x: x[1]).astype(int)
+        matched_pos = info.apply(lambda x: x[2]).astype(int)
+
+        is_default = (df['카테고리'].fillna('').astype(str) == DEFAULT_CATEGORY)
+        longer = (matched_len > df['_m_len'])
+        same_len = (matched_len == df['_m_len']) & (matched_len > 0)
+        higher_risk = same_len & (risk_val > df['_m_risk'])
+        same_risk = same_len & (risk_val == df['_m_risk'])
+        earlier_pos = same_risk & (matched_pos < df['_m_pos'])
+        same_pos = same_risk & (matched_pos == df['_m_pos'])
+        higher_code = same_pos & (code > df['_m_code'])
+
         fill_mask = rule_match & (
-            (df['카테고리'].fillna('').astype(str) == '기타거래') | (matched_len > df['_matched_kw_len'])
+            is_default | longer | higher_risk | earlier_pos | higher_code
         )
         if fill_mask.any():
             df.loc[fill_mask, '카테고리'] = cat_val
             df.loc[fill_mask, '키워드'] = matched_kw.loc[fill_mask]
-            df.loc[fill_mask, '_matched_kw_len'] = matched_len.loc[fill_mask]
-    df = df.drop(columns=['_matched_kw_len'], errors='ignore')
+            df.loc[fill_mask, '_m_len'] = matched_len.loc[fill_mask]
+            df.loc[fill_mask, '_m_risk'] = risk_val
+            df.loc[fill_mask, '_m_pos'] = matched_pos.loc[fill_mask]
+            df.loc[fill_mask, '_m_code'] = code
+    df = df.drop(columns=['_m_len', '_m_risk', '_m_pos', '_m_code'], errors='ignore')
     return df
 
 
@@ -761,17 +811,17 @@ def classify_1st_category(row):
     before_text = safe_str(row.get("before_text", ""))
     취소_val = safe_str(row.get("취소", ""))
 
-    if "취소" in before_text or "취소된 거래" in before_text:
-        return "취소"
-    if "취소" in 취소_val or "취소된 거래" in 취소_val:
-        return "취소"
+    if DIRECTION_CANCELLED in before_text or CANCELLED_TRANSACTION in before_text:
+        return DIRECTION_CANCELLED
+    if DIRECTION_CANCELLED in 취소_val or CANCELLED_TRANSACTION in 취소_val:
+        return DIRECTION_CANCELLED
 
     in_amt = row.get("입금액", 0) or 0
     out_amt = row.get("출금액", 0) or 0
 
     if out_amt > 0:
-        return "출금"
-    return "입금"
+        return DIRECTION_WITHDRAWAL
+    return DIRECTION_DEPOSIT
 
 def _load_전처리_규칙():
     """category_table.json에서 분류=전처리인 행만 (키워드, 카테고리) 리스트로 반환. 긴 키워드 먼저."""
@@ -779,9 +829,9 @@ def _load_전처리_규칙():
         return []
     try:
         category_tables = get_category_tables()
-        if not category_tables or "전처리" not in category_tables:
+        if not category_tables or CLASS_PRE not in category_tables:
             return []
-        tbl = category_tables["전처리"]
+        tbl = category_tables[CLASS_PRE]
         rules = []
         for _, row in tbl.iterrows():
             kw = str(row.get("키워드", "") or "").strip()
@@ -834,9 +884,9 @@ def _apply_전처리_only(df):
 
 def apply_후처리_bank(df, category_tables):
     """은행거래 후처리: category_table 후처리 규칙으로 적요/내용/송금메모/기타거래 컬럼의 키워드 → 카테고리 치환."""
-    if df is None or df.empty or "후처리" not in category_tables:
+    if df is None or df.empty or CLASS_POST not in category_tables:
         return df
-    category_table = category_tables["후처리"]
+    category_table = category_tables[CLASS_POST]
     if category_table is None or category_table.empty:
         return df
     rules = []
@@ -871,7 +921,7 @@ def compute_기타거래(row):
     if not 취소 and not 적요 and not 내용 and not 송금메모 and 거래점:
         송금메모 = 거래점
     if 취소:
-        parts.append('취소')
+        parts.append(DIRECTION_CANCELLED)
     for val in (적요, 내용, 송금메모):
         if val:
             parts.append(val)
@@ -999,17 +1049,11 @@ def get_category_tables():
         category_df = category_df.drop(columns=['구분'], errors='ignore')
     category_tables = {}
     분류_컬럼명 = '분류' if '분류' in category_df.columns else '차수'
-    차수_분류_매핑 = {
-        '1차': '입출금',
-        '2차': '전처리',
-        '6차': '기타거래'
-    }
-
     for 값 in category_df[분류_컬럼명].unique():
         if pd.notna(값):
             값_str = str(값).strip()
-            if 분류_컬럼명 == '차수' and 값_str in 차수_분류_매핑:
-                분류명 = 차수_분류_매핑[값_str]
+            if 분류_컬럼명 == '차수' and 값_str in CHASU_TO_CLASS:
+                분류명 = CHASU_TO_CLASS[값_str]
             else:
                 분류명 = 값_str
             category_tables[분류명] = category_df[category_df[분류_컬럼명] == 값].copy()
@@ -1103,14 +1147,14 @@ def classify_and_save(input_file=None, output_file=None, input_df=None):
     empty_etc = (df["기타거래"].fillna('').astype(str).str.strip() == '')
     if empty_etc.any():
         bank_col = df['은행명'].fillna('').astype(str).str.strip() if '은행명' in df.columns else pd.Series('', index=df.index)
-        df.loc[empty_etc, '기타거래'] = bank_col.loc[empty_etc].where(bank_col.loc[empty_etc] != '', '(미기재)')
+        df.loc[empty_etc, '기타거래'] = bank_col.loc[empty_etc].where(bank_col.loc[empty_etc] != '', NO_ENTRY)
     # 카테고리: 계정과목 규칙 적용 (before_text만 사용해 키워드 매칭)
-    if '계정과목' in category_tables:
+    if CLASS_ACCOUNT in category_tables:
         if '카테고리' not in df.columns:
             df['카테고리'] = ''
         df['카테고리'] = ''  # 기존 값 무시, category_table 계정과목만으로 재분류
         try:
-            df = apply_category_from_bank(df, category_tables['계정과목'])
+            df = apply_category_from_bank(df, category_tables[CLASS_ACCOUNT])
         except Exception as e:
             # 계정과목 매칭 실패 시 classify 중단
             LAST_CLASSIFY_ERROR = f"계정과목(카테고리) 적용 실패: {e}"
@@ -1121,7 +1165,7 @@ def classify_and_save(input_file=None, output_file=None, input_df=None):
                 pass
             return (False, LAST_CLASSIFY_ERROR, 0)
         # 신청인본인: 분류 '신청인' 행으로 before_text 매칭 시 키워드=category_table 카테고리(성명), 카테고리='신청인본인' 저장
-        신청인_df = category_tables.get('신청인')
+        신청인_df = category_tables.get(CLASS_APPLICANT)
         if 신청인_df is not None and not 신청인_df.empty:
             try:
                 df = apply_신청인본인_from_신청인(df, 신청인_df)
@@ -1129,7 +1173,7 @@ def classify_and_save(input_file=None, output_file=None, input_df=None):
                 _safe_print(f"경고: 신청인본인 매칭 적용 중 오류(무시): {e}", flush=True)
     else:
         if '카테고리' not in df.columns:
-            df['카테고리'] = '기타거래'
+            df['카테고리'] = DEFAULT_CATEGORY
         if '키워드' not in df.columns:
             df['키워드'] = ''
 
@@ -1138,15 +1182,14 @@ def classify_and_save(input_file=None, output_file=None, input_df=None):
     _출금 = pd.to_numeric(df['출금액'].fillna(0).astype(str).str.replace(',', ''), errors='coerce').fillna(0)
     _is_deposit = (_입금 > 0) & (_출금 == 0)
     # 키워드 매칭된 미분류 → 미분류입금/미분류출금
-    _미분류_mask = df['카테고리'].isin(['미분류', '미분류출금', '미분류입금'])
+    _미분류_mask = df['카테고리'].isin([UNCLASSIFIED, UNCLASSIFIED_WITHDRAWAL, UNCLASSIFIED_DEPOSIT])
     if _미분류_mask.any():
-        df.loc[_미분류_mask & _is_deposit, '카테고리'] = '미분류입금'
-        df.loc[_미분류_mask & ~_is_deposit, '카테고리'] = '미분류출금'
-    # 키워드 미매칭(기타거래) → 기타은행입금/기타은행출금
-    _기타_mask = df['카테고리'] == '기타거래'
+        df.loc[_미분류_mask & _is_deposit, '카테고리'] = UNCLASSIFIED_DEPOSIT
+        df.loc[_미분류_mask & ~_is_deposit, '카테고리'] = UNCLASSIFIED_WITHDRAWAL
+    _기타_mask = df['카테고리'] == DEFAULT_CATEGORY
     if _기타_mask.any():
-        df.loc[_기타_mask & _is_deposit, '카테고리'] = '기타은행입금'
-        df.loc[_기타_mask & ~_is_deposit, '카테고리'] = '기타은행출금'
+        df.loc[_기타_mask & _is_deposit, '카테고리'] = BANK_DEFAULT_DEPOSIT
+        df.loc[_기타_mask & ~_is_deposit, '카테고리'] = BANK_DEFAULT_WITHDRAWAL
 
     # 후처리: 계정과목 분류 끝난 뒤, 저장 전에 수행. category_table '후처리' 규칙으로 적요/내용/송금메모 치환
     try:
@@ -1171,7 +1214,7 @@ def classify_and_save(input_file=None, output_file=None, input_df=None):
         empty_etc = (df["기타거래"].fillna('').astype(str).str.strip() == '')
         if empty_etc.any():
             bank_col = df['은행명'].fillna('').astype(str).str.strip() if '은행명' in df.columns else pd.Series('', index=df.index)
-            df.loc[empty_etc, '기타거래'] = bank_col.loc[empty_etc].where(bank_col.loc[empty_etc] != '', '(미기재)')
+            df.loc[empty_etc, '기타거래'] = bank_col.loc[empty_etc].where(bank_col.loc[empty_etc] != '', NO_ENTRY)
 
     # 잔액 컬럼 삭제, 출금액 뒤 사업자번호/폐업 공란 추가 (기존 파일 호환)
     df = df.drop(columns=['잔액'], errors='ignore')

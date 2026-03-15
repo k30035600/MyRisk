@@ -80,8 +80,8 @@
         .bottom-actions .btn { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 2.5em; padding: 14px 24px; line-height: 1.2; box-sizing: border-box; border-radius: 4px; text-decoration: none; font-size: 1em; font-weight: bold; font-family: inherit; transition: background 0.2s, box-shadow 0.2s, color 0.2s; }
         .btn-home { background: #546E7A; color: #fff; border: 2px solid #546E7A; }
         .btn-home:hover { background: #37474F; border-color: #37474F; box-shadow: 0 4px 12px rgba(84,110,122,0.18); }
-        .btn-shutdown { background: #fff; color: #1A1A1A; border: 2px solid #455A64; }
-        .btn-shutdown:hover { background: #455A64; color: #fff; box-shadow: 0 4px 12px rgba(69,90,100,0.14); }
+        .btn-shutdown { background: #C62828; color: #fff; border: 2px solid #C62828; }
+        .btn-shutdown:hover { background: #B71C1C; border-color: #B71C1C; box-shadow: 0 4px 12px rgba(198,40,40,0.25); }
 
         @media (max-width: 1024px) {
             .panels-row { flex-direction: column; }
@@ -233,8 +233,8 @@
             </tbody>
         </table>
             </div>
-            <div style="display:flex; justify-content:flex-end; margin-top:6px;">
-                <a href="/category-standard" target="_blank" class="btn-execute" style="width:auto; padding:6px 16px; text-decoration:none; text-align:center; font-size:0.85em; display:inline-block;">카테고리생성</a>
+            <div style="margin-top:6px;">
+                <a id="btn-category-audit" href="/category-standard" target="_blank" class="btn-execute" style="width:100%; padding:6px 16px; text-decoration:none; text-align:center; font-size:0.85em; display:block; box-sizing:border-box;">카테고리 검수</a>
             </div>
         </div>
       </div>
@@ -245,6 +245,19 @@
     </div>
 
     <script>
+        const CAT = {
+            CANCELLED: {{ DIRECTION_CANCELLED | tojson }},
+            CANCELLED_TX: {{ CANCELLED_TRANSACTION | tojson }},
+            ACCOUNT: {{ CLASS_ACCOUNT | tojson }},
+            PRE: {{ CLASS_PRE | tojson }},
+            POST: {{ CLASS_POST | tojson }},
+            NIGHT: {{ CLASS_NIGHT | tojson }},
+            RISK: {{ CLASS_RISK | tojson }},
+            INDUSTRY: {{ CLASS_INDUSTRY | tojson }},
+            APPLICANT: {{ CLASS_APPLICANT | tojson }},
+            DEFAULT: {{ DEFAULT_CATEGORY | tojson }},
+            UNCLASSIFIED: {{ UNCLASSIFIED | tojson }}
+        };
         (function() {
             var inputUserName = document.getElementById('input-user-name');
             var inputSimyaStart = document.getElementById('input-simya-start');
@@ -302,6 +315,7 @@
                 var allMatch = nameMatch && contactMatch && emailMatch;
                 console.log('[초기화] 신청인 입력', { '신청인': nameVal, '연락처': contactVal, '이메일': emailVal, '신청인일치': nameMatch, '연락처일치': contactMatch, '이메일일치': emailMatch, '동일인': allMatch });
                 setCommonRadiosEnabled(!!allMatch);
+                if (typeof updateCategoryAuditState === 'function') updateCategoryAuditState();
                 var list = [bankBefore, bankAfter, cardBefore, cardAfter, cashAfter];
                 var sizes = [fileSizes.bank_before, fileSizes.bank_after, fileSizes.card_before, fileSizes.card_after, fileSizes.cash_after];
                 for (var i = 0; i < list.length; i++) {
@@ -402,6 +416,27 @@
             if (inputEmail) inputEmail.addEventListener('blur', saveFormSilent);
             if (inputSimyaStart) inputSimyaStart.addEventListener('blur', saveFormSilent);
             if (inputSimyaEnd) inputSimyaEnd.addEventListener('blur', saveFormSilent);
+
+            var btnCategoryAudit = document.getElementById('btn-category-audit');
+            function updateCategoryAuditState() {
+                if (!btnCategoryAudit) return;
+                var nameVal = inputUserName ? inputUserName.value.trim() : '';
+                var contactVal = inputContact ? inputContact.value.trim() : '';
+                var blocked = !nameVal || !contactVal;
+                btnCategoryAudit.style.opacity = blocked ? '0.45' : '1';
+                btnCategoryAudit.style.pointerEvents = blocked ? 'none' : 'auto';
+            }
+            if (inputUserName) inputUserName.addEventListener('input', updateCategoryAuditState);
+            if (inputContact) inputContact.addEventListener('input', updateCategoryAuditState);
+            if (btnCategoryAudit) {
+                btnCategoryAudit.addEventListener('click', function(e) {
+                    var nameVal = inputUserName ? inputUserName.value.trim() : '';
+                    var contactVal = inputContact ? inputContact.value.trim() : '';
+                    if (!nameVal || !contactVal) { e.preventDefault(); }
+                });
+                updateCategoryAuditState();
+            }
+
             loadFormData();
 
             function onBeforeChange(beforeEl, afterEl) {

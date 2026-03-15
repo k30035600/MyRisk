@@ -20,12 +20,12 @@ except ImportError:
     pd = None
 
 CATEGORY_TABLE_COLUMNS = ['분류', '키워드', '카테고리']
-# 확장 컬럼: xlsx→json 변환 시 위험도·업종코드 포함
-CATEGORY_TABLE_EXTENDED_COLUMNS = ['분류', '키워드', '카테고리', '위험도', '업종코드']
+# 확장 컬럼: xlsx→json 변환 시 위험도·위험지표 포함
+CATEGORY_TABLE_EXTENDED_COLUMNS = ['분류', '위험도', '카테고리', '위험지표', '키워드']
 
 
 def _to_str_no_decimal(val):
-    """업종코드 등: 문자로 취급, 소수점 없이 정수 문자열로. (1.0 → '1')"""
+    """위험지표 등: 문자로 취급, 소수점 없이 정수 문자열로. (1.0 → '1')"""
     if val is None:
         return ''
     if isinstance(val, float):
@@ -71,7 +71,7 @@ def load_category_table(path, default_empty=True):
 
 
 def normalize_category_df(df, extended=False):
-    """구분 등 제거, 표준 컬럼만 유지, fillna. extended=True면 위험도·업종코드 컬럼 포함."""
+    """구분 등 제거, 표준 컬럼만 유지, fillna. extended=True면 위험도·위험지표 컬럼 포함."""
     if df is None or (pd is not None and df.empty):
         cols = CATEGORY_TABLE_EXTENDED_COLUMNS if extended else CATEGORY_TABLE_COLUMNS
         return pd.DataFrame(columns=cols) if pd else []
@@ -81,14 +81,27 @@ def normalize_category_df(df, extended=False):
     for c in out_cols:
         if c not in df.columns:
             df[c] = ''
-    if extended and pd is not None and '업종코드' in df.columns:
+    if extended and pd is not None:
         df = df.copy()
-        df['업종코드'] = df['업종코드'].apply(_to_str_no_decimal)
+        if '위험도' in df.columns:
+            df['위험도'] = df['위험도'].apply(_normalize_risk_str)
+        if '위험지표' in df.columns:
+            df['위험지표'] = df['위험지표'].apply(_to_str_no_decimal)
     return df[out_cols].copy()
 
 
+def _normalize_risk_str(val):
+    """위험도 값을 문자열로 통일. 빈 값→'', 숫자→'0.1' 등."""
+    if val is None or val == '' or (isinstance(val, float) and val != val):
+        return ''
+    try:
+        return str(float(val))
+    except (ValueError, TypeError):
+        return str(val).strip()
+
+
 def safe_write_category_table(path, df, extended=False):
-    """카테고리 테이블 JSON 저장. extended=True이거나 df에 위험도·업종코드가 있으면 5컬럼으로 저장."""
+    """카테고리 테이블 JSON 저장. extended=True이거나 df에 위험도·위험지표가 있으면 5컬럼으로 저장."""
     path = _norm_path(path)
     if not path:
         return
@@ -96,7 +109,7 @@ def safe_write_category_table(path, df, extended=False):
     if df is None or (pd is not None and df.empty):
         rec = []
     else:
-        if extended or (pd is not None and ('위험도' in df.columns or '업종코드' in df.columns)):
+        if extended or (pd is not None and ('위험도' in df.columns or '위험지표' in df.columns)):
             write_cols = CATEGORY_TABLE_EXTENDED_COLUMNS
             if pd:
                 for c in write_cols:
@@ -107,8 +120,8 @@ def safe_write_category_table(path, df, extended=False):
             write_cols = CATEGORY_TABLE_COLUMNS
         if pd:
             out = df[write_cols].copy().fillna('')
-            if '업종코드' in out.columns:
-                out['업종코드'] = out['업종코드'].apply(_to_str_no_decimal)
+            if '위험지표' in out.columns:
+                out['위험지표'] = out['위험지표'].apply(_to_str_no_decimal)
             rec = out.to_dict('records')
             if write_cols == CATEGORY_TABLE_EXTENDED_COLUMNS:
                 for row in rec:
@@ -155,7 +168,7 @@ def get_category_table(path):
 
 
 def apply_category_action(path, action, data):
-    """path에 action 적용. 반환 (success, error_msg, count). 5컬럼(분류·키워드·카테고리·위험도·업종코드) 유지.
+    """path에 action 적용. 반환 (success, error_msg, count). 5컬럼(분류·키워드·카테고리·위험도·위험지표) 유지.
     action: 'add', 'replace', 'update', 'delete'."""
     path = _norm_path(path)
     if not path:
@@ -193,8 +206,10 @@ def apply_category_action(path, action, data):
                 n_분류 = str(data.get('분류') or '').strip()
                 n_키워드 = str(data.get('키워드') or '').strip()
                 n_카테고리 = str(data.get('카테고리') or '').strip()
-                n_위험도 = str(data.get('위험도') or '').strip()
-                n_업종코드 = _to_str_no_decimal(data.get('업종코드'))
+                has_위험도 = '위험도' in data
+                has_위험지표 = '위험지표' in data
+                n_위험도 = str(data.get('위험도') or '').strip() if has_위험도 else None
+                n_위험지표 = _to_str_no_decimal(data.get('위험지표')) if has_위험지표 else None
                 if pd is not None:
                     mask = (
                         (existing['분류'].fillna('').astype(str).str.strip() == o_분류)
@@ -204,14 +219,23 @@ def apply_category_action(path, action, data):
                     existing.loc[mask, '분류'] = n_분류
                     existing.loc[mask, '키워드'] = n_키워드
                     existing.loc[mask, '카테고리'] = n_카테고리
-                    existing.loc[mask, '위험도'] = n_위험도
-                    existing.loc[mask, '업종코드'] = n_업종코드
+                    if has_위험도:
+                        existing.loc[mask, '위험도'] = n_위험도
+                    if has_위험지표:
+                        existing.loc[mask, '위험지표'] = n_위험지표
                     out = existing
                 else:
-                    new_row = {cols[0]: n_분류, cols[1]: n_키워드, cols[2]: n_카테고리, cols[3]: n_위험도, cols[4]: n_업종코드}
                     out_list = []
                     for r in (existing.to_dict('records') if hasattr(existing, 'to_dict') else existing):
                         if (str(r.get('분류') or '').strip(), str(r.get('키워드') or '').strip(), str(r.get('카테고리') or '').strip()) == (o_분류, o_키워드, o_카테고리):
+                            new_row = {c: r.get(c, '') for c in cols}
+                            new_row['분류'] = n_분류
+                            new_row['키워드'] = n_키워드
+                            new_row['카테고리'] = n_카테고리
+                            if has_위험도:
+                                new_row['위험도'] = n_위험도
+                            if has_위험지표:
+                                new_row['위험지표'] = n_위험지표
                             out_list.append(new_row)
                         else:
                             out_list.append({c: r.get(c, '') for c in cols})
@@ -284,7 +308,7 @@ def get_category_table_path():
 
 
 def export_category_table_to_xlsx(category_table_path):
-    """category_table.json을 .source/category_table.xlsx로 내보내기. 5컬럼(분류·키워드·카테고리·위험도·업종코드) 유지. (ok, xlsx_path, error_msg)."""
+    """category_table.json을 .source/category_table.xlsx로 내보내기. 5컬럼(분류·키워드·카테고리·위험도·위험지표) 유지. (ok, xlsx_path, error_msg)."""
     try:
         import pandas as pd
         try:
@@ -308,18 +332,7 @@ def export_category_table_to_xlsx(category_table_path):
 
 # ----- 업종분류·위험도 매칭 (category_table만 사용) -----
 # 분류/카테고리가 아래 이름인 행만 업종분류 조회·매칭에 사용. 위험도 수치는 고정 매핑.
-RISK_CLASS_TO_VALUE = {
-    '분류제외지표': 0.1,
-    '심야폐업지표': 0.5,
-    '자료소명지표': 1.0,
-    '비정형지표': 1.5,
-    '투기성지표': 2.0,
-    '사기파산지표': 2.5,
-    '가상자산지표': 3.0,
-    '자산은닉지표': 3.5,
-    '과소비지표': 4.0,
-    '사행성지표': 5.0,
-}
+from lib.category_constants import RISK_CLASS_TO_VALUE, CLASS_RISK  # noqa: F401 — 단일 정의는 category_constants에, 기존 import 호환을 위해 re-export
 
 
 def _risk_value(분류명):
@@ -351,7 +364,7 @@ def _load_category_table_raw(path=None):
 def _default_risk_class_rows():
     """category_table에 위험도 행이 없을 때 사용할 기본 1~10호 행."""
     return [
-        {'업종분류': name, '위험도': str(val), '업종코드': '', '키워드': ''}
+        {'업종분류': name, '위험도': str(val), '위험지표': '', '키워드': ''}
         for name, val in RISK_CLASS_TO_VALUE.items()
     ]
 
@@ -360,13 +373,13 @@ def get_risk_class_table_data():
     """
     업종분류 조회용 데이터 반환.
     category_table에서 분류='위험도분류'인 행만 추려 변환:
-    업종분류=카테고리, 위험도=행의 위험도, 업종코드=행의 업종코드, 키워드=키워드.
+    업종분류=카테고리, 위험도=행의 위험도, 위험지표=행의 위험지표, 키워드=키워드.
     """
     rows = _load_category_table_raw()
     out = []
     for r in rows:
         분류 = (r.get('분류') or '').strip()
-        if 분류 != '위험도분류':
+        if 분류 != CLASS_RISK:
             continue
         키워드 = (r.get('키워드') or '').strip()
         카테고리 = (r.get('카테고리') or '').strip()
@@ -377,15 +390,15 @@ def get_risk_class_table_data():
             risk_str = str(float(위험도_val)) if 위험도_val is not None and str(위험도_val).strip() != '' else str(_risk_value(카테고리))
         except (TypeError, ValueError):
             risk_str = str(_risk_value(카테고리))
-        업종코드 = (r.get('업종코드') or '')
-        if hasattr(업종코드, 'strip'):
-            업종코드 = str(업종코드).strip()
+        위험지표 = (r.get('위험지표') or '')
+        if hasattr(위험지표, 'strip'):
+            위험지표 = str(위험지표).strip()
         else:
-            업종코드 = _to_str_no_decimal(업종코드) if 업종코드 else ''
+            위험지표 = _to_str_no_decimal(위험지표) if 위험지표 else ''
         out.append({
             '업종분류': 카테고리,
             '위험도': risk_str,
-            '업종코드': 업종코드,
+            '위험지표': 위험지표,
             '키워드': 키워드,
         })
     if not out:
@@ -415,7 +428,7 @@ def get_risk_class_map_for_apply():
     code_to_위험도 = {}
     for r in rows:
         분류 = (r.get('분류') or '').strip()
-        if 분류 != '위험도분류':
+        if 분류 != CLASS_RISK:
             continue
         키워드 = (r.get('키워드') or '').strip()
         카테고리 = (r.get('카테고리') or '').strip()
@@ -452,7 +465,7 @@ def export_risk_class_table_to_xlsx(json_path=None, xlsx_path=None):
         data = get_risk_class_table_data()
         out_path = xlsx_path or (os.path.join(os.path.dirname(get_category_table_path()), '업종분류_table.xlsx'))
         os.makedirs(os.path.dirname(out_path) or '.', exist_ok=True)
-        cols = ['업종분류', '위험도', '업종코드', '키워드']
+        cols = ['업종분류', '위험도', '위험지표', '키워드']
         df = pd.DataFrame(data)
         for c in cols:
             if c not in df.columns:

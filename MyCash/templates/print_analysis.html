@@ -389,6 +389,49 @@
         <p style="color:#334155;">출금액 데이터 없음</p>
         {% endif %}
     </div>
+    {% if major_summary is defined and major_summary|length > 0 %}
+    <div class="section" style="margin-top:12px; padding:10px; border:1px solid #FFCCBC; border-radius:4px; background:rgba(255,243,224,0.4);">
+        <div class="section-title" style="margin-bottom:6px;">카테고리 분류 방법 및 현황 (대분류별)</div>
+        <div style="font-size:8pt; color:#546E7A; margin-bottom:8px; line-height:1.6;">
+            <p style="margin:0 0 4px;"><strong>분류 파이프라인</strong>: 전처리(텍스트 정규화) → 계정과목(키워드 매칭) → 후처리(표시 문구 정리) → 위험도(1~10호)</p>
+            <p style="margin:0 0 4px;"><strong>분류 체계</strong>: 계정과목 표준 — 대분류 7(자금이동·필수생활비·재량소비·고위험항목·금융거래·인적거래·미분류) → 중분류 13 → 소분류 34</p>
+            <p style="margin:0 0 4px;"><strong>키워드 매칭</strong>: category_table.json 키워드를 거래 텍스트에서 검색. <code>/</code>는 OR 조건, <code>re:</code> 접두사는 정규식</p>
+            <p style="margin:0;"><strong>충돌 해결</strong>: 5단계 캐스케이드 — ① 키워드 길이 → ② 위험도 우선순위 → ③ 텍스트 위치 → ④ 소분류 코드 → ⑤ 기존 유지. 이 카테고리 분류 결과 위에 1~10호 위험도 지표가 추가 적용됩니다.</p>
+        </div>
+        <table style="width:100%; border-collapse:collapse; font-size:9pt;">
+            <thead><tr>
+                <th style="border:1px solid #FFCCBC; padding:3px 6px; background:#FFAB91; color:#BF360C; text-align:left;">대분류</th>
+                <th style="border:1px solid #FFCCBC; padding:3px 6px; background:#FFAB91; color:#BF360C; text-align:center;">건수</th>
+                <th style="border:1px solid #FFCCBC; padding:3px 6px; background:#FFAB91; color:#BF360C; text-align:right;">입금액</th>
+                <th style="border:1px solid #FFCCBC; padding:3px 6px; background:#FFAB91; color:#BF360C; text-align:right;">출금액</th>
+                <th style="border:1px solid #FFCCBC; padding:3px 6px; background:#FFAB91; color:#BF360C; text-align:right;">차액</th>
+            </tr></thead>
+            <tbody>
+                {% set ns_m = namespace(t_cnt=0, t_dep=0, t_wit=0) %}
+                {% for m in major_summary %}
+                {% set bal = (m['입금액']|int) - (m['출금액']|int) %}
+                {% set ns_m.t_cnt = ns_m.t_cnt + m['건수']|int %}
+                {% set ns_m.t_dep = ns_m.t_dep + m['입금액']|int %}
+                {% set ns_m.t_wit = ns_m.t_wit + m['출금액']|int %}
+                <tr>
+                    <td style="border:1px solid #FFCCBC; padding:3px 6px;">{{ m['대분류'] }}</td>
+                    <td style="border:1px solid #FFCCBC; padding:3px 6px; text-align:center;">{{ '{:,}'.format(m['건수']|int) }}</td>
+                    <td style="border:1px solid #FFCCBC; padding:3px 6px; text-align:right; color:#BF360C;">{{ '{:,}'.format(m['입금액']|int) }}</td>
+                    <td style="border:1px solid #FFCCBC; padding:3px 6px; text-align:right; color:#C62828;">{{ '{:,}'.format(m['출금액']|int) }}</td>
+                    <td style="border:1px solid #FFCCBC; padding:3px 6px; text-align:right; color:{{ '#BF360C' if bal >= 0 else '#C62828' }};">{{ '{:,}'.format(bal) }}</td>
+                </tr>
+                {% endfor %}
+                <tr style="background:#FFF3E0; font-weight:bold;">
+                    <td style="border:1px solid #FFCCBC; padding:3px 6px;">합계</td>
+                    <td style="border:1px solid #FFCCBC; padding:3px 6px; text-align:center;">{{ '{:,}'.format(ns_m.t_cnt) }}</td>
+                    <td style="border:1px solid #FFCCBC; padding:3px 6px; text-align:right; color:#BF360C;">{{ '{:,}'.format(ns_m.t_dep) }}</td>
+                    <td style="border:1px solid #FFCCBC; padding:3px 6px; text-align:right; color:#C62828;">{{ '{:,}'.format(ns_m.t_wit) }}</td>
+                    <td style="border:1px solid #FFCCBC; padding:3px 6px; text-align:right; color:{{ '#BF360C' if (ns_m.t_dep - ns_m.t_wit) >= 0 else '#C62828' }};">{{ '{:,}'.format(ns_m.t_dep - ns_m.t_wit) }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
     </div><!-- .report-wrap -->
 
     <div class="page-break"></div>

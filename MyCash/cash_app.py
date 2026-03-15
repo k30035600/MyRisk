@@ -94,6 +94,10 @@ from lib.category_table_io import (
     apply_category_action,
     _to_str_no_decimal,
 )
+from lib.category_constants import (
+    get_template_constants,
+    CLASS_APPLICANT, CLASS_NIGHT, CLASS_INDUSTRY, CLASS_RISK,
+)
 
 # ----- 데코레이터·JSON/데이터 유틸 (공통 모듈 사용) -----
 if PROJECT_ROOT not in sys.path:
@@ -131,8 +135,8 @@ def _read_cash_after_raw(path):
         if df is None or df.empty:
             return pd.DataFrame()
         df = df.copy()
-        if '업종코드' in df.columns and '위험도키워드' not in df.columns:
-            df = df.rename(columns={'업종코드': '위험도키워드'})
+        if '위험지표' in df.columns and '위험도키워드' not in df.columns:
+            df = df.rename(columns={'위험지표': '위험도키워드'})
         if '업종키워드' in df.columns and '위험도키워드' not in df.columns:
             df = df.rename(columns={'업종키워드': '위험도키워드'})
         if '업종분류' in df.columns and '위험도분류' not in df.columns:
@@ -235,7 +239,7 @@ def _safe_keyword(val):
 
 
 def _str_strip(val):
-    """값을 문자열로 정규화 (NaN/None → '', 그 외 strip). 업종코드 등에 사용."""
+    """값을 문자열로 정규화 (NaN/None → '', 그 외 strip). 위험지표 등에 사용."""
     if val is None or (isinstance(val, float) and pd.isna(val)):
         return ''
     return str(val).strip()
@@ -332,7 +336,7 @@ def _dataframe_to_cash_after_creation(df_bank, df_card):
 
 def _apply_업종분류_from_category_table(df):
     """cash_after DataFrame에 대해: category_table 기반(category_table_io)으로 위험도키워드→위험도분류·위험도 매칭. in-place 수정."""
-    code_col = '위험도키워드' if '위험도키워드' in df.columns else ('업종키워드' if '업종키워드' in df.columns else '업종코드')
+    code_col = '위험도키워드' if '위험도키워드' in df.columns else ('업종키워드' if '업종키워드' in df.columns else '위험지표')
     분류_col = '위험도분류' if '위험도분류' in df.columns else '업종분류'
     if df is None or df.empty or code_col not in df.columns:
         return
@@ -595,7 +599,7 @@ def merge_bank_card_to_cash_after():
 def index():
     """금융정보 병합작업 페이지. 전처리전(은행)·전처리후(신용카드)·카테고리 조회·금융정보 병합조회(은행+카드)·그래프. cash_after는 진입 시 삭제하지 않음."""
     # 좌측 카테고리 조회: category_table.json (분류, 키워드, 카테고리). 금융정보에서는 분류=심야구분/업종분류/위험도분류만 출력.
-    CATEGORY_QUERY_분류_MYCASH = ('심야구분', '업종분류', '위험도분류')
+    CATEGORY_QUERY_분류_MYCASH = (CLASS_NIGHT, CLASS_INDUSTRY, CLASS_RISK)
     category_table_data = []
     try:
         df = load_category_table(CATEGORY_TABLE_PATH, default_empty=True)
@@ -613,6 +617,7 @@ def index():
     resp = make_response(render_template(
         'index.html',
         category_table_data=category_table_data,
+        **get_template_constants('cash'),
     ))
     # 전처리 페이지 캐시 방지: 네비게이션 갱신이 바로 반영되도록
     resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
@@ -794,7 +799,7 @@ def get_simya_ranges():
         df = load_category_table(CATEGORY_TABLE_PATH, default_empty=True)
         if df is None or df.empty or '분류' not in df.columns:
             return jsonify({'ranges': []})
-        simya = df[df['분류'].fillna('').astype(str).str.strip() == '심야구분'].copy()
+        simya = df[df['분류'].fillna('').astype(str).str.strip() == CLASS_NIGHT].copy()
         ranges = []
         for _, row in simya.iterrows():
             kw = str(row.get('키워드', '') or '').strip()
@@ -998,7 +1003,7 @@ def get_category_applied_data():
 @app.route('/category')
 def category():
     """카테고리 페이지"""
-    return render_template('category.html')
+    return render_template('category.html', **get_template_constants('cash'))
 
 # 카테고리: MyRisk/data/category_table.json 단일 테이블(구분 없음)
 @app.route('/api/category')
@@ -1016,7 +1021,7 @@ def get_category_table():
                     df[c] = ''
             data = df[CATEGORY_TABLE_EXTENDED_COLUMNS].fillna('').to_dict('records')
             for r in data:
-                r['업종코드'] = _to_str_no_decimal(r.get('업종코드'))
+                r['위험지표'] = _to_str_no_decimal(r.get('위험지표'))
         response = jsonify({
             'data': data,
             'columns': CATEGORY_TABLE_EXTENDED_COLUMNS,
@@ -1046,7 +1051,7 @@ def get_risk_class_table():
         data = get_risk_class_table_data()
         response = jsonify({
             'data': data,
-            'columns': ['업종분류', '위험도', '업종코드', '키워드'],
+            'columns': ['업종분류', '위험도', '위험지표', '키워드'],
             'count': len(data),
         })
 
@@ -1071,19 +1076,27 @@ def save_category_table():
         success, error_msg, count = apply_category_action(path, action, data)
         if not success:
             return jsonify({'success': False, 'error': error_msg}), 400
+        xlsx_warn = None
         try:
             from lib.category_table_io import export_category_table_to_xlsx
-            export_category_table_to_xlsx(path)
-        except Exception:
-            pass
+            ok, _, err = export_category_table_to_xlsx(path)
+            if not ok:
+                xlsx_warn = err
+                print(f"[WARN] category_table → xlsx 내보내기 실패: {err}", flush=True)
+        except Exception as _xe:
+            xlsx_warn = str(_xe)
+            print(f"[WARN] category_table → xlsx 내보내기 예외: {_xe}", flush=True)
         try:
             from lib.path_config import delete_all_after_files
             delete_all_after_files()
         except Exception:
             pass
+        msg = '카테고리 테이블이 업데이트되었습니다.'
+        if xlsx_warn:
+            msg += f' (xlsx 내보내기 실패: {xlsx_warn})'
         response = jsonify({
             'success': True,
-            'message': '카테고리 테이블이 업데이트되었습니다.',
+            'message': msg,
             'count': count
         })
 
@@ -1296,7 +1309,7 @@ def print_analysis():
         try:
             df_cat = load_category_table(CATEGORY_TABLE_PATH, default_empty=True)
             if df_cat is not None and not df_cat.empty and '분류' in df_cat.columns:
-                신청인_rows = df_cat[df_cat['분류'].fillna('').astype(str).str.strip() == '신청인']
+                신청인_rows = df_cat[df_cat['분류'].fillna('').astype(str).str.strip() == CLASS_APPLICANT]
                 if not 신청인_rows.empty:
                     r = 신청인_rows.iloc[0]
                     if not applicant_name and '카테고리' in r:
@@ -1339,6 +1352,34 @@ def print_analysis():
             'risk_total_deposit': int(df_for_risk['입금액'].sum()) if '입금액' in df_for_risk.columns else 0,
             'risk_total_withdraw': int(df_for_risk['출금액'].sum()) if '출금액' in df_for_risk.columns else 0,
         })
+
+        major_summary = []
+        try:
+            ct_df = load_category_table(CATEGORY_TABLE_PATH, default_empty=True)
+            if ct_df is not None and not ct_df.empty and '분류' in ct_df.columns:
+                acct_ct = ct_df[ct_df['분류'] == '계정과목']
+                if not acct_ct.empty and '카테고리' in acct_ct.columns:
+                    major_map = {}
+                    risk_col = '위험도' if '위험도' in acct_ct.columns else None
+                    for _, r in acct_ct.iterrows():
+                        cat = str(r.get('카테고리', '')).strip()
+                        maj = str(r.get(risk_col, '')) if risk_col else ''
+                        if cat and cat not in major_map:
+                            major_map[cat] = maj
+                    if major_map and '카테고리' in df_for_risk.columns:
+                        df_for_risk_tmp = df_for_risk.copy()
+                        df_for_risk_tmp['_대분류'] = df_for_risk_tmp['카테고리'].map(major_map).fillna('Ⅶ. 미분류')
+                        ms = df_for_risk_tmp.groupby('_대분류').agg({'입금액': 'sum', '출금액': 'sum'}).reset_index()
+                        ms = ms.rename(columns={'_대분류': '대분류'})
+                        ms['건수'] = df_for_risk_tmp.groupby('_대분류').size().values
+                        roman_order = {'Ⅰ': 1, 'Ⅱ': 2, 'Ⅲ': 3, 'Ⅳ': 4, 'Ⅴ': 5, 'Ⅵ': 6, 'Ⅶ': 7}
+                        ms['_sort'] = ms['대분류'].apply(lambda x: roman_order.get(x[0] if x else '', 99))
+                        ms = ms.sort_values('_sort').drop(columns=['_sort'])
+                        major_summary = ms.to_dict('records')
+        except Exception:
+            pass
+        template_ctx['major_summary'] = major_summary
+
         return render_template('print_analysis.html', **template_ctx)
     except Exception as e:
         traceback.print_exc()
