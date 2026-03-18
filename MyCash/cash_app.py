@@ -6,14 +6,15 @@
 bank_after와 card_after를 병합해 cash_after를 생성한다.
 """
 from flask import Flask, render_template, jsonify, request, make_response
-import traceback
+import logging
+
 import math
 import pandas as pd
 from pathlib import Path
 import sys
 import io
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # ----- UTF-8 인코딩 (Windows 콘솔용) -----
 if sys.platform == 'win32':
@@ -24,6 +25,7 @@ if sys.platform == 'win32':
         pass  # 콘솔 UTF-8 래핑 실패 시 무시(통합 서버에서 app.py가 이미 설정)
 
 app = Flask(__name__)
+logger = logging.getLogger(__name__)
 
 # JSON 인코딩 설정 (한글 지원)
 app.json.ensure_ascii = False
@@ -155,7 +157,6 @@ def _read_cash_after_raw(path):
             df['은행명'] = df['금융사'].fillna('').astype(str).str.strip()
         return df
     except (OSError, ValueError, TypeError) as e:
-        print(f"Error reading {path}: {str(e)}")
         return pd.DataFrame()
 
 def load_category_file():
@@ -164,12 +165,10 @@ def load_category_file():
         try:
             return _read_cash_after_raw(CASH_AFTER_PATH)
         except (OSError, ValueError, TypeError) as e:
-            print(f"Error in load_category_file: {str(e)}")
             return pd.DataFrame()
     try:
         return _cash_after_cache_obj.get(CASH_AFTER_PATH, _read_cash_after_raw)
     except (OSError, ValueError, TypeError) as e:
-        print(f"Error in load_category_file: {str(e)}")
         return pd.DataFrame()
 
 def load_bank_after_file():
@@ -203,7 +202,6 @@ def load_bank_after_file():
                 df[c] = '' if c != '입금액' and c != '출금액' else 0
         return df[BANK_AFTER_DISPLAY_COLUMNS].copy()
     except (OSError, ValueError, TypeError) as e:
-        print(f"오류: bank_after 로드 실패 - {e}", flush=True)
         return pd.DataFrame()
 
 def load_card_after_file():
@@ -228,7 +226,6 @@ def load_card_after_file():
                 df[c] = '' if c not in ('입금액', '출금액') else 0
         return df[CARD_AFTER_DISPLAY_COLUMNS].copy()
     except (OSError, ValueError, TypeError) as e:
-        print(f"오류: card_after 로드 실패 - {e}", flush=True)
         return pd.DataFrame()
 
 def _safe_keyword(val):
@@ -372,13 +369,11 @@ def _apply_업종분류_from_category_table(df):
     except Exception as e:
         # 업종분류 매칭 실패 시에도 cash_after 병합은 계속 진행
         _log_cash_after("업종분류 매칭 예외(무시): %s" % e)
-        print(f"위험도분류(업종분류) 매칭 적용 중 오류(무시): {e}", flush=True)
 
 
 def _log_cash_after(msg):
-    """cash_after 생성 단계를 콘솔에만 출력."""
-    ts = datetime.now().strftime('%H:%M:%S')
-    print("[cash_after %s] %s" % (ts, msg), flush=True)
+    """cash_after 생성 단계를 로그에 출력."""
+    logger.info("[cash_after] %s", msg)
 
 
 def _min_risk_value(v):
@@ -471,7 +466,6 @@ def _load_bank_after_for_merge():
         df['키워드'] = df['키워드'].fillna('').astype(str).str.strip()
         return df
     except Exception as e:
-        print(f"오류: bank_after 병합용 로드 실패 - {e}", flush=True)
         return pd.DataFrame()
 
 def merge_bank_card_to_cash_after():
@@ -558,8 +552,6 @@ def merge_bank_card_to_cash_after():
             _log_cash_after("위험도 지표 1~10호 적용 완료")
         except Exception as e:
             _log_cash_after("위험도 지표 적용 예외: %s" % e)
-            print(f"위험도 지표(1~10호) 적용 중 오류: {e}", flush=True)
-            traceback.print_exc()
         # 저장 전 위험도 최소 0.1 보장
         if '위험도' in df.columns:
             _log_cash_after("위험도 최소 0.1 보정 적용 중 (%d행)" % len(df))
@@ -589,8 +581,6 @@ def merge_bank_card_to_cash_after():
         LAST_MERGE_ERROR = err
         _log_cash_after("오류: 병합 생성 실패 - %s" % e)
         _log_cash_after("========== cash_after 생성 종료 (예외) ==========")
-        print(f"오류: cash_after 병합 생성 실패 - {e}", flush=True)
-        traceback.print_exc()
         return (False, err, 0)
 
 
@@ -720,7 +710,6 @@ def get_bank_after_data():
 
         return response
     except Exception as e:
-        traceback.print_exc()
         return jsonify({
             'error': str(e),
             'count': 0,
@@ -779,7 +768,6 @@ def get_processed_data():
 
         return response
     except Exception as e:
-        traceback.print_exc()
         return jsonify({
             'error': str(e),
             'count': 0,
@@ -813,7 +801,6 @@ def get_simya_ranges():
                 ranges.append({'start': start_s if ':' in start_s else f'{start_s[0:2]}:{start_s[2:4]}:{start_s[4:6]}', 'end': end_s if ':' in end_s else f'{end_s[0:2]}:{end_s[2:4]}:{end_s[4:6]}'})
         return jsonify({'ranges': ranges})
     except Exception as e:
-        traceback.print_exc()
         return jsonify({'ranges': [], 'error': str(e)})
 
 
@@ -828,8 +815,6 @@ def get_category_applied_data():
         try:
             df = load_category_file()
         except Exception as e:
-            print(f"Error loading category file: {str(e)}")
-            traceback.print_exc()
             df = pd.DataFrame()
         
         if df.empty:
@@ -988,7 +973,6 @@ def get_category_applied_data():
 
         return response
     except Exception as e:
-        traceback.print_exc()
         category_file_exists = Path(CASH_AFTER_PATH).exists()
         return jsonify({
             'error': str(e),
@@ -1031,7 +1015,6 @@ def get_category_table():
 
         return response
     except Exception as e:
-        traceback.print_exc()
         response = jsonify({
             'error': str(e),
             'data': [],
@@ -1057,7 +1040,6 @@ def get_risk_class_table():
 
         return response
     except Exception as e:
-        traceback.print_exc()
         response = jsonify({
             'error': str(e),
             'data': [],
@@ -1082,10 +1064,10 @@ def save_category_table():
             ok, _, err = export_category_table_to_xlsx(path)
             if not ok:
                 xlsx_warn = err
-                print(f"[WARN] category_table → xlsx 내보내기 실패: {err}", flush=True)
+                logger.warning("category_table → xlsx 내보내기 실패: %s", err)
         except Exception as _xe:
             xlsx_warn = str(_xe)
-            print(f"[WARN] category_table → xlsx 내보내기 예외: {_xe}", flush=True)
+            logger.warning("category_table → xlsx 내보내기 예외: %s", _xe)
         try:
             from lib.path_config import delete_all_after_files
             delete_all_after_files()
@@ -1102,7 +1084,6 @@ def save_category_table():
 
         return response
     except Exception as e:
-        traceback.print_exc()
         response = jsonify({
             'success': False,
             'error': str(e)
@@ -1208,7 +1189,7 @@ def print_analysis():
             _dc_print = df_for_risk['대체구분'].fillna('').astype(str).str.strip()
             print_daechae_excluded = int((_dc_print != '').sum())
             df_for_risk = df_for_risk[_dc_print == '']
-        risk_classification_rows = _build_risk_classification_rows_from_df(df_for_risk)
+        risk_classification_rows, _tspan = _build_risk_classification_rows_from_df(df_for_risk)
         RISK_ORDER_PRINT = ['분류제외지표', '심야폐업지표', '자료소명지표', '비정형지표', '투기성지표', '사기파산지표', '가상자산지표', '자산은닉지표', '과소비지표', '사행성지표']
         RISK_DISPLAY_PRINT = ['1호(업종분류제외)', '2호(심야폐업지표)', '3호(자료소명지표)', '4호(비정형지표)', '5호(투기성지표)', '6호(사기파산지표)', '7호(가상자산지표)', '8호(자산은닉지표)', '9호(과소비지표)', '10호(사행성지표)']
 
@@ -1231,7 +1212,6 @@ def print_analysis():
                     na_position='last'
                 )
             except Exception as e:
-                print(f"[print_analysis] 위험도 세부 정렬 예외: {e}", flush=True)
                 df_sorted = df
             risk_detail_total_count = len(df_sorted)
             risk_detail_deposit_sum = int(df_sorted['입금액'].sum()) if '입금액' in df_sorted.columns else 0
@@ -1284,18 +1264,18 @@ def print_analysis():
 
         # 리포트 작성: 대체거래 제외 기준 R 산출
         current_status = [
-            {"id": "%d호" % (i + 1), "count": r["count"], "amount": r["withdraw"]}
+            {"id": "%d호" % (i + 1), "count": r["count"], "amount": r["withdraw"], "deposit": r.get("deposit", 0), "dates": r.get("dates", [])}
             for i, r in enumerate(risk_classification_rows)
         ]
         risk_guidelines_py = "risk_guidelines = " + _format_risk_guidelines_py(RISK_GUIDELINES_FIXED)
         current_status_py = "current_status = " + _format_current_status_py(current_status)
-        risk_report = _calculate_risk_report(RISK_GUIDELINES_FIXED, current_status)
+        risk_report = _calculate_risk_report(RISK_GUIDELINES_FIXED, current_status, _tspan)
         # 전체(대체거래 포함) R도 참고용으로 산출
         risk_full_report = None
         if print_daechae_excluded > 0:
-            rows_full = _build_risk_classification_rows_from_df(df_full)
-            status_full = [{"id": "%d호" % (i + 1), "count": r["count"], "amount": r["withdraw"]} for i, r in enumerate(rows_full)]
-            risk_full_report = _calculate_risk_report(RISK_GUIDELINES_FIXED, status_full)
+            rows_full, _tspan_full = _build_risk_classification_rows_from_df(df_full)
+            status_full = [{"id": "%d호" % (i + 1), "count": r["count"], "amount": r["withdraw"], "deposit": r.get("deposit", 0), "dates": r.get("dates", [])} for i, r in enumerate(rows_full)]
+            risk_full_report = _calculate_risk_report(RISK_GUIDELINES_FIXED, status_full, _tspan_full)
 
         opinion_ctx = _get_opinion_context(bank_filter=bank_filter or None, period=period or None)
         # 인쇄용은 현재 필터/집계값(print_* 등)만 사용. 단일 dict로 합쳐 중복 키 오류 방지
@@ -1382,7 +1362,6 @@ def print_analysis():
 
         return render_template('print_analysis.html', **template_ctx)
     except Exception as e:
-        traceback.print_exc()
         return "오류 발생: " + str(e), 500
 
 # 금융정보 위험도 분석 리포트용 가이드라인 (1~10호). 프롬프트·산출 공통.
@@ -1450,8 +1429,76 @@ def _get_risk_grade_item(score):
     else:
         return "안전 (Safe)"
 
-def _calculate_risk_report(guidelines, current_status):
-    """R = w × log₁₀(1 + f × avg_a) × threshold_factor. threshold 미만은 감점 보정."""
+def _compute_temporal_proximity(dates, total_span_days, alpha=0.3, beta=0.2):
+    """시계열 근접성 계수 T.
+    거래일이 좁은 기간에 집중되거나 분석 기간 후반부에 몰릴수록 T > 1.0.
+    T = 1 + α×C(집중도) + β×P(최근성).  범위: 1.00 ~ 1.50.
+    dates: list[datetime], total_span_days: 전체 분석 기간(일).
+    """
+    if len(dates) < 2 or total_span_days <= 0:
+        return 1.0
+    sorted_d = sorted(dates)
+    active_span = (sorted_d[-1] - sorted_d[0]).days
+    C = max(0.0, min(1.0, 1.0 - active_span / total_span_days))
+    cutoff = sorted_d[-1] - timedelta(days=max(1, int(total_span_days * 0.25)))
+    recent_count = sum(1 for d in sorted_d if d >= cutoff)
+    P = recent_count / len(dates)
+    T = 1.0 + alpha * C + beta * P
+    return round(min(T, 1.5), 3)
+
+
+def _compute_symmetry_factor(deposit, withdraw):
+    """입출금 대칭성 계수(S) 산출.
+    S = 1 − (입금 / 출금). 출금 대비 입금(회수) 비율이 높을수록 S가 낮아져 R을 감소시킨다.
+    - S = 0.0: 입금 = 출금 (완전 회수, 위험 최저)
+    - S = 1.0: 입금 = 0 (전액 유출, 위험 최고) → R 변동 없음
+    - 5호(투기성)·7호(가상자산)·8호(자산은닉) 등 입금 회수가 의미 있는 지표에만 적용.
+    Returns: S (0.3 ~ 1.0). 하한 0.3은 완전 회수 시에도 최소 위험도를 유지."""
+    if withdraw <= 0:
+        return 1.0
+    if deposit <= 0:
+        return 1.0
+    ratio = deposit / withdraw
+    s = 1.0 - ratio
+    return round(max(s, 0.3), 4)
+
+
+# S 계수를 적용할 위험도 지표 (입금 회수가 의미 있는 지표만)
+SYMMETRY_APPLICABLE = {'투기성지표', '가상자산지표', '자산은닉지표'}
+
+
+def _compute_threshold_factor(a_total, f, threshold, gamma=0.1, delta=0.05, count_threshold=10):
+    """동적 임계 계수(Θ) 산출.
+    - 금액 미달: 선형 감점 (a_total / threshold)
+    - 금액 기본 구간 (threshold ~ threshold×3): 1.0
+    - 금액 초과 (>threshold×3): 누진 가중 1 + γ × log₂(a_total/threshold), 상한 2.0
+    - 건수 가중: f >= count_threshold 이면 추가 가중, 상한 1.3
+    Returns: Θ (0.0 ~ 2.6)"""
+    if threshold <= 0:
+        return 1.0
+    # 금액 기반 factor
+    if a_total <= 0:
+        return 0.0
+    if a_total < threshold:
+        amount_factor = a_total / threshold
+    elif a_total <= threshold * 3:
+        amount_factor = 1.0
+    else:
+        amount_factor = 1.0 + gamma * math.log2(a_total / threshold)
+        amount_factor = min(amount_factor, 2.0)
+    # 건수 기반 factor
+    if f >= count_threshold:
+        count_factor = 1.0 + delta * (f / count_threshold - 1)
+        count_factor = min(count_factor, 1.3)
+    else:
+        count_factor = 1.0
+    return round(amount_factor * count_factor, 4)
+
+
+def _calculate_risk_report(guidelines, current_status, total_span_days=0):
+    """R = w × log₁₀(1 + f × avg_a) × T × Θ × S.
+    T: 시계열 근접성 계수, Θ: 동적 임계 계수, S: 입출금 대칭성 계수.
+    total_span_days: 전체 분석 기간(일). T 산출에 사용."""
     results = []
     total_r = 0.0
     total_count = 0
@@ -1461,25 +1508,32 @@ def _calculate_risk_report(guidelines, current_status):
         w = ref["weight"]
         f = item["count"]
         a_total = int(item["amount"]) if item["amount"] is not None else 0
+        deposit = int(item.get("deposit", 0) or 0)
         avg_a = a_total / f if f > 0 else 0
         threshold = ref.get("threshold", 0)
+        dates = item.get("dates", [])
+        T = _compute_temporal_proximity(dates, total_span_days) if dates and total_span_days > 0 else 1.0
+        Theta = _compute_threshold_factor(a_total, f, threshold)
+        name = ref["name"]
+        S = _compute_symmetry_factor(deposit, a_total) if name in SYMMETRY_APPLICABLE else 1.0
         base_score = w * math.log10(1 + (f * avg_a)) if (f * avg_a) >= 0 else 0
-        if threshold > 0 and a_total > 0 and a_total < threshold:
-            base_score *= (a_total / threshold)
-        risk_score = base_score
+        risk_score = base_score * T * Theta * S
         total_r += risk_score
         total_count += f
         total_amount_raw += a_total
         row_score = round(risk_score, 2)
         results.append({
-            "항목": ref["name"],
+            "항목": name,
             "가중치": w,
             "건수": f,
             "금액": "{:,}원".format(a_total),
+            "T": T,
+            "Θ": Theta,
+            "S": S,
             "점수": row_score,
             "종합R": row_score,
             "위험등급": _get_risk_grade_item(row_score),
-            "법조항": LEGAL_REFERENCES.get(ref["name"], ""),
+            "법조항": LEGAL_REFERENCES.get(name, ""),
         })
     total_score = round(total_r, 2)
     if total_score >= 150:
@@ -1747,12 +1801,12 @@ def _get_opinion_context(bank_filter=None, period=None, **_kw):
         if df_cash is not None and not df_cash.empty and '위험도분류' in df_cash.columns:
             if '대체구분' in df_cash.columns:
                 df_cash = df_cash[df_cash['대체구분'].fillna('').astype(str).str.strip() == '']
-            risk_rows = _build_risk_classification_rows_from_df(df_cash)
+            risk_rows, _tspan_op = _build_risk_classification_rows_from_df(df_cash)
             current_status = [
-                {"id": "%d호" % (i + 1), "count": r["count"], "amount": r["withdraw"]}
+                {"id": "%d호" % (i + 1), "count": r["count"], "amount": r["withdraw"], "deposit": r.get("deposit", 0), "dates": r.get("dates", [])}
                 for i, r in enumerate(risk_rows)
             ]
-            risk_report = _calculate_risk_report(RISK_GUIDELINES_FIXED, current_status)
+            risk_report = _calculate_risk_report(RISK_GUIDELINES_FIXED, current_status, _tspan_op)
             ctx['risk_total_score'] = risk_report.get('total_score', 0)
             ctx['risk_grade_label'] = risk_report.get('grade_label', '')
             ctx['risk_grade_desc'] = risk_report.get('grade_desc', '')
@@ -2199,11 +2253,13 @@ def _get_risk_condition_map():
 
 
 def _build_risk_classification_rows_from_df(df):
-    """df(위험도 0.1 이상 필터 적용된 cash_after)로 1~10호 위험도분류별 집계 행 리스트 반환."""
+    """df(위험도 0.1 이상 필터 적용된 cash_after)로 1~10호 위험도분류별 집계 행 리스트 반환.
+    각 행에 'dates'(해당 호 거래일 datetime 리스트)와 전체 분석 기간 'total_span_days'를 함께 반환."""
     RISK_ORDER_PRINT = ['분류제외지표', '심야폐업지표', '자료소명지표', '비정형지표', '투기성지표', '사기파산지표', '가상자산지표', '자산은닉지표', '과소비지표', '사행성지표']
     RISK_DISPLAY_PRINT = ['1호(업종분류제외)', '2호(심야폐업지표)', '3호(자료소명지표)', '4호(비정형지표)', '5호(투기성지표)', '6호(사기파산지표)', '7호(가상자산지표)', '8호(자산은닉지표)', '9호(과소비지표)', '10호(사행성지표)']
     RISK_DEFAULT_VAL = [0.1, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 5.0]
     rows = []
+    total_span_days = 0
     if not df.empty and '위험도분류' in df.columns:
         col = '위험도분류'
         valid_set = set(RISK_ORDER_PRINT)
@@ -2212,20 +2268,34 @@ def _build_risk_classification_rows_from_df(df):
         grp = df.groupby(df_key).agg({'입금액': 'sum', '출금액': 'sum', '위험도': 'min'}).reset_index()
         grp = grp.rename(columns={col: 'classification', '입금액': 'deposit', '출금액': 'withdraw', '위험도': 'risk'})
         by_cls = {r['classification']: r for _, r in grp.iterrows()}
+        # 호별 거래일(datetime) 수집
+        has_date = '거래일' in df.columns
+        date_series = None
+        if has_date:
+            date_series = pd.to_datetime(df['거래일'], errors='coerce')
+            valid_dates = date_series.dropna()
+            if not valid_dates.empty:
+                total_span_days = max(1, (valid_dates.max() - valid_dates.min()).days)
         for i, cls in enumerate(RISK_ORDER_PRINT):
             r = by_cls.get(cls, {})
             rv = r.get('risk')
             risk_val = float(rv) if pd.notna(rv) and rv != '' else RISK_DEFAULT_VAL[i]
+            cls_mask = df_key == cls
+            cls_dates = []
+            if has_date and date_series is not None:
+                cls_dt = date_series[cls_mask].dropna()
+                cls_dates = [d.to_pydatetime() for d in cls_dt]
             rows.append({
                 'classification': RISK_DISPLAY_PRINT[i],
                 'risk': round(risk_val, 1),
-                'count': int(len(df[df_key == cls])) if cls in by_cls else 0,
+                'count': int(cls_mask.sum()) if cls in by_cls else 0,
                 'deposit': int(r.get('deposit', 0)),
-                'withdraw': int(r.get('withdraw', 0))
+                'withdraw': int(r.get('withdraw', 0)),
+                'dates': cls_dates,
             })
     else:
-        rows = [{'classification': RISK_DISPLAY_PRINT[i], 'risk': round(RISK_DEFAULT_VAL[i], 1), 'count': 0, 'deposit': 0, 'withdraw': 0} for i in range(10)]
-    return rows
+        rows = [{'classification': RISK_DISPLAY_PRINT[i], 'risk': round(RISK_DEFAULT_VAL[i], 1), 'count': 0, 'deposit': 0, 'withdraw': 0, 'dates': []} for i in range(10)]
+    return rows, total_span_days
 
 
 @app.route('/analysis/risk-report')
@@ -2272,18 +2342,18 @@ def analysis_risk_report():
             _dc = df_net['대체구분'].fillna('').astype(str).str.strip()
             daechae_excluded_count = int((_dc != '').sum())
             df_net = df_net[_dc == '']
-        risk_classification_rows = _build_risk_classification_rows_from_df(df_net)
+        risk_classification_rows, _tspan_rr = _build_risk_classification_rows_from_df(df_net)
         current_status = [
-            {"id": "%d호" % (i + 1), "count": r["count"], "amount": r["withdraw"]}
+            {"id": "%d호" % (i + 1), "count": r["count"], "amount": r["withdraw"], "deposit": r.get("deposit", 0), "dates": r.get("dates", [])}
             for i, r in enumerate(risk_classification_rows)
         ]
-        risk_report = _calculate_risk_report(RISK_GUIDELINES_FIXED, current_status)
+        risk_report = _calculate_risk_report(RISK_GUIDELINES_FIXED, current_status, _tspan_rr)
         # 전체(대체거래 포함) R도 참고용으로 산출
         risk_full_report = None
         if daechae_excluded_count > 0:
-            rows_full = _build_risk_classification_rows_from_df(df)
-            status_full = [{"id": "%d호" % (i + 1), "count": r["count"], "amount": r["withdraw"]} for i, r in enumerate(rows_full)]
-            risk_full_report = _calculate_risk_report(RISK_GUIDELINES_FIXED, status_full)
+            rows_full, _tspan_rr_f = _build_risk_classification_rows_from_df(df)
+            status_full = [{"id": "%d호" % (i + 1), "count": r["count"], "amount": r["withdraw"], "deposit": r.get("deposit", 0), "dates": r.get("dates", [])} for i, r in enumerate(rows_full)]
+            risk_full_report = _calculate_risk_report(RISK_GUIDELINES_FIXED, status_full, _tspan_rr_f)
         return render_template('risk_report_page.html',
             risk_report=risk_report,
             risk_full_report=risk_full_report,
@@ -2291,7 +2361,6 @@ def analysis_risk_report():
             filter_institution=bank_filter or '',
             **daechae_ctx)
     except Exception as e:
-        traceback.print_exc()
         return "<p>오류: " + str(e) + "</p>", 200
 
 # 분석 API 라우트
@@ -2475,8 +2544,9 @@ def get_analysis_by_category_group():
         
         # 은행 필터
         bank_filter = request.args.get('bank', '')
-        if bank_filter:
-            df = df[df['은행명'] == bank_filter]
+        _bcol = '금융사' if '금융사' in df.columns else ('은행명' if '은행명' in df.columns else None)
+        if bank_filter and _bcol:
+            df = df[df[_bcol] == bank_filter]
         
         # 카테고리 필터 (입출금/거래유형/카테고리)
         입출금_filter = request.args.get('입출금', '')
@@ -2559,7 +2629,6 @@ def get_analysis_by_category_group():
 
         return response
     except Exception as e:
-        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/analysis/by-month')
@@ -2580,8 +2649,9 @@ def get_analysis_by_month():
         
         # 은행 필터
         bank_filter = request.args.get('bank', '')
-        if bank_filter:
-            df = df[df['은행명'] == bank_filter]
+        _bcol = '금융사' if '금융사' in df.columns else ('은행명' if '은행명' in df.columns else None)
+        if bank_filter and _bcol:
+            df = df[df[_bcol] == bank_filter]
         
         # 카테고리분류를 입출금으로 매핑
         if '카테고리분류' in df.columns and '입출금' not in df.columns:
@@ -2655,8 +2725,9 @@ def get_analysis_by_category_monthly():
         
         # 은행 필터
         bank_filter = request.args.get('bank', '')
-        if bank_filter:
-            df = df[df['은행명'] == bank_filter]
+        _bcol = '금융사' if '금융사' in df.columns else ('은행명' if '은행명' in df.columns else None)
+        if bank_filter and _bcol:
+            df = df[df[_bcol] == bank_filter]
         
         # 카테고리 필터 (입출금/거래유형/카테고리)
         입출금_filter = request.args.get('입출금', '')
@@ -2750,7 +2821,6 @@ def get_analysis_by_category_monthly():
 
         return response
     except Exception as e:
-        traceback.print_exc()
         return jsonify({'error': str(e), 'months': [], 'categories': []}), 500
 
 @app.route('/api/analysis/by-content')
@@ -2816,23 +2886,24 @@ def get_analysis_by_bank():
             return jsonify({'bank': [], 'account': []})
         
         # 은행별 통계
-        bank_stats = df.groupby('은행명').agg({
+        _bcol = '금융사' if '금융사' in df.columns else '은행명'
+        bank_stats = df.groupby(_bcol).agg({
             '입금액': 'sum',
             '출금액': 'sum'
         }).reset_index()
         bank_data = [{
-            'bank': row['은행명'],
+            'bank': row[_bcol],
             'deposit': int(row['입금액']),
             'withdraw': int(row['출금액'])
         } for _, row in bank_stats.iterrows()]
         
         # 계좌별 통계
-        account_stats = df.groupby(['은행명', '계좌번호']).agg({
+        account_stats = df.groupby([_bcol, '계좌번호']).agg({
             '입금액': 'sum',
             '출금액': 'sum'
         }).reset_index()
         account_data = [{
-            'bank': row['은행명'],
+            'bank': row[_bcol],
             'account': row['계좌번호'],
             'deposit': int(row['입금액']),
             'withdraw': int(row['출금액'])
@@ -2880,7 +2951,6 @@ def get_transactions_by_content():
 
         return response
     except Exception as e:
-        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/analysis/transactions')
@@ -2943,21 +3013,20 @@ def get_analysis_transactions():
             if '출금액' in result_df.columns:
                 result_df.rename(columns={'출금액': '금액'}, inplace=True)
         else: # balance - 차액 상위순일 때는 입금과 출금 모두 표시
-            # 입금과 출금이 모두 있는 행만 필터링
+            bal_cols = [c for c in ['거래일', bank_col, '카테고리', content_col] if c in filtered_df.columns]
             deposit_df = filtered_df[filtered_df['입금액'] > 0].copy()
             withdraw_df = filtered_df[filtered_df['출금액'] > 0].copy()
-            
-            # 입금 데이터
-            deposit_result = deposit_df[['거래일', '은행명', '입금액', '구분', '적요', '내용', '거래점']].copy()
+
+            dep_out = [c for c in bal_cols if c in deposit_df.columns] + ['입금액']
+            deposit_result = deposit_df[[c for c in dep_out if c in deposit_df.columns]].copy()
             deposit_result.rename(columns={'입금액': '금액'}, inplace=True)
             deposit_result['거래유형'] = '입금'
-            
-            # 출금 데이터
-            withdraw_result = withdraw_df[['거래일', '은행명', '출금액', '구분', '적요', '내용', '거래점']].copy()
+
+            wit_out = [c for c in bal_cols if c in withdraw_df.columns] + ['출금액']
+            withdraw_result = withdraw_df[[c for c in wit_out if c in withdraw_df.columns]].copy()
             withdraw_result.rename(columns={'출금액': '금액'}, inplace=True)
             withdraw_result['거래유형'] = '출금'
-            
-            # 두 데이터프레임 합치기
+
             result_df = pd.concat([deposit_result, withdraw_result], ignore_index=True)
         
         # 거래일 순으로 정렬
@@ -2977,7 +3046,6 @@ def get_analysis_transactions():
 
         return response
     except Exception as e:
-        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/analysis/content-by-category')
@@ -3013,7 +3081,6 @@ def get_content_by_category():
 
         return response
     except Exception as e:
-        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/analysis/cash-after-date-range')
@@ -3040,7 +3107,6 @@ def get_cash_after_date_range():
 
         return response
     except Exception as e:
-        traceback.print_exc()
         return jsonify({'error': str(e), 'min_date': None, 'max_date': None}), 500
 
 
@@ -3073,7 +3139,6 @@ def get_date_range():
 
         return response
     except Exception as e:
-        traceback.print_exc()
         return jsonify({'error': str(e), 'min_date': None, 'max_date': None}), 500
 
 # ----- API: cash_after 생성 (병합) -----
@@ -3107,14 +3172,24 @@ def save_match_type():
                     bank_updates.append({'거래일': row.get('거래일', ''), '거래시간': row.get('거래시간', ''), '금융사': row.get('금융사', ''), '입금액': row.get('입금액', 0), '출금액': row.get('출금액', 0), '대체구분': val})
                 elif source == '신용카드':
                     card_updates.append({'거래일': row.get('거래일', ''), '거래시간': row.get('거래시간', ''), '금융사': row.get('금융사', ''), '입금액': row.get('입금액', 0), '출금액': row.get('출금액', 0), '대체구분': val})
-        with open(str(cash_path), 'w', encoding='utf-8') as f:
-            _json.dump(records, f, ensure_ascii=False, indent=2)
+        import tempfile as _tmpf
+        _dir = str(cash_path.parent)
+        _fd, _tmp = _tmpf.mkstemp(dir=_dir, suffix='.tmp')
+        try:
+            with os.fdopen(_fd, 'w', encoding='utf-8') as f:
+                _json.dump(records, f, ensure_ascii=False, indent=2)
+            os.replace(_tmp, str(cash_path))
+        except BaseException:
+            try:
+                os.unlink(_tmp)
+            except OSError:
+                pass
+            raise
         if _cash_after_cache_obj is not None:
             _cash_after_cache_obj.invalidate()
         _sync_daechae_to_source(bank_updates, card_updates)
         return jsonify({'success': True, 'updated': changed})
     except Exception as e:
-        traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
@@ -3145,17 +3220,28 @@ def _sync_daechae_to_source(bank_updates, card_updates):
                 rwit = _normalize(r.get('출금액', 0))
                 if rd == d and rt == t and ri == inst and rdep == dep and rwit == wit:
                     r['대체구분'] = val
-        with open(str(path), 'w', encoding='utf-8') as f:
-            _json.dump(recs, f, ensure_ascii=False, indent=2)
+        import tempfile as _tmpf
+        _dir = os.path.dirname(os.path.abspath(str(path)))
+        _fd, _tmp = _tmpf.mkstemp(dir=_dir, suffix='.tmp')
+        try:
+            with os.fdopen(_fd, 'w', encoding='utf-8') as f:
+                _json.dump(recs, f, ensure_ascii=False, indent=2)
+            os.replace(_tmp, str(path))
+        except BaseException:
+            try:
+                os.unlink(_tmp)
+            except OSError:
+                pass
+            raise
 
     try:
         _apply(BANK_AFTER_PATH, bank_updates, '거래일', '거래시간', '은행명')
     except Exception:
-        traceback.print_exc()
+        pass
     try:
         _apply(CARD_AFTER_PATH, card_updates, '이용일', '이용시간', '카드사')
     except Exception:
-        traceback.print_exc()
+        pass
 
 
 @app.route('/api/generate-category', methods=['POST'])
@@ -3177,7 +3263,6 @@ def generate_category():
             'count': count
         })
     except Exception as e:
-        traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/help')

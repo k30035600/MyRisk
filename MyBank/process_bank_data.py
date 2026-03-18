@@ -5,10 +5,10 @@
 .source/Bank 엑셀 → 통합·전처리·계정과목 분류·후처리 → data/bank_after.json 저장.
 bank_before는 중간 산출물로만 사용; 앱에서는 bank_after만 노출한다.
 """
+import logging
 import os
 import re
 import sys
-import traceback
 import unicodedata
 from pathlib import Path
 
@@ -25,7 +25,6 @@ from lib.shared_app_utils import (
     clean_amount,
     setup_win32_utf8,
 )
-from lib.excel_io import safe_write_excel
 from lib.category_table_defaults import get_default_rules
 from lib.category_constants import (
     DEFAULT_CATEGORY, UNCLASSIFIED, UNCLASSIFIED_DEPOSIT, UNCLASSIFIED_WITHDRAWAL,
@@ -47,6 +46,8 @@ from lib.category_table_io import (
 from lib.path_config import get_data_dir, get_bank_after_path, get_category_table_json_path, get_source_bank_dir
 from lib.data_json_io import safe_write_data_json, safe_read_data_json
 
+logger = logging.getLogger(__name__)
+
 setup_win32_utf8()
 
 CATEGORY_TABLE_FILE = get_category_table_json_path()
@@ -56,12 +57,14 @@ BANK_BEFORE_FILE = os.path.join(get_data_dir(), 'bank_before.json')
 
 
 def _safe_print(*args, **kwargs):
-    """통합 서버(Waitress) 요청 스레드에서 stdout이 닫혀 있을 때 print()가 I/O operation on closed file 을 내지 않도록 처리."""
-    try:
-        print(*args, **kwargs)
-    except (ValueError, OSError) as e:
-        if 'closed file' not in str(e).lower():
-            raise
+    """레거시 래퍼. 내부적으로 logger를 사용한다. (호환성 유지용)"""
+    msg = ' '.join(str(a) for a in args)
+    if msg.startswith('오류') or msg.startswith('에러'):
+        logger.error(msg)
+    elif msg.startswith('경고'):
+        logger.warning(msg)
+    else:
+        logger.info(msg)
 
 
 def _safe_read_data_file(path, default_empty=True):
@@ -157,11 +160,6 @@ def ensure_bank_before_and_category(bank_before_path=None):
     """하위 호환용. category_table만 확보 (카드 _ensure_card_category_file와 동일. bank_before_path 무시)."""
     _ensure_bank_category_only()
 
-
-def normalize_text(text):
-    if not text:
-        return ""
-    return str(text).strip()
 
 LAST_INTEGRATE_ERROR = None
 LAST_CLASSIFY_ERROR = None
@@ -466,10 +464,7 @@ def integrate_bank_transactions(output_file=None):
                 err_str = err_str + ' ( .xls 파일은 pip install xlrd 필요 )'
             read_errors.append(f"{name}: {err_str}")
             _safe_print(f"오류: {name} 처리 실패 - {e}", flush=True)
-            try:
-                traceback.print_exc()
-            except (ValueError, OSError):
-                pass
+            logger.exception("%s 처리 실패", name)
     if bank_files and not all_data and read_errors:
         LAST_INTEGRATE_ERROR = ' | '.join(read_errors[:5])
         if len(read_errors) > 5:
@@ -486,8 +481,7 @@ def integrate_bank_transactions(output_file=None):
     if not all_data:
         combined_df = pd.DataFrame(columns=['거래일', '거래시간', '은행명', '계좌번호', '입금액', '출금액',
                                            '사업자번호', '폐업', '취소', '적요', '내용', '송금메모', '거래점'])
-        if safe_write_data_json(BANK_BEFORE_FILE, combined_df):
-            _safe_print(f"저장: {BANK_BEFORE_FILE} (0건)", flush=True)
+        safe_write_data_json(BANK_BEFORE_FILE, combined_df)
         return combined_df
 
     combined_df = pd.concat(all_data, ignore_index=True)
@@ -561,8 +555,7 @@ def integrate_bank_transactions(output_file=None):
             existing_columns.append(col)
     combined_df = combined_df[existing_columns]
 
-    if safe_write_data_json(BANK_BEFORE_FILE, combined_df):
-        _safe_print(f"저장: {BANK_BEFORE_FILE}", flush=True)
+    safe_write_data_json(BANK_BEFORE_FILE, combined_df)
 
     return combined_df
 
@@ -625,18 +618,6 @@ def migrate_bank_category_file(category_filepath=None):
     except Exception as e:
         _safe_print(f"오류: category_table 마이그레이션 저장 실패 - {e}")
         raise
-
-
-def _bank_row_search_text(row):
-    """카테고리 매칭용 검색 문자열 생성 (취소, 적요, 내용, 송금메모, 거래점, 메모). 공백 정규화하여 키워드 매칭률 향상."""
-    parts = []
-    for col in ['취소', '적요', '내용', '송금메모', '거래점', '메모']:
-        parts.append(safe_str(row.get(col, '')))
-    text = '#'.join(p for p in parts if p)
-    # 연속 공백 1개로 축소 (Excel/복사 시 공백 차이 보정)
-    if text:
-        text = re.sub(r'\s+', ' ', text).strip()
-    return text
 
 
 def apply_신청인본인_from_신청인(df, 신청인_df):
@@ -909,37 +890,6 @@ def apply_후처리_bank(df, category_tables):
     return df
 
 
-def compute_기타거래(row):
-    """기타거래: 취소(비어있지 않으면 '취소'만)/적요/내용/송금메모를 '_'로 연결, 중복 단어 제거, 연속 '_'·공백 정리. (거래점 제외)
-    단, 취소/적요/내용/송금메모가 모두 스페이스나 널이면 거래점을 송금메모로 사용."""
-    parts = []
-    취소 = safe_str(row.get('취소', '')).strip()
-    적요 = safe_str(row.get('적요', '')).strip()
-    내용 = safe_str(row.get('내용', '')).strip()
-    송금메모 = safe_str(row.get('송금메모', '')).strip()
-    거래점 = safe_str(row.get('거래점', '')).strip()
-    if not 취소 and not 적요 and not 내용 and not 송금메모 and 거래점:
-        송금메모 = 거래점
-    if 취소:
-        parts.append(DIRECTION_CANCELLED)
-    for val in (적요, 내용, 송금메모):
-        if val:
-            parts.append(val)
-    s = '_'.join(parts)
-    # 중복 단어: 공백·'_'로 나눈 단어 중 처음 나온 것만 유지
-    tokens = [w for w in re.split(r'[\s_]+', s) if w]
-    seen = set()
-    unique = []
-    for w in tokens:
-        if w not in seen:
-            seen.add(w)
-            unique.append(w)
-    s = '_'.join(unique)
-    # '_' 2개 이상 → 1개
-    s = re.sub(r'_+', '_', s)
-    return s.strip('_')
-
-
 def _기타거래_중복단어_제거(text):
     """기타거래 문자열에서 구분자(_#공백,)로 나눈 뒤 동일 단어 중복 제거(순서 유지)."""
     if not text or (isinstance(text, float) and pd.isna(text)):
@@ -955,24 +905,6 @@ def _기타거래_중복단어_제거(text):
             seen.add(w)
             unique.append(w)
     return '_'.join(unique)
-
-
-def _normalize_branch(value):
-    """거래점 문자열 정규화: 숫자 제거, 괄호 쌍 보정."""
-    if pd.isna(value) or not value:
-        return ""
-    text = str(value).strip()
-    if not text:
-        return ""
-    text = re.sub(r'\d+', '', text)
-    text = text.replace('((', '(').replace('))', ')')
-    open_count = text.count('(')
-    close_count = text.count(')')
-    if open_count > close_count:
-        text = text + ')' * (open_count - close_count)
-    elif close_count > open_count:
-        text = '(' * (close_count - open_count) + text
-    return text.strip()
 
 
 def _normalize_etc(value):
@@ -1126,10 +1058,7 @@ def classify_and_save(input_file=None, output_file=None, input_df=None):
         # before_text 생성 실패 시 classify 중단
         LAST_CLASSIFY_ERROR = f"before_text 생성 실패: {e}"
         _safe_print(f"오류: {LAST_CLASSIFY_ERROR}", flush=True)
-        try:
-            traceback.print_exc()
-        except (ValueError, OSError):
-            pass
+        logger.exception("before_text 생성 실패")
         return (False, LAST_CLASSIFY_ERROR, 0)
 
     # 후처리 매칭 전에 적요·내용·송금메모를 주식회사→(주) 등으로 정규화 (전처리는 before 저장 시 이미 적용됨)
@@ -1159,10 +1088,7 @@ def classify_and_save(input_file=None, output_file=None, input_df=None):
             # 계정과목 매칭 실패 시 classify 중단
             LAST_CLASSIFY_ERROR = f"계정과목(카테고리) 적용 실패: {e}"
             _safe_print(f"오류: {LAST_CLASSIFY_ERROR}", flush=True)
-            try:
-                traceback.print_exc()
-            except (ValueError, OSError):
-                pass
+            logger.exception("계정과목(카테고리) 적용 실패")
             return (False, LAST_CLASSIFY_ERROR, 0)
         # 신청인본인: 분류 '신청인' 행으로 before_text 매칭 시 키워드=category_table 카테고리(성명), 카테고리='신청인본인' 저장
         신청인_df = category_tables.get(CLASS_APPLICANT)
@@ -1198,10 +1124,7 @@ def classify_and_save(input_file=None, output_file=None, input_df=None):
         # 후처리 규칙 적용 실패 시 classify 중단
         LAST_CLASSIFY_ERROR = f"후처리 적용 실패: {e}"
         _safe_print(f"오류: {LAST_CLASSIFY_ERROR}", flush=True)
-        try:
-            traceback.print_exc()
-        except (ValueError, OSError):
-            pass
+        logger.exception("후처리 적용 실패")
         return (False, LAST_CLASSIFY_ERROR, 0)
 
     # 기타거래: 저장 전 컬럼 확보 및 빈 값 제거(절대 비우지 않음)
@@ -1257,19 +1180,13 @@ def classify_and_save(input_file=None, output_file=None, input_df=None):
     except PermissionError as e:
         LAST_CLASSIFY_ERROR = f"bank_after 저장 권한 없음(파일을 닫아주세요): {e}"
         _safe_print(f"오류: {LAST_CLASSIFY_ERROR}")
-        try:
-            traceback.print_exc()
-        except (ValueError, OSError):
-            pass
+        logger.exception("bank_after 저장 권한 없음")
         return (False, LAST_CLASSIFY_ERROR, 0)
     except Exception as e:
         # JSON/Excel 저장 중 기타 예외
         LAST_CLASSIFY_ERROR = f"파일 저장 중 예외: {e}"
         _safe_print(f"오류: {LAST_CLASSIFY_ERROR}")
-        try:
-            traceback.print_exc()
-        except (ValueError, OSError):
-            pass
+        logger.exception("파일 저장 중 예외")
         return (False, LAST_CLASSIFY_ERROR, 0)
 
     return (True, None, len(result_df))

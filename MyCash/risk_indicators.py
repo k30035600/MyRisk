@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from typing import Dict, List, Optional, Tuple
 
 import pandas as pd
@@ -17,7 +18,111 @@ import sys as _sys
 _PROJECT_ROOT_RI = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 if _PROJECT_ROOT_RI not in _sys.path:
     _sys.path.insert(0, _PROJECT_ROOT_RI)
-from lib.category_constants import CLASS_NIGHT, CLASS_RISK
+from lib.category_constants import CLASS_NIGHT, CLASS_RISK, CLASS_VASP
+
+
+# ──────────────────────────────────────────────────────────────
+# VASP 가상계좌 식별 (방법 1: 접두번호 테이블 + 정규식)
+# ──────────────────────────────────────────────────────────────
+# 주요 거래소의 제휴 은행 가상계좌 접두 대역.
+# 범위는 공시·보도 기반이며, category_table.json의 "VASP계좌" 분류 행으로도 확장 가능.
+VASP_ACCOUNT_PREFIXES: List[Tuple[re.Pattern, str]] = [
+    # 업비트 — NH농협 가상계좌 (301-0249~0251 대역)
+    (re.compile(r'301[-\s]?0(?:249|250|251)\d{4}[-\s]?\d{2}'), '업비트'),
+    # 빗썸 — NH농협 가상계좌 (301-0252~0254 대역)
+    (re.compile(r'301[-\s]?0(?:252|253|254)\d{4}[-\s]?\d{2}'), '빗썸'),
+    # 코인원 — NH농협 (301-0255~0257 대역)
+    (re.compile(r'301[-\s]?0(?:255|256|257)\d{4}[-\s]?\d{2}'), '코인원'),
+    # 코빗 — 신한 (110-4xx 대역)
+    (re.compile(r'110[-\s]?4\d{2}[-\s]?\d{6}'), '코빗'),
+]
+
+# 등록 VASP 서비스명·법인명 (금감원 가상자산사업자 신고 공개현황 기준)
+# 적요/내용 텍스트에서 거래소명이 직접 언급될 때 사용
+VASP_NAMES = [
+    '업비트', '빗썸', '코인원', '코빗', '플라이빗', '고팍스',
+    '포블', '코어닥스', '비블록', '오케이비트', '빗크몬', '프라뱅',
+    '보라비트', '코다', 'KODA', '케이닥', 'KDAC', '오하이월렛',
+    '하이퍼리즘', '오아시스', '커스텔라', '인피닛블록', '비댁스',
+    'INEX', '인엑스', '웨이브릿지', '바우맨', '로빗',
+    '두나무', '한국디지털거래소', '스트리미', '포블게이트',
+    '그레이브릿지', '골든퓨쳐스', '한국디지털에셋', '한국디지털자산수탁',
+    '가디언홀딩스', '마인드시프트', '해피블록', '블로세이프',
+]
+
+
+def _load_vasp_prefixes_from_category(data: Optional[list]) -> List[Tuple[re.Pattern, str]]:
+    """category_table.json에서 분류='VASP계좌' 행을 읽어 동적 접두번호 추가.
+    키워드=정규식 패턴, 카테고리=VASP명."""
+    extra = []
+    if not data:
+        return extra
+    for item in data:
+        if not isinstance(item, dict):
+            continue
+        if _str(item.get('분류')) != CLASS_VASP:
+            continue
+        pat_str = _str(item.get('키워드', ''))
+        vasp_name = _str(item.get('카테고리', ''))
+        if not pat_str or not vasp_name:
+            continue
+        try:
+            extra.append((re.compile(pat_str), vasp_name))
+        except re.error:
+            continue
+    return extra
+
+
+def identify_vasp_account(text: str, extra_prefixes: Optional[List[Tuple[re.Pattern, str]]] = None) -> Optional[Tuple[str, str]]:
+    """적요/내용 텍스트에서 VASP 가상계좌번호를 식별.
+    Returns: (VASP명, 매칭 근거) 또는 None.
+
+    방법 1: 접두번호 테이블 매칭 (확실도 높음)
+    """
+    if not text:
+        return None
+    t = text.replace('\n', ' ').replace('\r', ' ')
+
+    # 하드코딩 접두번호 + category_table 동적 접두번호
+    all_prefixes = VASP_ACCOUNT_PREFIXES
+    if extra_prefixes:
+        all_prefixes = list(VASP_ACCOUNT_PREFIXES) + extra_prefixes
+
+    for pattern, vasp_name in all_prefixes:
+        m = pattern.search(t)
+        if m:
+            return (vasp_name, f'가상계좌({m.group()})')
+
+    return None
+
+
+def identify_vasp_name(text: str) -> Optional[Tuple[str, str]]:
+    """적요/내용 텍스트에서 VASP 사업자명을 식별.
+    Returns: (VASP명, 매칭 키워드) 또는 None."""
+    if not text:
+        return None
+    t = text.upper()
+    for name in VASP_NAMES:
+        if name.upper() in t:
+            return (name, name)
+    return None
+
+
+def detect_vasp(row, search_cols: List[str], extra_prefixes: Optional[List[Tuple[re.Pattern, str]]] = None) -> Optional[Tuple[str, str]]:
+    """행에서 VASP 관련 거래를 탐지. 계좌번호 매칭 → 사업자명 매칭 순.
+    Returns: (VASP명, 위험도키워드 문자열) 또는 None."""
+    text = _search_text_dedup(row, search_cols)
+    if not text:
+        return None
+    # 1순위: 가상계좌번호 접두 매칭
+    result = identify_vasp_account(text, extra_prefixes)
+    if result:
+        return result
+    # 2순위: VASP 사업자명 매칭
+    result = identify_vasp_name(text)
+    if result:
+        return (result[0], f'VASP({result[1]})')
+    return None
 
 DEFAULT_RISK = 0.1  # 1호 기본 위험도
 CLASS_1호 = '분류제외지표'
@@ -353,6 +458,8 @@ def apply_risk_indicators(df: pd.DataFrame, category_table_path: Optional[str] =
         df.sort_values(by=sort_2, ascending=True, inplace=True, na_position='last')
 
     SEARCH_COLS = ['카테고리', '키워드', '기타거래']
+    VASP_SEARCH_COLS = ['적요', '내용', '송금메모', '카테고리', '키워드', '기타거래']
+    vasp_extra = _load_vasp_prefixes_from_category(cat_data)
 
     # 5~10호: 2호 미적용 행만 순회. 키워드 매칭 의존성으로 행별 처리 유지.
     CLASS_CONFIG = [(CLASS_5호, 0), (CLASS_6호, 0), (CLASS_7호, 0), (CLASS_8호, 0), (CLASS_9호, 0), (CLASS_10호, 0)]
@@ -369,14 +476,23 @@ def apply_risk_indicators(df: pd.DataFrame, category_table_path: Optional[str] =
                 continue
             kw_list = info.get('keywords', [])
             risk_val = info.get('위험도', 0.1)
-            if class_name == CLASS_7호 and '가상자산' in _str(row.get('카테고리', '')):
-                df.at[i, '위험도키워드'] = '가상자산'
-                if has_업종:
-                    df.at[i, '위험도분류'] = class_name
-                if has_위험도:
-                    df.at[i, '위험도'] = risk_val
-                matched = True
-                break
+            # 7호 판정: 기존 카테고리 매칭 + VASP 계좌/사업자명 식별
+            if class_name == CLASS_7호:
+                vasp_kw = None
+                if '가상자산' in _str(row.get('카테고리', '')):
+                    vasp_kw = '가상자산'
+                else:
+                    vasp_result = detect_vasp(row, VASP_SEARCH_COLS, vasp_extra)
+                    if vasp_result:
+                        vasp_kw = vasp_result[1]
+                if vasp_kw:
+                    df.at[i, '위험도키워드'] = vasp_kw
+                    if has_업종:
+                        df.at[i, '위험도분류'] = class_name
+                    if has_위험도:
+                        df.at[i, '위험도'] = risk_val
+                    matched = True
+                    break
             if kw_list and _keyword_match(text, kw_list):
                 df.at[i, '위험도키워드'] = _matched_keyword(text, kw_list)
                 if has_업종:

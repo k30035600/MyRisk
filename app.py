@@ -5,14 +5,15 @@
 MyBank, MyCard, MyCash 서브앱을 마운트하고,
 홈페이지·초기화·도움말·백업/복원 API를 제공한다.
 """
+import logging
 import os
 import sys
 import io
 import shutil
 import tempfile
-import traceback
 import subprocess
 import importlib.util
+import re
 import warnings
 
 # ----- 1. 환경·인코딩 (Railway·로컬 공통) -----
@@ -29,7 +30,7 @@ if sys.platform == "win32":
         pass  # 콘솔 CP 설정 실패 시 무시(터미널 환경에 따라 미지원)
 
 from datetime import datetime, timezone, timedelta
-from flask import Flask, render_template, render_template_string, redirect, make_response, request, jsonify, send_file
+from flask import Flask, render_template, render_template_string, redirect, make_response, request, jsonify, send_file, send_from_directory
 
 SERVER_START_TIME = None
 _VERSION_DEFAULT = '26/03/01'
@@ -67,6 +68,8 @@ try:
 except (OSError, AttributeError, ValueError):
     pass  # stdout/stderr UTF-8 래핑 실패 시 무시
 
+logger = logging.getLogger(__name__)
+
 warnings.filterwarnings('ignore', message='.*OLE2 inconsistency.*')
 warnings.filterwarnings('ignore', message='.*SSCS size is 0 but SSAT.*')
 warnings.filterwarnings('ignore', message='.*Cannot parse header or footer.*')
@@ -92,6 +95,8 @@ except (ImportError, AttributeError, TypeError):
 
 app.json.ensure_ascii = False
 app.config['JSON_AS_ASCII'] = False
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or os.urandom(24).hex()
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50 MB
 _root = os.path.dirname(os.path.abspath(__file__))
 os.environ['MYRISK_ROOT'] = _root
 if _root not in sys.path:
@@ -397,7 +402,6 @@ def _read_app_file(app_file):
                     os.unlink(tmp_out)
             except OSError:
                 pass
-        raise OSError(22, 'Invalid argument (OneDrive: 파일을 "항상 이 디바이스에 유지"로 설정 후 재시도)')
 
 
 class _SubappLoader:
@@ -418,7 +422,7 @@ class _SubappLoader:
 
 # ----- 6. 서브앱 라우트 등록 (소스 읽기 → 패치 → 메모리 로드 → prefix 붙여 등록) -----
 def load_subapp_routes(subapp_path, url_prefix, app_filename):
-    """서브 앱의 라우트를 메인 앱에 등록. 실패 시 _subapp_errors에 저장 후 폴백 뷰 등록."""
+    """서브 앱의 라우트를 메인 앱에 등록. 실패 시 폴백 뷰 등록."""
     # 프로젝트 루트는 앱 기동 시 사용한 _root로 통일·정규화 (OneDrive/경로로 lib 못 찾는 것 방지)
     project_root = os.path.normpath(os.path.abspath(_root))
     # 폴더명 변경 호환: MyBank/MyCard 없으면 MYBCBANK/MYBCCARD 사용 (MyCash는 fallback 없이 오류)
@@ -568,19 +572,12 @@ a:hover { text-decoration: underline; }
 </html>''', detail=detail)
 
 # 서브 앱 라우트 등록 (SUBAPP_CONFIG 기반)
-_subapp_errors = {}  # prefix -> (표시이름, 오류메시지)
-
 for subapp_path, url_prefix, app_filename, display_name in SUBAPP_CONFIG:
     try:
         load_subapp_routes(subapp_path, url_prefix, app_filename)
-        _subapp_errors.pop(url_prefix, None)
     except Exception as e:
-        # 서브앱별 로드 실패 시 폴백 뷰 등록을 위해 모든 예외 처리
         err_msg = str(e)
-        print(f"[ERROR] {display_name} ({url_prefix}, {subapp_path}/{app_filename}) 라우트 등록 실패: {err_msg}", flush=True)
-        traceback.print_exc()
-        _subapp_errors[url_prefix] = (display_name, err_msg)
-        # 실패한 prefix에 대한 폴백 라우트 등록 (404 대신 오류 안내 표시)
+        logger.exception("%s (%s, %s/%s) 라우트 등록 실패: %s", display_name, url_prefix, subapp_path, app_filename, err_msg)
         def _make_fallback(prefix, name, msg, folder, app_file):
             def fallback_view():
                 return _subapp_error_page(name, msg, folder, app_file)
@@ -595,6 +592,25 @@ _clear_startup_caches()
 # ----- 7. 메인 라우트 (리다이렉트, 홈, 도움말, 종료, 헬스, 404) -----
 # 신청인 검증: 서버 메모리에 유지 (쿠키 사용 안 함). 앱 종료 시 자동 소멸.
 _APPLICANT_SESSION = {}  # {'verified': bool, 'name': str, 'email': str, 'contact': str}
+
+_MAJOR_MAP = {
+    'I': 'I_자금이동', 'II': 'II_필수생활비', 'III': 'III_재량소비',
+    'IV': 'IV_금융거래', 'V': 'V_인적거래', 'VI': 'VI_고위험항목',
+}
+
+
+def _parse_amt(v):
+    try:
+        return int(float(str(v).replace(',', '') or '0'))
+    except Exception:
+        return 0
+
+
+def _kw_match(kw, val):
+    if kw.startswith('re:'):
+        return bool(re.search(kw[3:], val))
+    return kw in val
+
 
 @app.before_request
 def _before_request_ensure_category():
@@ -806,10 +822,6 @@ def api_category_inspection_report():
         current_code = None
         current_cat = None
         current_mid = ''
-        major_map = {
-            'I': 'I_자금이동', 'II': 'II_필수생활비', 'III': 'III_재량소비',
-            'IV': 'IV_금융거래', 'V': 'V_인적거래', 'VI': 'VI_고위험항목',
-        }
         for line in md_content.split('\n'):
             ls = line.strip()
             if ls.startswith('## 5. 계정과목'):
@@ -855,12 +867,6 @@ def api_category_inspection_report():
 
     lines.append('## 4. 거래 데이터 매칭 현황')
     lines.append('')
-
-    def _parse_amt(v):
-        try:
-            return int(float(str(v).replace(',', '') or '0'))
-        except Exception:
-            return 0
 
     if os.path.exists(bank_path):
         with open(bank_path, 'r', encoding='utf-8') as f:
@@ -954,11 +960,6 @@ def category_standard_data():
     current_major = ''
     current_mid = ''
 
-    major_map = {
-        'I': 'I_자금이동', 'II': 'II_필수생활비', 'III': 'III_재량소비',
-        'IV': 'IV_금융거래', 'V': 'V_인적거래', 'VI': 'VI_고위험항목',
-    }
-
     for line in content.split('\n'):
         ls = line.strip()
         if ls.startswith('## 1. 전처리'):
@@ -993,7 +994,7 @@ def category_standard_data():
                 roman = hm.group(1) or ''
                 name = hm.group(2).strip()
                 if roman:
-                    current_major = major_map.get(roman, roman + '_' + name)
+                    current_major = _MAJOR_MAP.get(roman, roman + '_' + name)
                 elif '미분류' in name:
                     current_major = '미분류'
                 else:
@@ -1082,10 +1083,6 @@ def category_standard_audit():
     current_cat = None
     current_major = ''
     current_mid = ''
-    major_map = {
-        'I': 'I_자금이동', 'II': 'II_필수생활비', 'III': 'III_재량소비',
-        'IV': 'IV_금융거래', 'V': 'V_인적거래', 'VI': 'VI_고위험항목',
-    }
 
     for line in md_content.split('\n'):
         ls = line.strip()
@@ -1115,7 +1112,7 @@ def category_standard_audit():
                 roman = hm.group(1) or ''
                 name = hm.group(2).strip()
                 if roman:
-                    current_major = major_map.get(roman, roman + '_' + name)
+                    current_major = _MAJOR_MAP.get(roman, roman + '_' + name)
                 elif '미분류' in name:
                     current_major = '미분류'
                 else:
@@ -1156,12 +1153,6 @@ def category_standard_audit():
     result['변경'] = changed
     result['유지'] = same_cnt
 
-    def _parse_amt(v):
-        try:
-            return int(float(str(v).replace(',', '') or '0'))
-        except Exception:
-            return 0
-
     if os.path.exists(bank_path):
         with open(bank_path, 'r', encoding='utf-8') as f:
             bank = _json.load(f)
@@ -1172,11 +1163,6 @@ def category_standard_audit():
                 kita_set.add(v)
 
         _risk_priority = RISK_CODE_PRIORITY
-
-        def _kw_match(kw, val):
-            if kw.startswith('re:'):
-                return bool(_re.search(kw[3:], val))
-            return kw in val
 
         matched_list = []
         unmatched_list = []
@@ -1253,17 +1239,13 @@ def category_standard_audit():
             v = r.get('키워드', '').strip()
             if v:
                 kw_set.add(v)
-        def _kw_match_card(kw, val):
-            if kw.startswith('re:'):
-                return bool(_re.search(kw[3:], val))
-            return kw in val
 
         card_matched = []
         card_unmatched = []
         for val in sorted(kw_set):
             hit = None
             for kw, info in new_kw_map.items():
-                if _kw_match_card(kw, val):
+                if _kw_match(kw, val):
                     hit = info
                     break
             txns = [r for r in card if r.get('키워드', '').strip() == val]
@@ -1479,7 +1461,7 @@ def category_audit_report():
     return jsonify(report)
 
 
-@app.route('/shutdown')
+@app.route('/shutdown', methods=['GET', 'POST'])
 def shutdown():
     """서버 종료 요청. 로컬호스트에서만 허용. (임시폴더/파일 삭제는 시작 시에만 수행)"""
     remote = request.remote_addr or ''
@@ -1523,12 +1505,13 @@ def favicon():
 @app.route('/img/<path:filename>')
 def serve_img(filename):
     """보고서 배경 등에 사용하는 이미지 서빙 (프로젝트 루트 img/ 폴더)."""
-    base = os.path.dirname(os.path.abspath(__file__))
-    path = os.path.join(base, 'img', filename)
-    if not os.path.isfile(path):
-        return '', 404
+    img_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'img')
+    real_dir = os.path.realpath(img_dir)
+    real_path = os.path.realpath(os.path.join(img_dir, filename))
+    if not real_path.startswith(real_dir + os.sep) and real_path != real_dir:
+        return '', 403
     try:
-        return send_file(path, as_attachment=False, max_age=3600)
+        return send_from_directory(img_dir, filename, max_age=3600)
     except Exception:
         return '', 404
 
@@ -1910,7 +1893,6 @@ def api_backup():
     import zipfile
     from datetime import datetime
 
-    _root = os.path.dirname(os.path.abspath(__file__))
     data_dir = os.path.join(_root, 'data')
     source_dir = os.path.join(_root, '.source')
     json_names = [
@@ -1970,13 +1952,13 @@ def api_restore():
     if not f.filename or not f.filename.lower().endswith('.zip'):
         return jsonify({'success': False, 'error': 'zip 파일만 업로드 가능합니다.'}), 400
 
-    _root = os.path.dirname(os.path.abspath(__file__))
     source_dir = os.path.join(_root, '.source')
     os.makedirs(source_dir, exist_ok=True)
 
     try:
         zip_data = io.BytesIO(f.read())
         extracted = []
+        real_source = os.path.realpath(source_dir)
         with zipfile.ZipFile(zip_data, 'r') as zf:
             for name in zf.namelist():
                 low = name.lower()
@@ -1991,6 +1973,9 @@ def api_restore():
                     target = os.path.join(source_dir, rel.replace('/', os.sep))
                 else:
                     target = os.path.join(source_dir, basename)
+                real_target = os.path.realpath(target)
+                if not real_target.startswith(real_source + os.sep):
+                    continue
                 os.makedirs(os.path.dirname(target), exist_ok=True)
                 with zf.open(name) as src, open(target, 'wb') as dst:
                     dst.write(src.read())
@@ -2152,7 +2137,6 @@ def page_not_found(e):
 def _auto_sync_category_from_server():
     """SYNC_SERVER_URL이 설정된 경우 서버에서 category_table을 받아 data/category_table_YYYYMMDD_HHMMSS.json 으로 저장. 백그라운드에서 한 번만 실행."""
     import urllib.request
-    import urllib.error
     from datetime import datetime
     base_url = os.environ.get('SYNC_SERVER_URL', '').strip().rstrip('/')
     if not base_url:
@@ -2167,14 +2151,12 @@ def _auto_sync_category_from_server():
         req.add_header('Accept', 'application/json')
         with urllib.request.urlopen(req, timeout=30) as resp:
             if resp.status != 200:
-                print(f"[자동동기화] 서버 응답 {resp.status}, 건너뜀.", flush=True)
                 return
             body = resp.read()
         with open(json_path, 'wb') as f:
             f.write(body)
-        print(f"[자동동기화] 복사 완료: {json_path}", flush=True)
-    except Exception as e:
-        print(f"[자동동기화] 실패 (건너뜀): {e}", flush=True)
+    except Exception:
+        pass
 
 
 # ----- 9. 진입점: 작업 디렉터리 설정 → waitress 서버 기동 -----
@@ -2195,7 +2177,7 @@ if __name__ == '__main__':
     host = '0.0.0.0'
     try:
         from waitress import serve
-        print(f"서버 시작: http://127.0.0.1:{port} (종료: http://127.0.0.1:{port}/shutdown)", flush=True)
+        logger.info("서버 시작: http://127.0.0.1:%d (종료: http://127.0.0.1:%d/shutdown)", port, port)
         # 로컬 기동 시 브라우저 자동 열기 (전체 화면 사용 권장)
         if not os.environ.get('RAILWAY_ENVIRONMENT') and not os.environ.get('HEROKU'):
             import threading
@@ -2212,5 +2194,4 @@ if __name__ == '__main__':
         serve(app, host=host, port=port, threads=8)
     except (ImportError, OSError) as e:
         # waitress 미설치 또는 바인딩 실패
-        print(f"서버 시작 오류: {e}", flush=True)
-        traceback.print_exc()
+        logger.exception("서버 시작 오류: %s", e)

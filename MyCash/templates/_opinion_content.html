@@ -71,7 +71,7 @@
             {% endif %}
 
             {% if risk_total_score is defined and risk_total_score > 0 %}
-            <p><strong>[위험도 종합 평가]</strong> 위험도 분석 공식 R = Σ(w<sub>i</sub> × log<sub>10</sub>(1 + f<sub>i</sub>×a<sub>i</sub>))에 따라 산출한 결과, 종합 위험점수(R)는 <strong>{{ "%.2f"|format(risk_total_score) }}</strong>이며 등급은 <strong>{{ risk_grade_label }}</strong>에 해당한다.</p>
+            <p><strong>[위험도 종합 평가]</strong> 위험도 분석 공식 R = Σ(w<sub>i</sub> × log<sub>10</sub>(1 + f<sub>i</sub>×avg_a<sub>i</sub>) × T<sub>i</sub> × Θ<sub>i</sub> × S<sub>i</sub>)에 따라 산출한 결과, 종합 위험점수(R)는 <strong>{{ "%.2f"|format(risk_total_score) }}</strong>이며 등급은 <strong>{{ risk_grade_label }}</strong>에 해당한다.</p>
             <table style="width:100%; border-collapse:collapse; font-size:12px; margin:8px 0;">
                 <thead>
                     <tr style="background:#FFCCBC; color:#E65100;">

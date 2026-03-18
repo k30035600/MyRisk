@@ -10,20 +10,11 @@ ENV PYTHONUNBUFFERED=1 \
     LC_ALL=C.UTF-8 \
     PYTHONUTF8=1
 
-# pip 빌드용 시스템 의존성 (일부 패키지 wheel 빌드에 필요)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
-    libffi-dev \
-    libssl-dev \
-    && rm -rf /var/lib/apt/lists/*
-
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# 포트 5000 (app.py 기본)
-EXPOSE 5000
+EXPOSE 8080
 
-# Flask 직접 실행 (UTF-8 모드 강제)
-CMD ["python", "-X", "utf8", "app.py"]
+CMD ["python", "-X", "utf8", "start_web.py"]

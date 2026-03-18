@@ -20,6 +20,7 @@
 - 전처리/후처리: 가맹점명·카드사 등 텍스트 치환. 계정과목: 가맹점명 키워드 매칭으로 카테고리 부여.
 - 원본: .xls, .xlsx만 취급.
 """
+import logging
 import numpy as np
 import pandas as pd
 import os
@@ -39,6 +40,8 @@ from lib.category_table_io import normalize_주식회사_for_match, safe_write_c
 from lib.path_config import get_data_dir, get_card_after_path, get_category_table_json_path, get_source_card_dir
 from lib.data_json_io import safe_write_data_json, safe_read_data_json
 from lib.category_table_defaults import get_default_rules
+
+logger = logging.getLogger(__name__)
 from lib.category_constants import (
     DEFAULT_CATEGORY, UNCLASSIFIED, UNCLASSIFIED_DEPOSIT, UNCLASSIFIED_WITHDRAWAL,
     CARD_DEFAULT_DEPOSIT, CARD_DEFAULT_WITHDRAWAL, CARD_CASH_PROCESSING,
@@ -47,7 +50,6 @@ from lib.category_constants import (
 
 setup_win32_utf8()
 
-SOURCE_DATA_DIR = os.path.dirname(get_source_card_dir())
 SOURCE_CARD_DIR = get_source_card_dir()
 CARD_BEFORE_FILE = os.path.join(get_data_dir(), 'card_before.json')
 CARD_AFTER_FILE = get_card_after_path()
@@ -77,7 +79,6 @@ CARD_BEFORE_COLUMNS = [
     '카드사', '카드번호', '이용일', '이용시간', '입금액', '출금액', '취소', '가맹점명', '사업자번호', '폐업'
 ]
 EXCEL_EXTENSIONS = ('*.xls', '*.xlsx')
-SEARCH_COLUMNS = ['적요', '내용', '거래점', '송금메모', '가맹점명']
 # .source 헤더명 → card_before.xlsx 표준 컬럼 (카테고리는 category_table 신용카드 규칙으로 분류)
 # 헤더 행에서 인덱스를 취득하고, 다음 헤더 행이 나올 때까지 해당 인덱스로 매핑
 HEADER_TO_STANDARD = {
@@ -94,28 +95,6 @@ HEADER_TO_STANDARD = {
 과세유형_헤더키워드 = '과세유형'
 # 금액 컬럼으로 간주할 헤더 키워드 (포함 시 숫자로 변환)
 AMOUNT_COLUMN_KEYWORDS = ('금액', '입금', '출금', '잔액')
-
-def normalize_brackets(text):
-    """괄호 쌍 정규화: (( → (, )) → (, 불균형 시 보정."""
-    if not text:
-        return text
-    text = text.replace('((', '(')
-    text = text.replace('))', ')')
-    open_count = text.count('(')
-    close_count = text.count(')')
-    if open_count > close_count:
-        text = text + ')' * (open_count - close_count)
-    elif close_count > open_count:
-        text = '(' * (close_count - open_count) + text
-    return text
-
-
-def remove_numbers(text):
-    """문자열에서 숫자 제거."""
-    if not text:
-        return text
-    return re.sub(r'\d+', '', text)
-
 
 def _business_number_digits(value):
     """사업자번호 셀 값에서 숫자만 추출(10자리). Excel 숫자형(1234567890.0)·9자리(앞 0 제거) 보정."""
@@ -143,25 +122,6 @@ def _normalize_business_number(value):
     if digits is None:
         return ''
     return f'{digits[:3]}-{digits[3:5]}-{digits[5:]}'
-
-
-def _normalize_구분(val):
-    """구분(할부)을 숫자(int) 또는 일시불('')로 정규화. 0/일시불 → '', 3/6/12 등 → int. '3개월' 등에서 숫자만 추출."""
-    if val is None or (isinstance(val, float) and pd.isna(val)):
-        return ''
-    s = str(val).strip()
-    if s in ('', '0', '일시불'):
-        return ''
-    try:
-        n = int(float(val))
-        return '' if n == 0 else n
-    except (TypeError, ValueError):
-        pass
-    m = re.match(r'^(\d+)', s)
-    if m:
-        n = int(m.group(1))
-        return '' if n == 0 else n
-    return ''
 
 
 def _card_excel_files(source_dir):
@@ -446,23 +406,6 @@ def _is_date_like_value(val):
     return True
 
 
-def _row_to_standard_columns(row, source_columns):
-    """.source 한 행(Series)을 추출용 컬럼 dict로 변환."""
-    new_row = {col: '' for col in _EXTRACT_COLUMNS}
-    for src_col in source_columns:
-        std_col = _map_source_header_to_standard(src_col)
-        if std_col is None:
-            continue
-        val = row.get(src_col, row.get(str(src_col)))
-        if pd.notna(val) and str(val).strip() != '':
-            if not new_row[std_col]:
-                # 이용일은 날짜 형태인 값만 채움 (0/1/71 등은 매출일·이용일자 등이 덮어쓰도록 건너뜀)
-                if std_col == '이용일' and not _is_date_like_value(val):
-                    continue
-                new_row[std_col] = str(val).strip()
-    return _normalize_row_values(new_row)
-
-
 def _extract_rows_from_sheet(df, card_company_from_file):
     """시트 DataFrame에서 추출용 행 리스트 추출 (이용금액 포함)."""
     rows = []
@@ -524,7 +467,7 @@ def _load_prepost_rules(category_path=None):
         후처리.sort(key=lambda x: len(x['키워드']), reverse=True)
         return 전처리, 후처리
     except (OSError, ValueError, KeyError, TypeError) as e:
-        print(f"전처리/후처리 규칙 로드 실패: {e}", flush=True)
+        logger.warning("전처리/후처리 규칙 로드 실패: %s", e)
         return [], []
 
 
@@ -625,10 +568,10 @@ def integrate_card_excel(output_file=None, base_dir=None, skip_write=False):
                         all_rows.extend(_extract_rows_from_sheet(df, card_company_from_file))
                 except Exception as e:
                     read_errors.append(f"{name} 시트 '{sheet_name}': {e}")
-                    print(f"오류: {name} 시트 '{sheet_name}' 읽기 실패 - {e}")
+                    logger.error("%s 시트 '%s' 읽기 실패: %s", name, sheet_name, e)
         except Exception as e:
             read_errors.append(f"{name}: {e}")
-            print(f"오류: {name} 처리 실패 - {e}")
+            logger.error("%s 처리 실패: %s", name, e)
 
     card_files = _card_excel_files(source_dir)
     if not card_files:
@@ -703,7 +646,7 @@ def integrate_card_excel(output_file=None, base_dir=None, skip_write=False):
             combined_df = _apply_전처리_only_to_columns(combined_df, ['가맹점명', '카드사'])
         except Exception as e:
             # 전처리 규칙 적용 실패 시 원본으로 저장
-            print(f"경고: 전처리 적용 중 오류(무시하고 저장) - {e}")
+            logger.warning("전처리 적용 중 오류(무시하고 저장): %s", e)
         # card_before.xlsx 저장 시 입금액은 절대값으로 보장
         if '입금액' in combined_df.columns:
             combined_df['입금액'] = pd.to_numeric(combined_df['입금액'], errors='coerce').fillna(0).abs()
@@ -713,10 +656,9 @@ def integrate_card_excel(output_file=None, base_dir=None, skip_write=False):
         try:
             out_path = Path(CARD_BEFORE_FILE).resolve()
             out_path.parent.mkdir(parents=True, exist_ok=True)
-            if safe_write_data_json(str(out_path), combined_df):
-                print(f"저장: {out_path}", flush=True)
+            safe_write_data_json(str(out_path), combined_df)
         except Exception as e:
-            print(f"오류: {CARD_BEFORE_FILE} 저장 실패 - {e}", file=sys.stderr, flush=True)
+            logger.error("%s 저장 실패: %s", CARD_BEFORE_FILE, e)
     return combined_df
 
 
@@ -823,7 +765,7 @@ def classify_and_save(input_df=None):
                         df_card = apply_category_from_merchant(df_card, df_cat)
                         # 카드거래: 신청인본인 구분 없음 (적용하지 않음)
             except Exception as _e:
-                print(f"[WARN] 카테고리 로드/적용 실패 (원본으로 저장): {_e}", flush=True)
+                logger.warning("카테고리 로드/적용 실패 (원본으로 저장): %s", _e)
 
         df_card = _apply_후처리_only_to_columns(df_card, ['가맹점명', '카드사'])
 
@@ -889,7 +831,7 @@ def classify_and_save(input_df=None):
             try:
                 create_category_table(df_card, category_filepath=CATEGORY_TABLE_FILE)
             except Exception as e:
-                print(f"category_table.json 신용카드 섹션 생성 실패: {e}", flush=True)
+                logger.warning("category_table.json 신용카드 섹션 생성 실패: %s", e)
 
         return (True, None, len(df_card))
     except FileNotFoundError as e:
@@ -897,8 +839,7 @@ def classify_and_save(input_df=None):
         LAST_CLASSIFY_ERROR = err
         return (False, err, 0)
     except Exception as e:
-        import traceback
-        traceback.print_exc()
+        logger.exception("classify_and_save 오류")
         err = str(e)
         LAST_CLASSIFY_ERROR = err
         return (False, err, 0)
@@ -932,11 +873,10 @@ def create_category_table(df=None, category_filepath=None):
         if not os.path.exists(out_path):
             raise FileNotFoundError(f"오류: 파일 생성 후에도 {out_path} 파일이 존재하지 않습니다.")
     except PermissionError as e:
-        print(f"오류: 파일 쓰기 권한이 없습니다 - {out_path}")
+        logger.error("파일 쓰기 권한이 없습니다: %s", out_path)
         raise
     except Exception as e:
-        # category_table 생성/쓰기 실패 시 호출자에 전달
-        print(f"오류: category_table 생성 실패 - {e}")
+        logger.error("category_table 생성 실패: %s", e)
         raise
     return category_df
 
@@ -1061,9 +1001,9 @@ def main():
         if cmd == 'classify':
             ok, err, n = classify_and_save()
             if ok:
-                print(f"card_after 생성 완료: {n}건", flush=True)
+                logger.info("card_after 생성 완료: %d건", n)
             else:
-                print(f"오류: {err}", file=sys.stderr, flush=True)
+                logger.error("오류: %s", err)
             return
     integrate_card_excel()
 

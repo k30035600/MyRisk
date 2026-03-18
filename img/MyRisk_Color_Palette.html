@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>MyRisk Color Palette</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Noto Sans KR','Malgun Gothic','Gothic A1',sans-serif;background:#fff;color:#1A1A1A;}
+.page{width:1400px;padding:40px 48px 36px;margin:0 auto;}
+.brand{font-size:14px;color:#546E7A;letter-spacing:.5px;}
+h1{font-size:36px;font-weight:900;color:#263238;margin:4px 0 28px;letter-spacing:-0.5px;}
+.grid{display:grid;grid-template-columns:520px 1fr;gap:32px;}
+.section-title{font-size:15px;font-weight:700;color:#37474F;margin-bottom:16px;}
+
+/* Section 1: Module Identity Colors */
+.modules{display:flex;gap:20px;}
+.module{flex:1;text-align:center;}
+.module-label{font-size:13px;font-weight:700;color:#37474F;margin-bottom:10px;}
+.circle{width:100px;height:100px;border-radius:50%;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;letter-spacing:.3px;}
+.swatches{display:flex;flex-direction:column;gap:3px;margin-top:8px;}
+.swatch{display:flex;align-items:center;border-radius:4px;padding:5px 8px;font-size:11px;gap:6px;}
+.swatch-color{width:16px;height:16px;border-radius:3px;flex-shrink:0;border:1px solid rgba(0,0,0,.08);}
+.swatch-hex{font-family:'Consolas','SF Mono',monospace;font-weight:600;min-width:64px;}
+.swatch-role{color:#546E7A;font-size:10.5px;}
+
+/* Section 2: Common */
+.common-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px;}
+.common-swatch{border-radius:6px;padding:10px 6px 8px;text-align:center;min-height:56px;display:flex;flex-direction:column;justify-content:center;align-items:center;border:1px solid rgba(0,0,0,.06);}
+.common-hex{font-family:'Consolas','SF Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.2px;}
+.common-role{font-size:9.5px;margin-top:3px;opacity:.85;}
+
+/* Section 2b: Text/BG row */
+.common-grid-2{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:6px;}
+
+/* Section 3: Risk Grades */
+.risk-strip{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin-top:4px;}
+.risk-swatch{border-radius:5px;padding:10px 4px 8px;text-align:center;min-height:52px;display:flex;flex-direction:column;justify-content:center;align-items:center;border:1px solid rgba(0,0,0,.05);}
+.risk-hex{font-family:'Consolas','SF Mono',monospace;font-size:9.5px;font-weight:600;}
+.risk-label{font-size:10px;margin-top:3px;font-weight:600;}
+
+.right-col{display:flex;flex-direction:column;gap:24px;}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="brand">나눔과어울림 ShareHarmony · MyRisk</div>
+  <h1>MyRisk Color Palette</h1>
+
+  <div class="grid">
+    <!-- LEFT: Module Identity Colors -->
+    <div>
+      <div class="section-title">1. 기본 3색 (Module Identity Colors)</div>
+      <div class="modules">
+        <!-- MyBank -->
+        <div class="module">
+          <div class="module-label">MyBank</div>
+          <div class="circle" style="background:#1565C0;">#1565C0</div>
+          <div class="swatches">
+            <div class="swatch"><div class="swatch-color" style="background:#0A3D91;"></div><span class="swatch-hex">#0A3D91</span><span class="swatch-role">Dark</span></div>
+            <div class="swatch" style="background:#B3D4FC22;"><div class="swatch-color" style="background:#B3D4FC;"></div><span class="swatch-hex">#B3D4FC</span><span class="swatch-role">Header BG</span></div>
+            <div class="swatch"><div class="swatch-color" style="background:#BBDEFB;"></div><span class="swatch-hex">#BBDEFB</span><span class="swatch-role">Border</span></div>
+            <div class="swatch" style="background:#E8F0FE44;"><div class="swatch-color" style="background:#E8F0FE;"></div><span class="swatch-hex">#E8F0FE</span><span class="swatch-role">Card BG</span></div>
+            <div class="swatch"><div class="swatch-color" style="background:#C8DFFE;"></div><span class="swatch-hex">#C8DFFE</span><span class="swatch-role">Sum Row</span></div>
+          </div>
+        </div>
+        <!-- MyCard -->
+        <div class="module">
+          <div class="module-label">MyCard</div>
+          <div class="circle" style="background:#6A1B9A;">#6A1B9A</div>
+          <div class="swatches">
+            <div class="swatch"><div class="swatch-color" style="background:#38006B;"></div><span class="swatch-hex">#38006B</span><span class="swatch-role">Dark</span></div>
+            <div class="swatch" style="background:#E1BEE722;"><div class="swatch-color" style="background:#E1BEE7;"></div><span class="swatch-hex">#E1BEE7</span><span class="swatch-role">Header BG</span></div>
+            <div class="swatch"><div class="swatch-color" style="background:#DFC4E8;"></div><span class="swatch-hex">#DFC4E8</span><span class="swatch-role">Border</span></div>
+            <div class="swatch" style="background:#F3E5F544;"><div class="swatch-color" style="background:#F3E5F5;"></div><span class="swatch-hex">#F3E5F5</span><span class="swatch-role">Card BG</span></div>
+            <div class="swatch"><div class="swatch-color" style="background:#EAD0F1;"></div><span class="swatch-hex">#EAD0F1</span><span class="swatch-role">Sum Row</span></div>
+          </div>
+        </div>
+        <!-- MyCash -->
+        <div class="module">
+          <div class="module-label">MyCash</div>
+          <div class="circle" style="background:#E65100;">#E65100</div>
+          <div class="swatches">
+            <div class="swatch"><div class="swatch-color" style="background:#A52A00;"></div><span class="swatch-hex">#A52A00</span><span class="swatch-role">Dark</span></div>
+            <div class="swatch" style="background:#FFCCBC22;"><div class="swatch-color" style="background:#FFCCBC;"></div><span class="swatch-hex">#FFCCBC</span><span class="swatch-role">Header BG</span></div>
+            <div class="swatch"><div class="swatch-color" style="background:#FFDBC8;"></div><span class="swatch-hex">#FFDBC8</span><span class="swatch-role">Border</span></div>
+            <div class="swatch" style="background:#FFF3E044;"><div class="swatch-color" style="background:#FFF3E0;"></div><span class="swatch-hex">#FFF3E0</span><span class="swatch-role">Card BG</span></div>
+            <div class="swatch"><div class="swatch-color" style="background:#FFD9CC;"></div><span class="swatch-hex">#FFD9CC</span><span class="swatch-role">Sum Row</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Common + Risk -->
+    <div class="right-col">
+      <!-- Common Colors -->
+      <div>
+        <div class="section-title">2. 공통색 (Common)</div>
+        <div class="common-grid">
+          <div class="common-swatch" style="background:#263238;color:#fff;"><span class="common-hex">#263238</span><span class="common-role">Primary</span></div>
+          <div class="common-swatch" style="background:#1B2631;color:#fff;"><span class="common-hex">#1B2631</span><span class="common-role">Primary Dark</span></div>
+          <div class="common-swatch" style="background:#546E7A;color:#fff;"><span class="common-hex">#546E7A</span><span class="common-role">Action</span></div>
+          <div class="common-swatch" style="background:#37474F;color:#fff;"><span class="common-hex">#37474F</span><span class="common-role">Action Dark</span></div>
+          <div class="common-swatch" style="background:#B0BEC5;color:#263238;"><span class="common-hex">#B0BEC5</span><span class="common-role">Action Light</span></div>
+          <div class="common-swatch" style="background:#1565C0;color:#fff;"><span class="common-hex">#1565C0</span><span class="common-role">Income/입금</span></div>
+          <div class="common-swatch" style="background:#C62828;color:#fff;"><span class="common-hex">#C62828</span><span class="common-role">Expense/출금</span></div>
+        </div>
+        <div class="common-grid-2">
+          <div class="common-swatch" style="background:#1A1A1A;color:#fff;"><span class="common-hex">#1A1A1A</span><span class="common-role">Text</span></div>
+          <div class="common-swatch" style="background:#334155;color:#fff;"><span class="common-hex">#334155</span><span class="common-role">Body</span></div>
+          <div class="common-swatch" style="background:#5A6872;color:#fff;"><span class="common-hex">#5A6872</span><span class="common-role">Muted</span></div>
+          <div class="common-swatch" style="background:#95A5A6;color:#fff;"><span class="common-hex">#95A5A6</span><span class="common-role">Disabled</span></div>
+          <div class="common-swatch" style="background:#F0F2F5;color:#334155;border:1px solid #D5DAE0;"><span class="common-hex">#F0F2F5</span><span class="common-role">BG</span></div>
+          <div class="common-swatch" style="background:#FFFFFF;color:#334155;border:1px solid #D5DAE0;"><span class="common-hex">#FFFFFF</span><span class="common-role">Surface</span></div>
+          <div class="common-swatch" style="background:#D5DAE0;color:#334155;"><span class="common-hex">#D5DAE0</span><span class="common-role">Border</span></div>
+        </div>
+      </div>
+
+      <!-- Risk Grades -->
+      <div>
+        <div class="section-title">3. 위험도 등급 (Risk Grades)</div>
+        <div class="risk-strip">
+          <div class="risk-swatch" style="background:#FFFDE7;color:#5A6872;border:1px solid #E0DCC0;"><span class="risk-hex">#FFFDE7</span><span class="risk-label">1호</span></div>
+          <div class="risk-swatch" style="background:#FFF8E1;color:#5A6872;"><span class="risk-hex">#FFF8E1</span><span class="risk-label">2호</span></div>
+          <div class="risk-swatch" style="background:#FFECB3;color:#5A6872;"><span class="risk-hex">#FFECB3</span><span class="risk-label">3호</span></div>
+          <div class="risk-swatch" style="background:#FFE0B2;color:#5A6872;"><span class="risk-hex">#FFE0B2</span><span class="risk-label">4호</span></div>
+          <div class="risk-swatch" style="background:#FFD6C9;color:#5A6872;"><span class="risk-hex">#FFD6C9</span><span class="risk-label">5호</span></div>
+          <div class="risk-swatch" style="background:#FFCDD2;color:#5A6872;"><span class="risk-hex">#FFCDD2</span><span class="risk-label">6호</span></div>
+          <div class="risk-swatch" style="background:#F8BBD0;color:#5A6872;"><span class="risk-hex">#F8BBD0</span><span class="risk-label">7호</span></div>
+          <div class="risk-swatch" style="background:#F0B0B0;color:#5A6872;"><span class="risk-hex">#F0B0B0</span><span class="risk-label">8호</span></div>
+          <div class="risk-swatch" style="background:#E8A0A0;color:#fff;"><span class="risk-hex">#E8A0A0</span><span class="risk-label">9호</span></div>
+          <div class="risk-swatch" style="background:#D32F2F;color:#fff;"><span class="risk-hex">#D32F2F</span><span class="risk-label">10호</span></div>
+        </div>
+      </div>
+
+      <!-- Category Codes -->
+      <div>
+        <div class="section-title">4. 카테고리 코드색 (Category Codes)</div>
+        <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;">
+          <div class="common-swatch" style="background:#546E7A;color:#fff;"><span class="common-hex">#546E7A</span><span class="common-role">M 계좌이동</span></div>
+          <div class="common-swatch" style="background:#2E7D32;color:#fff;"><span class="common-hex">#2E7D32</span><span class="common-role">L 생활비</span></div>
+          <div class="common-swatch" style="background:#E65100;color:#fff;"><span class="common-hex">#E65100</span><span class="common-role">D 재량소비</span></div>
+          <div class="common-swatch" style="background:#C62828;color:#fff;"><span class="common-hex">#C62828</span><span class="common-role">H 고위험</span></div>
+          <div class="common-swatch" style="background:#1565C0;color:#fff;"><span class="common-hex">#1565C0</span><span class="common-role">F 금융</span></div>
+          <div class="common-swatch" style="background:#6A1B9A;color:#fff;"><span class="common-hex">#6A1B9A</span><span class="common-role">P 기타</span></div>
+        </div>
+      </div>
+
+      <!-- Status Colors -->
+      <div>
+        <div class="section-title">5. 상태색 (Status)</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">
+          <div class="common-swatch" style="background:#2E7D32;color:#fff;"><span class="common-hex">#2E7D32</span><span class="common-role">Success</span></div>
+          <div class="common-swatch" style="background:#E67E22;color:#fff;"><span class="common-hex">#E67E22</span><span class="common-role">Warning</span></div>
+          <div class="common-swatch" style="background:#C62828;color:#fff;"><span class="common-hex">#C62828</span><span class="common-role">Error</span></div>
+          <div class="common-swatch" style="background:#1565C0;color:#fff;"><span class="common-hex">#1565C0</span><span class="common-role">Info</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:20px;text-align:right;font-size:10px;color:#95A5A6;">
+    주식회사 나눔과 어울림 ShareHarmony · MyRisk v200 · 2026-03-17
+  </div>
+</div>
+</body>
+</html>

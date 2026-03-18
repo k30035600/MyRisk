@@ -9,6 +9,7 @@ DataFrame을 UTF-8 JSON(records 형식)으로 저장·로드한다. datetime·nu
 import os
 import json
 import logging
+import tempfile
 import numpy as np
 import pandas as pd
 
@@ -35,11 +36,21 @@ def safe_write_data_json(path, df):
     if not isinstance(df, pd.DataFrame):
         return False
     try:
-        os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
+        dir_name = os.path.dirname(os.path.abspath(path))
+        os.makedirs(dir_name, exist_ok=True)
         rec = df.fillna('').to_dict('records')
         _records_to_json_serializable(rec)
-        with open(path, 'w', encoding='utf-8') as f:
-            json.dump(rec, f, ensure_ascii=False, indent=2)
+        fd, tmp = tempfile.mkstemp(dir=dir_name, suffix='.tmp')
+        try:
+            with os.fdopen(fd, 'w', encoding='utf-8') as f:
+                json.dump(rec, f, ensure_ascii=False, indent=2)
+            os.replace(tmp, path)
+        except BaseException:
+            try:
+                os.unlink(tmp)
+            except OSError:
+                pass
+            raise
         return True
     except Exception:
         _logger.exception('safe_write_data_json 실패: %s', path)

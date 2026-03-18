@@ -14,8 +14,12 @@ import json
 import os
 import re
 import logging
+import tempfile
+import threading
 
 _logger = logging.getLogger(__name__)
+
+_ct_lock = threading.Lock()
 
 try:
     import pandas as pd
@@ -27,6 +31,23 @@ CATEGORY_TABLE_EXTENDED_COLUMNS = ['분류', '위험도', '카테고리', '위�
 
 # mtime 기반 category_table 캐시 (매 요청 재로드 방지)
 _ct_cache = {'path': None, 'mtime': None, 'data': None}
+
+
+def _atomic_json_write(path, data):
+    """임시 파일에 쓴 뒤 os.replace()로 원자적 교체. 쓰기 중 크래시 시 기존 파일 보존."""
+    dir_name = os.path.dirname(os.path.abspath(path))
+    os.makedirs(dir_name, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=dir_name, suffix='.tmp')
+    try:
+        with os.fdopen(fd, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        os.replace(tmp, path)
+    except BaseException:
+        try:
+            os.unlink(tmp)
+        except OSError:
+            pass
+        raise
 
 
 def _to_str_no_decimal(val):
@@ -54,29 +75,31 @@ def _norm_path(path):
 
 
 def invalidate_category_cache():
-    """캐시 수동 무효화 (저장 후 호출)."""
-    _ct_cache['path'] = None
-    _ct_cache['mtime'] = None
-    _ct_cache['data'] = None
+    """캐시 수동 무효화 (저장 후 호출). 스레드 안전."""
+    with _ct_lock:
+        _ct_cache['path'] = None
+        _ct_cache['mtime'] = None
+        _ct_cache['data'] = None
 
 
 def load_category_table(path, default_empty=True):
-    """JSON 카테고리 테이블 로드. mtime 캐시 적용으로 변경 없으면 재로드하지 않음."""
+    """JSON 카테고리 테이블 로드. mtime 캐시 적용으로 변경 없으면 재로드하지 않음. 스레드 안전."""
     path = _norm_path(path)
     if not path or not os.path.exists(path):
         if pd is None:
             return [] if default_empty else None
         return pd.DataFrame(columns=CATEGORY_TABLE_COLUMNS) if default_empty else None
     try:
-        cur_mtime = os.path.getmtime(path)
-        if _ct_cache['path'] == path and _ct_cache['mtime'] == cur_mtime and _ct_cache['data'] is not None:
-            data = _ct_cache['data']
-        else:
-            with open(path, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-            _ct_cache['path'] = path
-            _ct_cache['mtime'] = cur_mtime
-            _ct_cache['data'] = data
+        with _ct_lock:
+            cur_mtime = os.path.getmtime(path)
+            if _ct_cache['path'] == path and _ct_cache['mtime'] == cur_mtime and _ct_cache['data'] is not None:
+                data = _ct_cache['data']
+            else:
+                with open(path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                _ct_cache['path'] = path
+                _ct_cache['mtime'] = cur_mtime
+                _ct_cache['data'] = data
         if not data:
             return pd.DataFrame(columns=CATEGORY_TABLE_COLUMNS) if default_empty and pd else None
         if pd:
@@ -149,8 +172,7 @@ def safe_write_category_table(path, df, extended=False):
         else:
             out = df
             rec = out.to_dict('records') if hasattr(out, 'to_dict') else out
-    with open(path, 'w', encoding='utf-8') as f:
-        json.dump(rec, f, ensure_ascii=False, indent=2)
+    _atomic_json_write(path, rec)
     invalidate_category_cache()
 
 
@@ -158,8 +180,7 @@ def create_empty_category_table(path):
     """빈 category_table.json 생성."""
     path = _norm_path(path)
     if path:
-        with open(path, 'w', encoding='utf-8') as f:
-            json.dump([], f, ensure_ascii=False)
+        _atomic_json_write(path, [])
         invalidate_category_cache()
 
 
@@ -263,8 +284,7 @@ def apply_category_action(path, action, data):
             if pd is not None:
                 safe_write_category_table(path, out, extended=True)
                 return (True, '', len(out))
-            with open(path, 'w', encoding='utf-8') as f:
-                json.dump(out, f, ensure_ascii=False, indent=2)
+            _atomic_json_write(path, out)
             invalidate_category_cache()
             return (True, '', len(out))
         if action == 'replace' or action == 'add':
@@ -311,8 +331,7 @@ def apply_category_action(path, action, data):
                         continue
                     seen.add(key)
                     out_list.append({c: r.get(c, '') for c in cols})
-            with open(path, 'w', encoding='utf-8') as f:
-                json.dump(out_list, f, ensure_ascii=False, indent=2)
+            _atomic_json_write(path, out_list)
             invalidate_category_cache()
             return (True, '', len(out_list))
         return (False, f'지원하지 않는 action: {action}', 0)
@@ -362,12 +381,6 @@ def _risk_value(분류명):
     if not 분류명 or not isinstance(분류명, str):
         return 0.1
     return RISK_CLASS_TO_VALUE.get(분류명.strip(), 0.1)
-
-
-def _is_risk_class(분류, 카테고리):
-    """분류 또는 카테고리가 위험도 분류명(1~10호)인지 여부."""
-    s = (분류 or '').strip() or (카테고리 or '').strip()
-    return s in RISK_CLASS_TO_VALUE
 
 
 def _load_category_table_raw(path=None):

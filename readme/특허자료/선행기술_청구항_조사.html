@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>선행기술_청구항_조사</title>
+
+<style>
+@page { size: A4; margin: 20mm 18mm 20mm 18mm; }
+* { box-sizing: border-box; }
+body {
+  font-family: 'Malgun Gothic','맑은 고딕','Noto Sans KR',sans-serif;
+  font-size: 10.5pt; line-height: 1.65; color: #1a1a1a;
+  text-align: justify; margin: 0; padding: 20px 30px;
+}
+h1 {
+  font-size: 18pt; color: #1B3A5C; border-bottom: 3px solid #1B3A5C;
+  padding-bottom: 8px; margin-top: 0;
+}
+h2 {
+  font-size: 14pt; color: #1B3A5C; border-bottom: 2px solid #2E6DA4;
+  padding-bottom: 5px; margin-top: 1.2em;
+}
+h3 {
+  font-size: 11.5pt; color: #2E6DA4; margin-top: 1em;
+  border-left: 4px solid #2E6DA4; padding-left: 8px;
+}
+table {
+  width: 100%; border-collapse: collapse; margin: 10px 0 14px 0;
+  font-size: 9.5pt;
+}
+th {
+  background: #1B3A5C; color: #fff; padding: 7px 8px;
+  border: 1px solid #1B3A5C; text-align: center; font-weight: 600;
+}
+td {
+  padding: 6px 8px; border: 1px solid #B8D0E8;
+  vertical-align: top; text-align: left;
+}
+tr:nth-child(even) td { background: #EBF1F8; }
+blockquote {
+  border-left: 4px solid #2E6DA4; margin: 12px 0; padding: 8px 14px;
+  background: #EBF1F8; font-size: 10pt;
+}
+hr { border: none; border-top: 1px solid #B8D0E8; margin: 16px 0; }
+strong { color: #1B3A5C; }
+td strong { color: #1B3A5C; }
+.page-break { page-break-before: always; }
+@media print {
+  body { padding: 0; }
+  .page-break { page-break-before: always; }
+  table { page-break-inside: avoid; }
+}
+</style>
+
+</head>
+<body>
+<h1>선행기술 청구항 조사 보고서</h1>
+<table>
+<thead><tr><th>항목</th><th>내용</th></tr></thead>
+<tbody>
+<tr><td>**조사일**</td><td>2026-03-16</td></tr>
+<tr><td>**조사 방법**</td><td>Google Patents(patents.google.com) 직접 조회, 웹 검색</td></tr>
+<tr><td>**조사 목적**</td><td>MyRisk 특허출원서의 선행기술 7건에 대한 청구항 확인 및 차별점 분석</td></tr>
+<tr><td>**관련 문서**</td><td>특허출원서(Opus의견)_v2.md, system_flow.md</td></tr>
+</tbody></table>
+<hr>
+<h2>종합 비교 분석</h2>
+<h3>선행기술 대비 MyRisk 차별점 요약</h3>
+<table>
+<thead><tr><th>기술 요소</th><th>문1</th><th>문2</th><th>문3</th><th>문4</th><th>문5</th><th>문6</th><th>문7</th><th>**MyRisk**</th></tr></thead>
+<tbody>
+<tr><td>이기종 금융 데이터 통합</td><td>✗</td><td>✗</td><td>△</td><td>✗</td><td>△</td><td>✗</td><td>✗</td><td>**✓**</td></tr>
+<tr><td>3단계 계층적 분류</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>**✓**</td></tr>
+<tr><td>최장 일치+5단계 캐스케이드</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>**✓**</td></tr>
+<tr><td>법적 위험도(1~10호)</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>**✓**</td></tr>
+<tr><td>Step-up Scoring</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>**✓**</td></tr>
+<tr><td>R 점수(T·Θ·S)</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>**✓**</td></tr>
+<tr><td>소명서 자동 생성</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>**✓**</td></tr>
+<tr><td>채무자회생법 매핑</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>**✓**</td></tr>
+<tr><td>VASP 3단계 식별</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>✗</td><td>**✓**</td></tr>
+</tbody></table>
+<h3>선행기술 기술 동향</h3>
+<table>
+<thead><tr><th>기술 동향</th><th>문헌</th><th>MyRisk 대응</th></tr></thead>
+<tbody>
+<tr><td>AI/ML 분류 표준화</td><td>문5, 문6</td><td>규칙 기반이나 5단계 캐스케이드+3단계 분류, 생성형 AI 확장(청구항 5)</td></tr>
+<tr><td>시계열 분석 활발</td><td>문5(ARIMA/LSTM)</td><td>T 계수(파산직전 의심 패턴 특화)</td></tr>
+<tr><td>거래처-계정과목 매칭 기존 기술</td><td>문6, 문7</td><td>최장 일치+위험도 우선+5단계 차별화</td></tr>
+<tr><td>임계값/신뢰도 보정 보편화</td><td>문6(신뢰도)</td><td>Θ(금액·건수 복합)+S(대칭성) 다차원 보정</td></tr>
+</tbody></table>
+<h3>진보성 판단</h3>
+<blockquote>선행기술 7건은 법률 문서 분석/작성, 회계 분개, 가계부, AI 재무관리, ML 분개, 계정과목 분류에 특화. 문5~7은 "금융 거래 분류" 영역에서 겹치나 모두 <strong>회계·세무</strong> 또는 <strong>기업 재무 예측</strong> 목적.<br><br>MyRisk 핵심 결합 — <strong>이기종 통합 + 3단계 분류(최장 일치·5단계) + 채무자회생법 Step-up(1~10호) + R 점수(T·Θ·S) + 소명서 자동 생성</strong> — 은 어떤 선행기술에서도 개시되지 않음.<br><br><strong>진보성(비자명성) 확보에 유리</strong>. 명세서에서 문5의 시계열 vs T 계수, 문6의 신뢰도 vs Θ 계수 차별점 명확 기술 권장.</blockquote>
+<hr>
+<div class="page-break"></div>
+<h2>문1. KR102289935B1 — 인공지능 기반의 법률 문서 분석 시스템 및 방법</h2>
+<table>
+<thead><tr><th>항목</th><th>내용</th></tr></thead>
+<tbody>
+<tr><td>**등록번호**</td><td>KR102289935B1</td></tr>
+<tr><td>**출원인**</td><td>주식회사 인텔리콘 연구소</td></tr>
+<tr><td>**출원일**</td><td>2019-08-23</td></tr>
+<tr><td>**IPC**</td><td>G06F 40/20, G06Q 50/18</td></tr>
+<tr><td>**청구항 수**</td><td>11개 (독립 2 + 종속 9)</td></tr>
+</tbody></table>
+<h3>청구항 전문</h3>
+<p><strong>【청구항 1】</strong> (독립항 — 시스템) 분석 대상 법률 문서가 입력되면, 상기 입력된 법률 문서를 문장 단위로 분석하여 미리 설정된 클래스와 적어도 하나 이상의 레이블로 분류하고, 상기 분석된 문장과 분류된 클래스를 미리 저장된 기준 정보와 비교하여 누락된 문장, 위험 오류 요소 및 클래스 중 하나 이상의 발생 여부를 탐지하되, 누락된 문장이 탐지되면 작성례가 표시되고, 위험 오류 요소가 탐지되면 해석 정보를 생성하여 표시하는 법률 문서 분석 서버(200)를 포함하되, 메타 데이터를 추출하고 위험 오류 요소의 발생 여부를 탐지하는 것을 특징으로 하는 인공지능 기반의 법률 문서 분석 시스템.</p>
+<p><strong>【청구항 2】</strong> 문서 정보 분석부(210), 분석 추론부(220), 데이터베이스(230) 구비.</p>
+<p><strong>【청구항 3】</strong> 갑/을 교정, 빈칸 교정, 영/한 변환, 동의어 변환 전처리, 형태소 분석.</p>
+<p><strong>【청구항 5】</strong> 누락 탐지부(221), 위험 탐지부(222), 메타 정보 추출부(223), 해설 생성부(224).</p>
+<p><strong>【청구항 6~7】</strong> 시각화/텍스트 표시, 법령 정보 추출.</p>
+<p><strong>【청구항 9】</strong> (독립항 — 방법) 법률 문서 입력→분석·분류→탐지→생성·표시.</p>
+<p><strong>【청구항 11】</strong> 위험 오류는 특정 클래스 문장에 특정 단어 포함 여부로 판단.</p>
+<h3>MyRisk와의 차별점</h3>
+<table>
+<thead><tr><th>구분</th><th>KR102289935B1</th><th>MyRisk</th></tr></thead>
+<tbody>
+<tr><td>**분석 대상**</td><td>법률 문서 텍스트</td><td>금융기관 거래 내역</td></tr>
+<tr><td>**분석 목적**</td><td>문서 누락·위험 조항 탐지</td><td>면책불허가 사유 위험도 정량 산출</td></tr>
+<tr><td>**분류 방식**</td><td>문장→클래스·레이블</td><td>3단계 계층적 분류</td></tr>
+<tr><td>**위험도 산정**</td><td>없음</td><td>1~10호 Step-up Scoring + R 점수(T·Θ·S)</td></tr>
+<tr><td>**수식**</td><td>없음</td><td>R = w × log₁₀(1+f×avg_a) × T × Θ × S</td></tr>
+</tbody></table>
+<hr>
+<div class="page-break"></div>
+<h2>문2. KR102022412B1 — 법률문서 자동작성 시스템 및 그 방법</h2>
+<table>
+<thead><tr><th>항목</th><th>내용</th></tr></thead>
+<tbody>
+<tr><td>**등록번호**</td><td>KR102022412B1</td></tr>
+<tr><td>**상태**</td><td>**만료(Expired)**</td></tr>
+<tr><td>**IPC**</td><td>G06Q 50/18</td></tr>
+<tr><td>**청구항 수**</td><td>10개</td></tr>
+</tbody></table>
+<h3>청구항 전문</h3>
+<p><strong>【청구항 1】</strong> 법률문서 자동작성 시스템: 사용자 단말기 + 법률문서자동작성제공서버(인터페이스부, 처리부(질의부·판단부·작성부), DB관리부, 모델생성부(수신·분석·학습·추론·모델링), 제어부).</p>
+<p><strong>【청구항 5】</strong> 방법: 질문출력→응답입력→추가질문→문서작성→출력→업데이트(형태소·구조분석→학습→추론→새 모델).</p>
+<p><strong>【청구항 6】</strong> 당사자 관계도를 그래픽으로 표현.</p>
+<h3>MyRisk와의 차별점</h3>
+<table>
+<thead><tr><th>구분</th><th>KR102022412B1</th><th>MyRisk</th></tr></thead>
+<tbody>
+<tr><td>**입력**</td><td>사용자 Q&A</td><td>금융기관 엑셀 자동 수신</td></tr>
+<tr><td>**문서 생성**</td><td>법률문서 양식</td><td>위험도 보고서 + 소명서 초안</td></tr>
+<tr><td>**위험도**</td><td>없음</td><td>1~10호 Step-up Scoring</td></tr>
+<tr><td>**상태**</td><td>만료</td><td>신규 출원</td></tr>
+</tbody></table>
+<hr>
+<div class="page-break"></div>
+<h2>문3. KR102824993B1 — 스크래핑을 이용한 회계 처리 시스템 및 방법</h2>
+<table>
+<thead><tr><th>항목</th><th>내용</th></tr></thead>
+<tbody>
+<tr><td>**등록번호**</td><td>KR102824993B1</td></tr>
+<tr><td>**출원인**</td><td>웹케시 주식회사</td></tr>
+<tr><td>**등록일**</td><td>2025-06-27</td></tr>
+<tr><td>**IPC**</td><td>G06Q 40/12</td></tr>
+<tr><td>**청구항 수**</td><td>13개 (독립 3 + 종속 10)</td></tr>
+</tbody></table>
+<h3>청구항 전문</h3>
+<p><strong>【청구항 1】</strong> 제1수신부(입출내역) + 제2수신부(징수기관 스크래핑 납입내역) + 회계처리부(매핑→분개). 보험금 근로자별 분할 또는 대출 원금·이자 분할 포함.</p>
+<p><strong>【청구항 2】</strong> 회계 기준 DB, 분개(차변·대변).</p>
+<p><strong>【청구항 6】</strong> (독립 — 사용자장치) 통신부+저장부+스크래핑부.</p>
+<p><strong>【청구항 8】</strong> (독립 — 방법) 입출내역→납입내역→매핑→회계처리.</p>
+<h3>MyRisk와의 차별점</h3>
+<table>
+<thead><tr><th>구분</th><th>KR102824993B1</th><th>MyRisk</th></tr></thead>
+<tbody>
+<tr><td>**목적**</td><td>회계 분개</td><td>법적 위험도 + 소명서</td></tr>
+<tr><td>**분류**</td><td>회계 계정과목</td><td>3단계 법적 카테고리(1~10호)</td></tr>
+<tr><td>**매핑**</td><td>금액 비교</td><td>키워드 최장 일치 + 5단계</td></tr>
+<tr><td>**법적 근거**</td><td>없음</td><td>채무자회생법 제564조</td></tr>
+</tbody></table>
+<hr>
+<div class="page-break"></div>
+<h2>문4. KR101580947B1 — 푸시메시지 기반 가계부 관리 서비스 시스템</h2>
+<table>
+<thead><tr><th>항목</th><th>내용</th></tr></thead>
+<tbody>
+<tr><td>**등록번호**</td><td>KR101580947B1</td></tr>
+<tr><td>**IPC**</td><td>G06Q 40/00</td></tr>
+</tbody></table>
+<h3>청구항 전문</h3>
+<p><strong>【청구항 1】</strong> 가계부 관리: 권한 획득 모듈 + 판단 모듈(유효 정보) + 데이터 추출 모듈 + 가계부 관리 모듈(자동 입력). 종속항: 백그라운드 구동, 패키지명 판단, 정규표현식 패턴 매칭.</p>
+<h3>MyRisk와의 차별점</h3>
+<table>
+<thead><tr><th>구분</th><th>KR101580947B1</th><th>MyRisk</th></tr></thead>
+<tbody>
+<tr><td>**대상**</td><td>모바일 푸시메시지</td><td>금융기관 엑셀(5년치)</td></tr>
+<tr><td>**목적**</td><td>실시간 소비 기록</td><td>법적 위험도·소명서</td></tr>
+<tr><td>**분류**</td><td>패키지명·정규식 단순 추출</td><td>3단계(최장일치+5단계)</td></tr>
+<tr><td>**위험도**</td><td>없음</td><td>1~10호 + R 점수(T·Θ·S)</td></tr>
+</tbody></table>
+<hr>
+<div class="page-break"></div>
+<h2>문5. KR102486186B1 — 웹 스크래핑과 AI를 이용한 자동화된 재무 관리 클라우드 서비스</h2>
+<table>
+<thead><tr><th>항목</th><th>내용</th></tr></thead>
+<tbody>
+<tr><td>**등록번호**</td><td>KR102486186B1</td></tr>
+<tr><td>**출원인**</td><td>(주)글로싸인 외</td></tr>
+<tr><td>**등록일**</td><td>2023-01-06</td></tr>
+<tr><td>**IPC**</td><td>G06Q 40/00</td></tr>
+<tr><td>**청구항 수**</td><td>10개 (독립 2 + 종속 8)</td></tr>
+</tbody></table>
+<h3>청구항 전문</h3>
+<p><strong>【청구항 1】</strong> (독립 — 방법) 스크래핑→AI 계정과목 자동 분류→시계열 분석(원인-결과 연계, 최소비용값 선택)→자금 흐름 분석·예측.</p>
+<p><strong>【청구항 2】</strong> AI 분류 시 신경망 벡터 인코딩.</p>
+<p><strong>【청구항 3】</strong> 입력 벡터: 거래처 상호·거래 시간·주기성·거래처 타입·업종 벡터.</p>
+<p><strong>【청구항 5】</strong> 시계열: 금액 합산/분할 비용값 + 시간 차이 비용값 + 거래처 매칭 비용값.</p>
+<p><strong>【청구항 6】</strong> 예측: ARIMA, RNN, LSTM, GRU.</p>
+<p><strong>【청구항 7】</strong> (독립 — 시스템) 4개 서버.</p>
+<h3>MyRisk와의 차별점</h3>
+<table>
+<thead><tr><th>구분</th><th>KR102486186B1</th><th>MyRisk</th></tr></thead>
+<tbody>
+<tr><td>**목적**</td><td>기업 재무 관리·자금 예측</td><td>개인 파산/면책 위험도·소명서</td></tr>
+<tr><td>**분류**</td><td>AI 벡터 인코딩(신경망)</td><td>키워드 최장 일치+5단계 캐스케이드</td></tr>
+<tr><td>**시계열**</td><td>ARIMA/LSTM 예측</td><td>T 계수(집중도C+최근성P, 파산직전 탐지)</td></tr>
+<tr><td>**임계값**</td><td>없음</td><td>Θ(금액·건수 복합 가중)</td></tr>
+<tr><td>**대칭성**</td><td>없음</td><td>S(입금 회수 비율, 하한 0.3)</td></tr>
+<tr><td>**위험도**</td><td>없음</td><td>1~10호 Step-up + R 점수</td></tr>
+<tr><td>**법적 근거**</td><td>없음</td><td>채무자회생법 제564조</td></tr>
+<tr><td>**대상**</td><td>기업(사업자)</td><td>개인(채무자)</td></tr>
+</tbody></table>
+<hr>
+<div class="page-break"></div>
+<h2>문6. KR101914620B1 — 빅데이터 및 기계학습을 이용한 자동 분개 서버</h2>
+<table>
+<thead><tr><th>항목</th><th>내용</th></tr></thead>
+<tbody>
+<tr><td>**등록번호**</td><td>KR101914620B1</td></tr>
+<tr><td>**출원인**</td><td>(주)아이퀘스트</td></tr>
+<tr><td>**등록일**</td><td>2018-11-02</td></tr>
+<tr><td>**IPC**</td><td>G06Q 40/00</td></tr>
+<tr><td>**청구항 수**</td><td>12개 (독립 2 + 종속 10)</td></tr>
+</tbody></table>
+<h3>청구항 전문</h3>
+<p><strong>【청구항 1】</strong> (독립 — 서버) 데이터 입출력부 + 빅데이터 관리부(패턴화) + 기계학습부(ML 규칙 생성) + 계정과목 선정부. <strong>신뢰도 임계치</strong> 이하 시 복수 추천. 자사/타사 패턴 가중치 설정.</p>
+<p><strong>【청구항 3~4】</strong> 클라이언트별 맞춤형 규칙.</p>
+<p><strong>【청구항 7】</strong> 거래 시각별 상이한 가중치.</p>
+<p><strong>【청구항 8~9】</strong> 상호명·업종·사업자등록번호 기반 검색, 키워드 확장.</p>
+<p><strong>【청구항 10】</strong> 처리 금액 상한선.</p>
+<h3>MyRisk와의 차별점</h3>
+<table>
+<thead><tr><th>구분</th><th>KR101914620B1</th><th>MyRisk</th></tr></thead>
+<tbody>
+<tr><td>**목적**</td><td>회계 분개 자동화</td><td>법적 위험도 + 소명서</td></tr>
+<tr><td>**분류**</td><td>빅데이터+ML 패턴</td><td>키워드 최장 일치+5단계</td></tr>
+<tr><td>**임계값**</td><td>분류 신뢰도→복수 추천</td><td>Θ(금액·건수 복합, 누진 가중)</td></tr>
+<tr><td>**시간 가중**</td><td>거래 시각별 가중치</td><td>T(집중도+최근성, 파산직전 탐지)</td></tr>
+<tr><td>**위험도**</td><td>없음</td><td>1~10호 Step-up + R 점수</td></tr>
+<tr><td>**법적 근거**</td><td>없음</td><td>채무자회생법 제564조</td></tr>
+</tbody></table>
+<hr>
+<div class="page-break"></div>
+<h2>문7. KR101892671B1 — 손익계산서 비용의 계정과목 자동 분류 시스템</h2>
+<table>
+<thead><tr><th>항목</th><th>내용</th></tr></thead>
+<tbody>
+<tr><td>**등록번호**</td><td>KR101892671B1</td></tr>
+<tr><td>**등록일**</td><td>2018-08-28</td></tr>
+<tr><td>**IPC**</td><td>G06Q 10/10</td></tr>
+<tr><td>**청구항 수**</td><td>4개 (독립 1)</td></tr>
+</tbody></table>
+<h3>청구항 전문</h3>
+<p><strong>【청구항 4】</strong> (독립) DB관리자부(100): 업체명입력→저장→계정과목입력→업체계정과목저장→업체타계정과목→<strong>주계정과목등록부(R)</strong>. DB사용자부(200): 국세청 전자세금계산서에 적용→주 계정과목 자동 분류.</p>
+<h3>MyRisk와의 차별점</h3>
+<table>
+<thead><tr><th>구분</th><th>KR101892671B1</th><th>MyRisk</th></tr></thead>
+<tbody>
+<tr><td>**매칭**</td><td>거래처 1:1 매칭</td><td>키워드 최장 일치+5단계 캐스케이드</td></tr>
+<tr><td>**복수 매칭**</td><td>주계정과목등록부</td><td>5단계(길이→위험도→위치→소분류→유지)</td></tr>
+<tr><td>**데이터**</td><td>국세청 전자세금계산서</td><td>은행·카드 엑셀</td></tr>
+<tr><td>**분류 단계**</td><td>단일</td><td>3단계</td></tr>
+<tr><td>**위험도**</td><td>없음</td><td>1~10호 + R 점수(T·Θ·S)</td></tr>
+</tbody></table>
+<hr>
+<blockquote><strong>참고</strong>: KIPRIS 직접 검색을 통한 추가 정밀 조사 권장.</blockquote>
+</body>
+</html>

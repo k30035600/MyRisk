@@ -24,6 +24,9 @@
                 <th style="border:1px solid #FFDBC8; padding:4px; background:#FFCCBC; color:#E65100; text-align:center;">가중치</th>
                 <th style="border:1px solid #FFDBC8; padding:4px; background:#FFCCBC; color:#E65100; text-align:center;">건수</th>
                 <th style="border:1px solid #FFDBC8; padding:4px; background:#FFCCBC; color:#E65100; text-align:center;">금액</th>
+                <th style="border:1px solid #FFDBC8; padding:4px; background:#FFCCBC; color:#E65100; text-align:center;" title="시계열 근접성 계수: 거래 집중도·최근성 반영 (1.00~1.50)">T</th>
+                <th style="border:1px solid #FFDBC8; padding:4px; background:#FFCCBC; color:#E65100; text-align:center;" title="동적 임계 계수: 금액 미달 감점·초과 가중·건수 복합 (0~2.6)">Θ</th>
+                <th style="border:1px solid #FFDBC8; padding:4px; background:#FFCCBC; color:#E65100; text-align:center;" title="입출금 대칭성 계수: 입금(회수) 비율 반영 (0.3~1.0). 투기성·가상자산·자산은닉에 적용">S</th>
                 <th style="border:1px solid #FFDBC8; padding:4px; background:#FFCCBC; color:#E65100; text-align:center;">항목별 R(점수)</th>
                 <th style="border:1px solid #FFDBC8; padding:4px; background:#FFCCBC; color:#E65100; text-align:center;">위험등급</th>
             </tr>
@@ -35,6 +38,9 @@
                 <td style="border:1px solid #FFDBC8; padding:4px; text-align:center;">{{ row.가중치 }}</td>
                 <td style="border:1px solid #FFDBC8; padding:4px; text-align:right;">{{ row.건수 }}</td>
                 <td style="border:1px solid #FFDBC8; padding:4px; text-align:right;">{{ row.금액 }}</td>
+                <td style="border:1px solid #FFDBC8; padding:4px; text-align:center;{% if row.T is defined and row.T > 1.0 %} color:#C62828; font-weight:bold;{% endif %}">{{ '%.2f'|format(row.T|default(1.0)|float) }}</td>
+                <td style="border:1px solid #FFDBC8; padding:4px; text-align:center;{% if row.Θ is defined and row.Θ != 1.0 %} color:#1565C0; font-weight:bold;{% endif %}">{{ '%.2f'|format(row.Θ|default(1.0)|float) }}</td>
+                <td style="border:1px solid #FFDBC8; padding:4px; text-align:center;{% if row.S is defined and row.S < 1.0 %} color:#2E7D32; font-weight:bold;{% endif %}">{{ '%.2f'|format(row.S|default(1.0)|float) }}</td>
                 <td style="border:1px solid #FFDBC8; padding:4px; text-align:right;">{{ row.종합R }}</td>
                 <td style="border:1px solid #FFDBC8; padding:4px; text-align:left;">{{ row.위험등급 }}</td>
             </tr>
@@ -46,6 +52,9 @@
                 <td style="border:1px solid #FFDBC8; border-top:2px solid #263238; padding:4px;"></td>
                 <td style="border:1px solid #FFDBC8; border-top:2px solid #263238; padding:4px; text-align:right;">{{ total_count }}</td>
                 <td style="border:1px solid #FFDBC8; border-top:2px solid #263238; padding:4px; text-align:right;">{{ total_amount }}</td>
+                <td style="border:1px solid #FFDBC8; border-top:2px solid #263238; padding:4px;"></td>
+                <td style="border:1px solid #FFDBC8; border-top:2px solid #263238; padding:4px;"></td>
+                <td style="border:1px solid #FFDBC8; border-top:2px solid #263238; padding:4px;"></td>
                 <td style="border:1px solid #FFDBC8; border-top:2px solid #263238; padding:4px; text-align:right;">{{ total_score }}</td>
                 <td style="border:1px solid #FFDBC8; border-top:2px solid #263238; padding:4px; text-align:left;">{{ grade_label }}</td>
             </tr>
@@ -59,6 +68,7 @@
         <span class="risk-report-r-value" style="font-size:16px; font-weight:bold; margin-left:auto;">R = {{ total_score }} → {{ grade_label }}</span>
     </div>
     <p style="margin:4px 0; font-size:9pt; color:#1A1A1A;">{{ grade_desc }}</p>
+    <p style="margin:2px 0; font-size:8pt; color:#5A6872;">R = w × log₁₀(1 + f × avg_a) × T × Θ × S &nbsp;|&nbsp; T = 시계열 근접성 (1.00~1.50) &nbsp;|&nbsp; Θ = 동적 임계 (금액·건수) &nbsp;|&nbsp; S = 입출금 대칭성 (0.30~1.00)</p>
     {% if risk_full_report is defined and risk_full_report %}
     {% set full_score = risk_full_report.get('total_score', 0) %}
     {% set full_label = risk_full_report.get('grade_label', '') %}

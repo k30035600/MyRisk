@@ -22,16 +22,6 @@ def make_ensure_working_directory(script_dir):
     """서브앱 뷰 실행 시 cwd를 script_dir로 바꾸는 데코/컨텍스트용. 반환: callable(context_manager 또는 함수)."""
     script_dir = os.path.abspath(script_dir)
 
-    def _chdir_and_run(*args, **kwargs):
-        old = os.getcwd()
-        try:
-            os.chdir(script_dir)
-            if args and callable(args[0]):
-                return args[0](*args[1:], **kwargs)
-            return None
-        finally:
-            os.chdir(old)
-
     class _CwdContext:
         def __enter__(self):
             self._old = os.getcwd()
@@ -124,7 +114,6 @@ def list_memory_bytes(lst):
     if lst is None:
         return 0
     try:
-        import sys
         return sum(sys.getsizeof(x) for x in (lst if isinstance(lst, (list, tuple)) else [lst]))
     except (TypeError, AttributeError):
         return 0

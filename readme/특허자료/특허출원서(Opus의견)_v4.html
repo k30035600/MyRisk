@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>특허출원서 보강 초안 v4 (Opus 의견)</title>
+<style>
+:root{--primary:#1a237e;--accent:#0d47a1;--bg:#fafafa;--card:#fff;--border:#cfd8dc;--text:#212121;--text2:#546e7a;--warn:#e65100;--safe:#2e7d32;--critical:#c62828;--important:#ef6c00;--info:#1565c0;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Noto Sans KR','Malgun Gothic',sans-serif;color:var(--text);background:var(--bg);line-height:1.8;padding:20px;}
+.container{max-width:1000px;margin:0 auto;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:48px 56px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+h1{font-size:1.7em;color:var(--primary);border-bottom:3px solid var(--primary);padding-bottom:12px;margin-bottom:8px;text-align:center;}
+.subtitle{text-align:center;font-size:.88em;color:var(--text2);margin-bottom:24px;}
+h2{font-size:1.3em;color:var(--accent);border-left:4px solid var(--accent);padding-left:12px;margin:36px 0 16px;}
+h3{font-size:1.05em;color:var(--text);margin:24px 0 10px;padding-bottom:4px;border-bottom:1px dashed var(--border);}
+h4{font-size:.98em;color:var(--accent);margin:16px 0 8px;}
+p{margin:8px 0;text-align:justify;}
+blockquote{background:#e8eaf6;border-left:4px solid var(--accent);padding:12px 16px;margin:12px 0;font-size:.92em;border-radius:0 6px 6px 0;}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.88em;}
+th{background:#e8eaf6;color:var(--primary);padding:8px 10px;border:1px solid var(--border);text-align:center;font-weight:700;}
+td{padding:8px 10px;border:1px solid var(--border);vertical-align:top;}
+tr:nth-child(even) td{background:#fafafa;}
+.badge-critical{background:var(--critical);color:#fff;padding:2px 8px;border-radius:3px;font-size:.78em;font-weight:700;}
+.badge-important{background:var(--important);color:#fff;padding:2px 8px;border-radius:3px;font-size:.78em;font-weight:700;}
+.badge-info{background:var(--info);color:#fff;padding:2px 8px;border-radius:3px;font-size:.78em;font-weight:700;}
+.check-list{list-style:none;padding-left:0;}
+.check-list li{padding:4px 0;padding-left:28px;position:relative;}
+.check-list li::before{content:'✓';position:absolute;left:4px;color:var(--safe);font-weight:700;font-size:1.1em;}
+.card{background:#f8f9fa;border:1px solid var(--border);border-radius:6px;padding:16px 20px;margin:12px 0;}
+.card-title{font-weight:700;color:var(--accent);margin-bottom:8px;font-size:.95em;}
+hr{border:none;border-top:1px solid var(--border);margin:32px 0;}
+.footer{text-align:center;font-size:.82em;color:var(--text2);margin-top:32px;padding-top:16px;border-top:1px solid var(--border);}
+@media print{body{padding:0;background:#fff;}.container{border:none;box-shadow:none;padding:24px 32px;}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>특허출원서 보강 초안 v4 (Opus 의견)</h1>
+<div class="subtitle">
+작성일: 2026-03-17 | 근거: 260316_p-14_s(특허출원서).pdf 최종 검수, v3, system_flow.md, 선행기술 7건, 코드 전수조사 3차, 기보 전략 보고서<br>
+성격: 변리사 검토용 기술설명서 겸 명세서 초안
+</div>
+
+<hr>
+
+<h2>제1장 Opus 검토 의견서</h2>
+
+<h3>1.1 v3 대비 v4 수정사항 (출원서 최종 검수 반영)</h3>
+<table>
+<tr><th>#</th><th>문제</th><th>심각도</th><th>v4 조치</th></tr>
+<tr><td>1</td><td><strong>발명 명칭 불일치</strong> — 출원서 표지와 명세서의 국문·영문 명칭이 서로 다름</td><td><span class="badge-critical">심각</span></td><td>통일: "인공지능 기반의 금융거래 위험도 분석 및 법적 소명 자료 자동 생성 시스템 및 방법"</td></tr>
+<tr><td>2</td><td><strong>비특허문헌 빈 항목</strong> — (【비특허문헌】) [문헌1] 이후 내용 없음</td><td><span class="badge-critical">심각</span></td><td>해당 항목 전체 삭제</td></tr>
+<tr><td>3</td><td><strong>청구항 이중 기재</strong> — 【특허청구범위】(p.11~13) + 【도 6】 내(p.27~30) 이중 기재</td><td><span class="badge-critical">심각</span></td><td>도면 내 청구항 형태 삭제 → "발명의 구성 요소 개념도" 테이블로 대체</td></tr>
+<tr><td>4</td><td><strong>발명의 효과 간략</strong> — 4항목 한 줄씩</td><td><span class="badge-important">중요</span></td><td>각 항목 2~3줄로 확대</td></tr>
+<tr><td>5</td><td><strong>청구항 11 간략</strong> — 시스템 독립항이 1줄 요약</td><td><span class="badge-important">중요</span></td><td>전처리부~소명서 생성부 5개 구성 요소 구체 기재</td></tr>
+<tr><td>6</td><td><strong>도면 번호 혼용</strong> — "제1도" vs "【도 1】"</td><td><span class="badge-info">참고</span></td><td>"도 1" 표기로 통일 (KIPO 선호)</td></tr>
+<tr><td>7</td><td><strong>배경기술 문헌1~4 미언급</strong> — 본문에서 문헌5~7만 언급</td><td><span class="badge-info">참고</span></td><td>문헌1~4도 배경기술 본문에서 간략 언급</td></tr>
+<tr><td>8</td><td><strong>감면사유 미기입</strong></td><td><span class="badge-important">중요</span></td><td>코드 41(소기업) 기입 안내</td></tr>
+<tr><td>9</td><td><strong>우선심사 미신청</strong></td><td><span class="badge-important">중요</span></td><td>동시 신청 강력 권장 명시</td></tr>
+</table>
+
+<h3>1.2 초기 출원서(p-14_s) 대비 보강 포인트</h3>
+<table>
+<tr><th>구분</th><th>초기 출원서(p-14_s)</th><th>본 보강안 v4</th></tr>
+<tr><td>발명 명칭</td><td>파산 면책 소명 자료 자동 생성</td><td><strong>금융거래 위험도 분석 및 법적 소명 자료 자동 생성</strong> (표지=명세서 통일)</td></tr>
+<tr><td>청구항 수</td><td>2개(독립 1, 종속 1)</td><td><strong>11개(독립 2, 종속 9)</strong> — 청구항 11 시스템 독립항 확대</td></tr>
+<tr><td>기술 구체성</td><td>추상적</td><td>R 공식, Step-up, 3단계 분류, 5단계 캐스케이드</td></tr>
+<tr><td>R 점수 공식</td><td>없음</td><td>R = w × log₁₀(1+f×avg_a) × T × Θ × S</td></tr>
+<tr><td>선행기술</td><td>1건</td><td><strong>7건</strong> — 배경기술에서 전부 언급</td></tr>
+<tr><td>도면</td><td>4개(중복)</td><td>7개 — "도 1" 표기 통일, 이중기재 해결</td></tr>
+<tr><td>비특허문헌</td><td>빈 항목</td><td><strong>삭제</strong></td></tr>
+<tr><td>발명의 효과</td><td>미기재 수준</td><td><strong>4항목 각 2~3줄 확대</strong></td></tr>
+<tr><td>감면/우선심사</td><td>미기재</td><td><strong>코드 41 + 우선심사 동시 신청 권장</strong></td></tr>
+</table>
+
+<h3>1.3 실제 코드 분석 결과 요약</h3>
+
+<h4>구현 확인됨 (명세서 청구항에 기재)</h4>
+<table>
+<tr><th>기술 요소</th><th>구현 위치</th><th>상세</th></tr>
+<tr><td>1~10호 Step-up Scoring</td><td>MyCash/risk_indicators.py</td><td>1호 기본(0.1) → 10호(5.0) 순차 덮어쓰기</td></tr>
+<tr><td>최장 일치(Longest Match)</td><td>process_bank_data.py, process_card_data.py</td><td>5단계 충돌 해결 캐스케이드 포함</td></tr>
+<tr><td>3단계 분류 엔진</td><td>category_table_io.py + 각 process 모듈</td><td>전처리 → 계정과목 → 후처리</td></tr>
+<tr><td>R 점수 산출</td><td>cash_app.py _calculate_risk_report</td><td>R = w × log₁₀(1+f×avg_a) × T × Θ × S</td></tr>
+<tr><td>시계열 근접성 계수(T)</td><td>cash_app.py _compute_temporal_proximity</td><td>T = 1 + α×C + β×P</td></tr>
+<tr><td>동적 임계 계수(Θ)</td><td>cash_app.py _compute_threshold_factor</td><td>Θ = amount_factor × count_factor</td></tr>
+<tr><td>입출금 대칭성 계수(S)</td><td>cash_app.py _compute_symmetry_factor</td><td>S = 1−(입금/출금), 하한 0.3</td></tr>
+<tr><td>채무자회생법 매핑</td><td>cash_app.py LEGAL_REFERENCES</td><td>3호~10호 각 해당 항</td></tr>
+<tr><td>소명 템플릿 초안</td><td>cash_app.py SUGGESTION_TEMPLATES</td><td>지표별 10종</td></tr>
+<tr><td>VASP 3단계 식별</td><td>risk_indicators.py detect_vasp</td><td>(a) 카테고리 → (b) 접두번호 → (c) 사업자명</td></tr>
+<tr><td>5단계 매칭 충돌 해결</td><td>process_bank_data.py _best_match</td><td>길이→위험도→위치→소분류→기존 유지</td></tr>
+<tr><td>이기종 데이터 통합</td><td>cash_app.py merge_bank_card_to_cash_after</td><td>은행+카드 → cash_after</td></tr>
+<tr><td>원자적 파일 쓰기</td><td>category_table_io.py, data_json_io.py</td><td>tempfile.mkstemp + os.replace</td></tr>
+<tr><td>스레드 안전 캐시</td><td>category_table_io.py _ct_lock</td><td>threading.Lock</td></tr>
+<tr><td>경로 탐색 방어</td><td>app.py serve_img, api_restore</td><td>os.path.realpath 검증</td></tr>
+</table>
+
+<h4>선택적 확장</h4>
+<table>
+<tr><th>기술 요소</th><th>현황</th><th>청구항</th></tr>
+<tr><td>생성형 AI 소명 합성</td><td>미구현. 정형 생성 완료</td><td>청구항 5</td></tr>
+<tr><td>인터랙티브 Q&A UI</td><td>미구현. 소명서 자동 생성 완료</td><td>청구항 8</td></tr>
+<tr><td>외부 API 사업자 검증</td><td>법적 제약으로 미적용</td><td>청구항 10</td></tr>
+</table>
+
+<h3>1.4 선행기술 조사 결과 요약 (7건)</h3>
+<table>
+<tr><th>선행기술</th><th>등록번호</th><th>핵심 기술</th><th>MyRisk 차별점</th></tr>
+<tr><td>AI 법률문서 분석</td><td>KR102289935B1</td><td>NLP 법률 문서 파싱·분류</td><td>금융 데이터 분석 아님. 위험도 스코어링 없음</td></tr>
+<tr><td>법률문서 자동작성</td><td>KR102022412B1</td><td>Q&A 기반 법률 문서 생성</td><td>금융 데이터 자동 분석 없음. 만료</td></tr>
+<tr><td>스크래핑 회계처리</td><td>KR102824993B1</td><td>입출금→회계 분개</td><td>법적 리스크 분석·소명 없음</td></tr>
+<tr><td>푸시메시지 기반 가계부</td><td>KR101580947B1</td><td>푸시메시지 파싱→가계부 자동 입력</td><td>법적 소명·위험도 없음</td></tr>
+<tr><td>AI 재무관리</td><td>KR102486186B1</td><td>AI분류+시계열+ARIMA/LSTM 예측</td><td>T 계수(파산직전 패턴)로 목적 상이, R 수식 없음</td></tr>
+<tr><td>ML 자동분개</td><td>KR101914620B1</td><td>빅데이터+ML+신뢰도 임계치</td><td>Θ(금액·건수 복합)로 차별, 법적 위험도 없음</td></tr>
+<tr><td>계정과목 분류</td><td>KR101892671B1</td><td>거래처 1:1 매칭+주계정과목</td><td>5단계 캐스케이드로 차별, 3단계 분류</td></tr>
+</table>
+
+<h3>1.5 코드 안정화 전수조사 결과</h3>
+<table>
+<tr><th>항목</th><th>건수</th><th>상세</th></tr>
+<tr><td>보안 취약점</td><td>3건</td><td>Path Traversal, Zip Slip, 원자적 쓰기</td></tr>
+<tr><td>스레드 안전성</td><td>1건</td><td>category_table 캐시 Lock</td></tr>
+<tr><td>print()→logging</td><td>79건</td><td>info/warning/error 변환</td></tr>
+<tr><td>traceback→logging</td><td>39건</td><td>exception() 변환</td></tr>
+<tr><td>데드코드 제거</td><td>19건</td><td>미사용 함수·변수</td></tr>
+<tr><td>미사용 import</td><td>11건</td><td>정리</td></tr>
+<tr><td>중복 코드 통합</td><td>5패턴</td><td>_parse_amt, major_map 등</td></tr>
+<tr><td>Docker·배포</td><td>3건</td><td>포트, CMD, 의존성</td></tr>
+</table>
+
+<hr>
+
+<h2>제2장 특허 명세서 초안</h2>
+
+<blockquote>
+<strong>v4에서 변경된 부분:</strong>
+<ul>
+<li>【발명의 명칭】 국문·영문 표지=명세서 통일</li>
+<li>【배경기술】 문헌1~4도 본문에서 언급</li>
+<li>【선행기술문헌】 비특허문헌 항목 삭제</li>
+<li>【발명의 효과】 각 항목 2~3줄로 확대</li>
+<li>【도면의 간단한 설명】 "도 1" 표기 통일</li>
+<li>실시예 4.9절 "구성 요소 개념도" 추가 (기존 청구항 형태 삭제)</li>
+<li>【청구항 11】 시스템 독립항 5개 구성 요소 구체 기재</li>
+</ul>
+</blockquote>
+
+<div class="card">
+<div class="card-title">→ 완성 텍스트는 260316_특허출원서_HWP수정본.md / .html에 수록.</div>
+<p>HWP에서 명세서 부분을 해당 파일 내용으로 교체하면 됩니다.</p>
+</div>
+
+<hr>
+
+<h2>제3장 변리사 전달용 체크리스트</h2>
+
+<h3>3.1 명세서 최종 점검</h3>
+<ul class="check-list">
+<li>발명 명칭: 표지=명세서 국문·영문 <strong>통일 완료</strong></li>
+<li>비특허문헌: 빈 항목 <strong>삭제 완료</strong></li>
+<li>청구항 이중기재: 도면 내 청구항 형태 → <strong>구성 요소 개념도 테이블</strong>로 대체</li>
+<li>발명의 효과: 4항목 각 <strong>2~3줄로 확대</strong></li>
+<li>청구항 11: 시스템 독립항 <strong>5개 구성 요소 구체 기재</strong></li>
+<li>도면 번호: <strong>"도 1" 표기 통일</strong> (KIPO 선호)</li>
+<li>배경기술: <strong>문헌1~7 전부</strong> 본문에서 언급</li>
+<li>청구항 11개(독립 2, 종속 9), 코드 파일명 제거</li>
+<li>진보성: 5단계 캐스케이드 + T·Θ·S + VASP 3단계</li>
+<li>수식: R = w × log₁₀(1+f×avg_a) × T × Θ × S</li>
+<li>선행기술: 7건, 문5(시계열)·문6(신뢰도)·문7(1:1매칭) 대비 명확 기술</li>
+<li>하드웨어 결합성: "프로세서 및 메모리" 명시</li>
+<li>도면: 7개, 부호 100~400</li>
+<li>선택적 확장: AI(5항), Q&A(8항), API(10항)</li>
+</ul>
+
+<h3>3.2 출원서 표지 수정 사항</h3>
+<table>
+<tr><th>항목</th><th>현재</th><th>수정</th></tr>
+<tr><td><strong>【감면(면제)사유】</strong></td><td>비어 있음</td><td><strong>코드 41</strong> (소기업) 기입 + 소기업확인서 첨부</td></tr>
+<tr><td><strong>【출원인코드】</strong></td><td>비어 있음</td><td>특허로에서 사전 발급 후 기입</td></tr>
+<tr><td><strong>【대리인】</strong></td><td>비어 있음</td><td>변리사 대리 시 기입 / 본인 출원 시 항목 삭제</td></tr>
+<tr><td><strong>우선심사</strong></td><td>미신청</td><td><strong>우선심사신청서 별도 제출 강력 권장</strong> (일반 12~18개월 → 우선 3~6개월)</td></tr>
+</table>
+
+<h3>3.3 HWP 수정 가이드</h3>
+<ol>
+<li>HWP에서 <code>260316_p-14_s(특허출원서).hwp</code> 열기</li>
+<li><strong>[별지 제14호서식] 출원서 표지</strong>: 감면사유 코드 41 기입, 출원인코드 기입</li>
+<li><strong>[별지 제15호서식] 명세서</strong>: <code>260316_특허출원서_HWP수정본.md</code>의 【명세서】~【도면】 내용으로 교체
+    <ul>
+    <li>발명 명칭 통일 확인</li>
+    <li>비특허문헌 항목 삭제 확인</li>
+    <li>발명의 효과 확대 확인</li>
+    <li>청구항 11 시스템 독립항 확대 확인</li>
+    <li>도면 번호 "도 1" 통일 확인</li>
+    <li><strong>실시예 4.9절</strong>: 기존 [청구항 1]~[청구항 10] 형태 → "구성 요소 개념도" 테이블로 교체 확인</li>
+    </ul>
+</li>
+<li><strong>도면 이미지</strong>: 기존 첨부 도면 유지 (내용 변경 없음)</li>
+<li><strong>요약서</strong>: 대표도 "도 4" 확인</li>
+</ol>
+
+<h3>3.4 v3 대비 v4 변경사항 요약</h3>
+<table>
+<tr><th>항목</th><th>v3</th><th>v4</th></tr>
+<tr><td>발명 명칭</td><td>표지와 명세서 불일치 가능</td><td><strong>통일 확인·강제</strong></td></tr>
+<tr><td>비특허문헌</td><td>빈 항목 존재</td><td><strong>삭제</strong></td></tr>
+<tr><td>도면 내 청구항</td><td>[청구항 1]~[청구항 10] 이중기재</td><td><strong>구성 요소 개념도 테이블</strong>로 대체</td></tr>
+<tr><td>발명의 효과</td><td>1줄씩 4항목</td><td><strong>2~3줄씩 4항목</strong></td></tr>
+<tr><td>청구항 11</td><td>1줄 요약</td><td><strong>5개 구성 요소(전처리부~소명서 생성부) 구체 기재</strong></td></tr>
+<tr><td>도면 번호</td><td>"제1도" 혼용</td><td><strong>"도 1" 통일</strong></td></tr>
+<tr><td>배경기술</td><td>문헌5~7만 언급</td><td><strong>문헌1~7 전부 언급</strong></td></tr>
+<tr><td>감면/우선심사</td><td>안내 없음</td><td><strong>코드 41 + 우선심사 권장 명시</strong></td></tr>
+</table>
+
+<h3>3.5 추가 권장 사항</h3>
+<ol>
+<li><strong>KIPRIS 정밀 조사</strong>: IPC G06Q50/18, G06Q40/02</li>
+<li><strong>도면 제작</strong>: system_flow.md Mermaid → PNG + 부호 표기</li>
+<li><strong>실시 가능성</strong>: 클라우드 운영 시 "실시예 실제 운용" 근거</li>
+<li><strong>IP 디딤돌/특허 바우처</strong>: 출원 비용 절감</li>
+<li><strong>해외(PCT)</strong>: 일본·독일 등 법체계 유사 국가</li>
+</ol>
+
+<div class="footer">
+본 문서는 Claude Opus가 260316_p-14_s(특허출원서).pdf를 최종 검수하고, 발견된 9건의 개선사항을 반영하여 작성한 v4 의견서입니다.<br>
+HWP 수정용 완성 텍스트는 <code>260316_특허출원서_HWP수정본.md / .html</code>에 별도 수록되어 있습니다.<br>
+최종 출원 전 변리사의 전문적 검토가 필수적입니다.<br><br>
+주식회사 나눔과 어울림 ShareHarmony | MyRisk v200 | 2026-03-17
+</div>
+
+</div>
+</body>
+</html>

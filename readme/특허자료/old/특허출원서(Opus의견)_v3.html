@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>특허출원서(Opus의견)_v3</title>
+
+<style>
+@page { size: A4; margin: 20mm 18mm 20mm 18mm; }
+* { box-sizing: border-box; }
+body {
+  font-family: 'Malgun Gothic','맑은 고딕','Noto Sans KR',sans-serif;
+  font-size: 10.5pt; line-height: 1.65; color: #1a1a1a;
+  text-align: justify; margin: 0; padding: 20px 30px;
+}
+h1 {
+  font-size: 18pt; color: #1B3A5C; border-bottom: 3px solid #1B3A5C;
+  padding-bottom: 8px; margin-top: 0;
+}
+h2 {
+  font-size: 14pt; color: #1B3A5C; border-bottom: 2px solid #2E6DA4;
+  padding-bottom: 5px; margin-top: 1.2em;
+}
+h3 {
+  font-size: 11.5pt; color: #2E6DA4; margin-top: 1em;
+  border-left: 4px solid #2E6DA4; padding-left: 8px;
+}
+table {
+  width: 100%; border-collapse: collapse; margin: 10px 0 14px 0;
+  font-size: 9.5pt;
+}
+th {
+  background: #1B3A5C; color: #fff; padding: 7px 8px;
+  border: 1px solid #1B3A5C; text-align: center; font-weight: 600;
+}
+td {
+  padding: 6px 8px; border: 1px solid #B8D0E8;
+  vertical-align: top; text-align: left;
+}
+tr:nth-child(even) td { background: #EBF1F8; }
+blockquote {
+  border-left: 4px solid #2E6DA4; margin: 12px 0; padding: 8px 14px;
+  background: #EBF1F8; font-size: 10pt;
+}
+hr { border: none; border-top: 1px solid #B8D0E8; margin: 16px 0; }
+strong { color: #1B3A5C; }
+td strong { color: #1B3A5C; }
+.page-break { page-break-before: always; }
+@media print {
+  body { padding: 0; }
+  .page-break { page-break-before: always; }
+  table { page-break-inside: avoid; }
+}
+</style>
+
+</head>
+<body>
+<h1>특허출원서 보강 초안 v3 (Opus 의견)</h1>
+<blockquote><strong>작성일</strong>: 2026-03-16<br><strong>작성 근거</strong>: p-14_s(특허출원서).pdf(초기 출원서), MyRisk 특허 출원 프로젝트.docx(보강안), system_flow.md(시스템 구성도), MyRisk_v200 실제 코드 분석, 코드 안정화 전수조사 결과, 선행기술 7건 조사 결과를 종합<br><strong>본 문서의 성격</strong>: 변리사 검토용 기술설명서 겸 명세서 초안</blockquote>
+<hr>
+<h2>제1장 Opus 검토 의견서</h2>
+<h3>1.1 초기 출원서(p-14_s) 대비 보강 포인트</h3>
+<table>
+<thead><tr><th>구분</th><th>초기 출원서(p-14_s)</th><th>본 보강안 v3</th></tr></thead>
+<tbody>
+<tr><td>발명 명칭</td><td>인공지능 기반의 파산 면책 소명 자료 자동 생성 시스템 및 방법</td><td>인공지능 기반의 금융거래 위험도 분석 및 법적 소명 자료 자동 생성 시스템 및 방법</td></tr>
+<tr><td>청구항 수</td><td>2개(독립 1, 종속 1)</td><td>**11개(독립 2, 종속 9)**</td></tr>
+<tr><td>기술 구체성</td><td>추상적("AI가 분석")</td><td>실제 수식, Step-up Scoring, 3단계 분류, 5단계 캐스케이드</td></tr>
+<tr><td>R 점수 공식</td><td>없음</td><td>R = w × log₁₀(1+f×avg_a) × T × Θ × S</td></tr>
+<tr><td>코드 파일명</td><td>web_server.py 등 직접 노출</td><td>상위 개념 용어로 치환</td></tr>
+<tr><td>선행기술문헌</td><td>가계부 자동 작성 1건</td><td>**7건** 확인 (법률문서, 회계처리, AI재무관리, ML분개, 계정과목분류 포함)</td></tr>
+<tr><td>도면</td><td>4개(일부 중복)</td><td>7개(시스템 구성도~UI 예시도)</td></tr>
+<tr><td>데이터 범위</td><td>신용카드에 한정</td><td>은행+카드+금융정보 이기종 통합</td></tr>
+<tr><td>보안·안정성</td><td>미기재</td><td>원자적 파일 쓰기, 스레드 안전 캐시, 경로 탐색 방어</td></tr>
+</tbody></table>
+<h3>1.2 v2 대비 v3 보강 포인트</h3>
+<table>
+<thead><tr><th>항목</th><th>v2</th><th>v3 (본 문서)</th></tr></thead>
+<tbody>
+<tr><td>선행기술 수</td><td>4건</td><td>**7건** (+4건 추가: 가계부, AI재무관리, ML분개, 계정과목분류)</td></tr>
+<tr><td>시계열 차별점</td><td>기재</td><td>**문5(ARIMA/LSTM) 대비 T 계수 차별점 명확화**</td></tr>
+<tr><td>임계값 차별점</td><td>기재</td><td>**문6(신뢰도 임계치) 대비 Θ 계수 차별점 명확화**</td></tr>
+<tr><td>매칭 차별점</td><td>기재</td><td>**문7(1:1 매칭) 대비 5단계 캐스케이드 차별점 보강**</td></tr>
+<tr><td>진보성 논증</td><td>4건 대비</td><td>**7건 대비 종합 진보성 논증 강화**</td></tr>
+</tbody></table>
+<h3>1.3 실제 코드 분석 결과 요약</h3>
+<p>#### 구현 확인됨 (명세서 청구항에 기재)</p>
+<table>
+<thead><tr><th>기술 요소</th><th>구현 위치</th><th>상세</th></tr></thead>
+<tbody>
+<tr><td>1~10호 Step-up Scoring</td><td>MyCash/risk_indicators.py</td><td>1호 기본(0.1) → 10호(5.0) 순차 덮어쓰기</td></tr>
+<tr><td>최장 일치(Longest Match)</td><td>process_bank_data.py, process_card_data.py</td><td>5단계 충돌 해결 캐스케이드 포함</td></tr>
+<tr><td>3단계 분류 엔진</td><td>category_table_io.py + 각 process 모듈</td><td>전처리 → 계정과목 → 후처리</td></tr>
+<tr><td>R 점수 산출</td><td>cash_app.py _calculate_risk_report</td><td>R = w × log₁₀(1+f×avg_a) × T × Θ × S</td></tr>
+<tr><td>시계열 근접성 계수(T)</td><td>cash_app.py _compute_temporal_proximity</td><td>T = 1 + α×C + β×P</td></tr>
+<tr><td>동적 임계 계수(Θ)</td><td>cash_app.py _compute_threshold_factor</td><td>Θ = amount_factor × count_factor</td></tr>
+<tr><td>입출금 대칭성 계수(S)</td><td>cash_app.py _compute_symmetry_factor</td><td>S = 1−(입금/출금), 하한 0.3</td></tr>
+<tr><td>채무자회생법 매핑</td><td>cash_app.py LEGAL_REFERENCES</td><td>3호~10호 각 해당 항</td></tr>
+<tr><td>소명 템플릿 초안</td><td>cash_app.py SUGGESTION_TEMPLATES</td><td>지표별 10종</td></tr>
+<tr><td>VASP 3단계 식별</td><td>risk_indicators.py detect_vasp</td><td>(a) 카테고리 → (b) 접두번호 정규식 → (c) 사업자명</td></tr>
+<tr><td>5단계 매칭 충돌 해결</td><td>process_bank_data.py _best_match</td><td>길이→위험도→위치→소분류→기존 유지</td></tr>
+<tr><td>이기종 데이터 통합</td><td>cash_app.py merge_bank_card_to_cash_after</td><td>은행+카드 → cash_after</td></tr>
+<tr><td>원자적 파일 쓰기</td><td>category_table_io.py, data_json_io.py</td><td>tempfile.mkstemp + os.replace</td></tr>
+<tr><td>스레드 안전 캐시</td><td>category_table_io.py _ct_lock</td><td>threading.Lock</td></tr>
+<tr><td>경로 탐색 방어</td><td>app.py serve_img, api_restore</td><td>os.path.realpath 검증</td></tr>
+</tbody></table>
+<p>#### 선택적 확장</p>
+<table>
+<thead><tr><th>기술 요소</th><th>현황</th><th>청구항</th></tr></thead>
+<tbody>
+<tr><td>생성형 AI 소명 합성</td><td>미구현. 정형 생성 완료</td><td>청구항 5</td></tr>
+<tr><td>인터랙티브 Q&A UI</td><td>미구현. 소명서 자동 생성 완료</td><td>청구항 8</td></tr>
+<tr><td>외부 API 사업자 검증</td><td>법적 제약으로 미적용</td><td>청구항 10</td></tr>
+</tbody></table>
+<h3>1.4 선행기술 조사 결과 요약 (7건)</h3>
+<table>
+<thead><tr><th>선행기술</th><th>등록번호</th><th>핵심 기술</th><th>MyRisk 차별점</th></tr></thead>
+<tbody>
+<tr><td>AI 법률문서 분석</td><td>KR102289935B1</td><td>NLP 법률 문서 파싱·분류</td><td>금융 데이터 분석 아님. 위험도 스코어링 없음</td></tr>
+<tr><td>법률문서 자동작성</td><td>KR102022412B1</td><td>Q&A 기반 법률 문서 생성</td><td>금융 데이터 자동 분석 없음. 만료</td></tr>
+<tr><td>스크래핑 회계처리</td><td>KR102824993B1</td><td>입출금→회계 분개</td><td>법적 리스크 분석·소명 없음</td></tr>
+<tr><td>푸시메시지 기반 가계부</td><td>KR101580947B1</td><td>푸시메시지 파싱→가계부 자동 입력</td><td>법적 소명·위험도 없음</td></tr>
+<tr><td>AI 재무관리</td><td>KR102486186B1</td><td>AI분류+시계열+ARIMA/LSTM 예측</td><td>T 계수(파산직전 패턴)로 목적 상이, R 수식 없음</td></tr>
+<tr><td>ML 자동분개</td><td>KR101914620B1</td><td>빅데이터+ML+신뢰도 임계치</td><td>Θ(금액·건수 복합)로 차별, 법적 위험도 없음</td></tr>
+<tr><td>계정과목 분류</td><td>KR101892671B1</td><td>거래처 1:1 매칭+주계정과목</td><td>5단계 캐스케이드로 차별, 3단계 분류</td></tr>
+</tbody></table>
+<blockquote><strong>Opus 견해</strong>: 7건 조사에서도 "채무자회생법 기반 위험도 산정 + 3단계 분류 + Step-up Scoring + R 점수(T·Θ·S) + 소명서 생성"의 결합은 미발견. <strong>진보성 확보 유리</strong>. 문5(시계열)·문6(신뢰도)와의 차별점을 명세서에 명확 기술 권장.</blockquote>
+<h3>1.5 코드 안정화 전수조사 결과</h3>
+<table>
+<thead><tr><th>항목</th><th>건수</th><th>상세</th></tr></thead>
+<tbody>
+<tr><td>보안 취약점</td><td>3건</td><td>Path Traversal, Zip Slip, 원자적 쓰기</td></tr>
+<tr><td>스레드 안전성</td><td>1건</td><td>category_table 캐시 Lock</td></tr>
+<tr><td>print()→logging</td><td>79건</td><td>info/warning/error 변환</td></tr>
+<tr><td>traceback→logging</td><td>39건</td><td>exception() 변환</td></tr>
+<tr><td>데드코드 제거</td><td>19건</td><td>미사용 함수·변수</td></tr>
+<tr><td>미사용 import</td><td>11건</td><td>정리</td></tr>
+<tr><td>중복 코드 통합</td><td>5패턴</td><td>_parse_amt, major_map 등</td></tr>
+<tr><td>Docker·배포</td><td>3건</td><td>포트, CMD, 의존성</td></tr>
+</tbody></table>
+<hr>
+<h2>제2장 특허 명세서 초안</h2>
+<h3>【발명의 명칭】</h3>
+<p>국문: 인공지능 기반의 금융거래 위험도 분석 및 법적 소명 자료 자동 생성 시스템 및 방법</p>
+<p>영문: AI-based Financial Transaction Risk Analysis and Automated Legal Explanation Document Generation System and Method</p>
+<h3>【기술분야】</h3>
+<p>본 발명은 금융 데이터 분석 및 법률 서비스(Legal-Tech) 기술에 관한 것으로, 프로세서 및 메모리를 포함하는 컴퓨팅 장치에 의해 수행되며, 이기종 금융기관의 거래 내역 데이터를 통합 전처리하고, 법적 기준에 따른 위험도를 정량적으로 산정하여, 개인회생 및 파산 절차에 필요한 소명 자료를 자동 생성하는 시스템 및 방법에 관한 것이다.</p>
+<h3>【배경기술】</h3>
+<p>개인회생 및 파산 신청 건수가 증가함에 따라, 채무자는 방대한 금융 거래 내역에 대해 면책 불허가 사유(사치, 도박, 자산 은닉 등)가 없음을 법원 및 파산관재인에게 소명해야 한다. 그러나 기존 방식에는 다음과 같은 한계가 존재한다.</p>
+<p>첫째, 은행 거래 내역과 신용카드 내역은 금융기관마다 데이터 포맷이 상이하여 통합 분석에 막대한 수기 작업이 소요된다.</p>
+<p>둘째, 거래 적요나 가맹점명이 비정형 텍스트로 기록되어 단순 키워드 검색만으로는 법적 위험 거래를 정확히 분류하기 어렵다.</p>
+<p>셋째, 분석 결과에 대해 법원 제출용 소명 자료 작성 시, 법률 지식 부족으로 방어권 행사가 제한된다.</p>
+<p>넷째, 파산 신청 직전 집중 거래, 과다 빈도 거래, 투자금 유출 후 부분 회수 등의 패턴을 종합 분석하는 정량적 모델이 부재하다.</p>
+<p>한편, 선행기술로서 AI를 이용한 재무 관리 클라우드 서비스(KR102486186B1)는 시계열 분석과 ARIMA/LSTM 등을 활용하여 기업의 자금 흐름을 예측하고, 빅데이터 및 기계학습을 이용한 자동 분개 서버(KR101914620B1)는 신뢰도 임계치를 통한 복수 계정과목 추천 기능을 제공하며, 손익계산서 계정과목 자동 분류 시스템(KR101892671B1)은 거래처-계정과목 1:1 매칭을 수행하나, 이들은 모두 회계·세무 또는 기업 재무 예측을 목적으로 하며, 채무자회생법에 기반한 법적 위험도의 정량적 산정과 소명서 자동 생성 기능은 결여되어 있다.</p>
+<p>따라서 이기종 금융 데이터를 통합하고, 법적 기준에 따른 위험도를 정량적으로 산출하며, 시간적·금액적·빈도적 패턴을 복합적으로 반영하여, 법적 소명 문안을 자동 생성하는 지능형 시스템의 개발이 요구된다.</p>
+<h3>【선행기술문헌】</h3>
+<p>#### 【특허문헌】</p>
+<p>[문헌1] 인공지능 기반의 법률 문서 분석 시스템 및 방법 (KR102289935B1)</p>
+<p>[문헌2] 법률문서 자동작성 시스템 및 그 방법 (KR102022412B1)</p>
+<p>[문헌3] 스크래핑을 이용한 회계 처리 시스템 (KR102824993B1)</p>
+<p>[문헌4] 푸시메시지 기반 가계부 관리 서비스 시스템 (KR101580947B1)</p>
+<p>[문헌5] 웹 스크래핑과 인공지능을 이용한 자동화된 재무 관리 클라우드 서비스 (KR102486186B1)</p>
+<p>[문헌6] 빅데이터 및 기계학습을 이용한 자동 분개 수행 방법 및 서버 (KR101914620B1)</p>
+<p>[문헌7] 손익계산서에 작성되는 비용의 계정과목을 자동으로 분류하는 계정과목 분류시스템 (KR101892671B1)</p>
+<h3>【해결하려는 과제】</h3>
+<p>상기 선행기술들은 각각 법률 문서 텍스트 분석(문헌1), 양식 기반 법률 문서 작성(문헌2), 회계 분개 자동화(문헌3), 소비 패턴 분석(문헌4), AI 기반 재무 관리·자금 예측(문헌5), 빅데이터·ML 기반 자동 분개(문헌6), 거래처-계정과목 매칭(문헌7)에 집중하고 있으나, 채무자 회생 및 파산에 관한 법률 제564조에서 규정하는 면책 불허가 사유를 <strong>정량적으로 산정</strong>하는 위험도 분석 엔진을 갖추고 있지 않으며, 금융 거래 내역에서 직접 법적 소명 자료를 자동 생성하는 기능도 결여되어 있다.</p>
+<p>특히, 문헌5의 시계열 분석(ARIMA/LSTM)은 기업 자금 흐름의 미래 예측을 목적으로 하는 반면, 본 발명의 시계열 근접성 계수(T)는 파산 신청 직전의 의심 거래 패턴을 탐지하는 것을 목적으로 하여 기술적 사상이 상이하다. 또한, 문헌6의 신뢰도 임계치는 분류 결과의 확실성을 평가하는 반면, 본 발명의 동적 임계 계수(Θ)는 금액 규모와 거래 빈도의 복합 가중을 통해 법적 위험도의 크기를 보정하는 것으로 목적과 산출 방식이 근본적으로 다르다.</p>
+<p>본 발명은 이기종 금융 데이터의 통합 전처리, 3단계 계층적 분류, 법적 근거 기반의 단계적 위험도 산정, 시계열·금액·빈도 패턴의 복합 위험도 보정, 및 소명 자료 자동 생성을 일관된 파이프라인으로 수행하는 시스템 및 방법을 제공하는 것을 목적으로 한다.</p>
+<h3>【과제의 해결 수단】</h3>
+<p>본 발명은 프로세서 및 메모리를 포함하는 컴퓨팅 장치에 의해 수행되는 금융거래 위험도 분석 방법을 제공한다.</p>
+<p><strong>첫째</strong>, 데이터 전처리부는 복수의 금융기관으로부터 서로 다른 포맷으로 발행된 은행 거래 내역 데이터 및 신용카드 승인 내역 데이터를 수신하여, 금융기관별 전용 파서를 통해 단일한 통합 데이터 구조로 정규화한다.</p>
+<p><strong>둘째</strong>, 3단계 계층적 분류 엔진을 통해 분류 정확도를 극대화한다. 전처리→계정과목 분류(최장 일치 방식)→후처리. 복수 키워드 동시 매칭 시 5단계 충돌 해결 캐스케이드 적용.</p>
+<p><strong>셋째</strong>, 단계적 위험도 상향(Step-up Scoring) 알고리즘. 제1호(0.1)~제10호(5.0) 순차 판정, 상위 호수 조건 충족 시 갱신.</p>
+<p><strong>넷째</strong>, R = w × log₁₀(1 + f × avg_a) × T × Θ × S 공식으로 정량적 위험도 종합 점수를 산출한다. T는 시계열 근접성(집중도·최근성), Θ는 동적 임계(금액·건수 복합), S는 입출금 대칭성(회수 비율).</p>
+<p><strong>다섯째</strong>, 소명서 생성부는 지표별 법적 소명 전략 템플릿과 채무자회생법 조항 참조를 조합하여 소명서 초안을 자동 생성한다.</p>
+<h3>【발명의 효과】</h3>
+<p><strong>1. 정밀도·효율성 극대화</strong>: 이기종 데이터 통합, 3단계 분류, 5단계 캐스케이드.</p>
+<p><strong>2. 정량적 위험도 산출</strong>: 1~10호 Step-up Scoring + T·Θ·S 복합 보정.</p>
+<p><strong>3. 방어권 강화</strong>: 소명 전략 템플릿+법조항 자동 매칭.</p>
+<p><strong>4. 산업상 이용</strong>: 회생, 이혼 재산 분할, 기업 감사 등 확장 가능.</p>
+<hr>
+<h2>제3장 특허청구범위</h2>
+<h3>【청구항 1】 (독립항 — 방법)</h3>
+<p>프로세서 및 메모리를 포함하는 컴퓨팅 장치에 의해 수행되는 금융거래 위험도 분석 및 법적 소명 자료 자동 생성 방법으로서,</p>
+<p>(a) 복수의 금융기관으로부터 서로 다른 포맷으로 발행된 은행 거래 내역 데이터 및 신용카드 승인 내역 데이터를 수신하여, 금융기관별 전용 파서를 통해 단일한 통합 데이터 구조로 정규화하는 데이터 전처리 단계;</p>
+<p>(b) 사전 정의된 카테고리 테이블을 참조하여, 상기 통합 데이터의 적요 또는 가맹점 명칭에 포함된 비정형 텍스트를 (i) 전처리, (ii) 계정과목 분류, (iii) 후처리의 3단계를 거쳐 자동 분류하되, 상기 계정과목 분류 시 검색 키워드의 길이 역순으로 매칭을 시도하는 최장 일치(Longest Match) 방식을 적용하는 3단계 계층적 카테고리 분류 단계;</p>
+<p>(c) 분류 완료된 은행 거래 데이터와 신용카드 거래 데이터를 단일 통합 데이터로 병합하는 이기종 데이터 통합 단계;</p>
+<p>(d) 상기 통합 데이터의 각 거래에 대하여, 채무자 회생 및 파산에 관한 법률 제564조에 대응하는 제1호(분류제외) 내지 제10호(사행성) 위험도 지표를 순차 적용하되, 상위 호수 조건 충족 시 기 산정된 위험도를 갱신하는 단계적 위험도 상향(Step-up Scoring) 방식의 위험도 산정 단계; 및</p>
+<p>(e) 위험도 가중치(w), 거래 건수(f), 평균 거래 금액(avg_a), 시계열 근접성 계수(T), 동적 임계 계수(Θ), 입출금 대칭성 계수(S)를 사용하여 R = w × log₁₀(1 + f × avg_a) × T × Θ × S 공식으로 위험도 종합 점수(R)를 산출하고, 지표별 법적 소명 전략 템플릿과 법조항 참조를 매칭하여 소명서 초안을 자동 생성하는 소명 자료 생성 단계;</p>
+<p>를 포함하는 것을 특징으로 하는 금융거래 위험도 분석 및 법적 소명 자료 자동 생성 방법.</p>
+<h3>【청구항 2】 (5단계 충돌 해결)</h3>
+<p>제1항에 있어서, 계정과목 분류 시 복수 키워드 동시 매칭 시 (i) 키워드 길이 우선, (ii) 위험도 코드 우선, (iii) 텍스트 내 출현 위치 우선, (iv) 소분류 코드 순, (v) 기존 분류 유지의 5단계 충돌 해결 캐스케이드를 적용하는 것을 특징.</p>
+<h3>【청구항 3】 (위험도 산정 상세)</h3>
+<p>제1항에 있어서, 제1호(0.1) 기본값 부여 후 제2호(0.5)~제10호(5.0) 순차 판정, 제2호(심야·폐업) 해당 시 3~10호 생략, 제5호~제10호는 카테고리 테이블 위험도분류 키워드+기준 출금액 결합 조건으로 판정.</p>
+<h3>【청구항 4】 (R 점수 및 T 계수)</h3>
+<p>제1항에 있어서, T = 1 + α × C + β × P (C: 활동기간 대비 집중도, P: 최근 25% 구간 건수 비율)로 산출하여 단기간 집중·파산 직전 의심 패턴을 반영.</p>
+<h3>【청구항 5】 (소명서: 정형 + AI)</h3>
+<p>제1항에 있어서, (a) 정형 생성(템플릿 치환) 또는 (b) 생성형 AI 합성 중 선택 수행, AI 불가 시 정형으로 자동 전환.</p>
+<h3>【청구항 6】 (VASP 3단계 식별)</h3>
+<p>제1항에 있어서, 가상자산 거래 식별은 (a) 카테고리 매칭 → (b) 접두번호 정규표현식 → (c) 사업자명 매칭 순서로 수행, 접두번호 테이블은 카테고리 테이블의 VASP계좌 분류 행으로 동적 확장 가능.</p>
+<h3>【청구항 7】 (동적 임계 계수 Θ)</h3>
+<p>제4항에 있어서, Θ = amount_factor × count_factor. 금액 임계값 미만 시 선형 감점, 3배 초과 시 누진 가중(γ, 상한 2.0), 건수 기준 이상 시 비례 가중(δ, 상한 1.3).</p>
+<h3>【청구항 8】 (인터랙티브 Q&A)</h3>
+<p>제1항에 있어서, 위험 항목 기반 맞춤 질문 생성 → 사용자 답변 수집 → 소명서 재생성. 미입력 항목은 정형 생성 문구 유지.</p>
+<h3>【청구항 9】 (입출금 대칭성 S)</h3>
+<p>제4항에 있어서, S = 1 − (입금합계/출금합계), 하한 0.3. 투기성(5호)·가상자산(7호)·자산은닉(8호)에만 적용, 비적용 지표는 S=1.0.</p>
+<h3>【청구항 10】 (외부 API 검증)</h3>
+<p>제4항에 있어서, 사업자등록번호를 외부 API에 조회하여 업종·폐업 여부 확인. 개인정보보호법 등 법령 허용 범위 내 수행.</p>
+<h3>【청구항 11】 (독립항 — 시스템)</h3>
+<p>프로세서, 메모리, 프로그램을 포함하는 시스템으로서: 데이터 전처리부 + 분류 엔진부(3단계, 최장 일치) + 데이터 통합부 + 위험도 산정부(1~10호 Step-up) + 소명서 생성부(R 점수 + 템플릿).</p>
+<hr>
+<h2>제4장 발명을 실시하기 위한 구체적인 내용</h2>
+<h3>4.1 시스템 전체 구성 (제1도)</h3>
+<p>데이터 입력 계층(100), 처리 엔진 계층(200), 데이터 저장 계층(300), 출력 보고서 계층(400).</p>
+<h3>4.2 데이터 전처리 (제2도)</h3>
+<p>금융기관별 전용 파서. 국민은행(상단 메타 행), 신한은행(날짜 형식 상이), 하나은행(컬럼 명칭 상이). 표준 컬럼 매핑. 카드: 헤더 자동 감지, 이용금액→입금/출금 분리, 취소 자동 식별.</p>
+<h3>4.3 3단계 분류 엔진 (제3도)</h3>
+<p>S1. 전처리: 비정형 문자열 치환. S2. 계정과목: 최장 일치 + 5단계 캐스케이드(길이→위험도 코드(M<L<D<F<P<H)→위치→소분류→기존). S3. 후처리: 법적 용어 재정규화.</p>
+<h3>4.4 위험도 산정 (제4도)</h3>
+<table>
+<thead><tr><th>호수</th><th>지표명</th><th>위험도</th><th>법적 근거</th></tr></thead>
+<tbody>
+<tr><td>1호</td><td>분류제외</td><td>0.1</td><td>—</td></tr>
+<tr><td>2호</td><td>심야폐업</td><td>0.5</td><td>제564조</td></tr>
+<tr><td>3호</td><td>자료소명</td><td>1.0</td><td>제564조 3호</td></tr>
+<tr><td>4호</td><td>비정형</td><td>1.5</td><td>제564조 3호</td></tr>
+<tr><td>5호</td><td>투기성</td><td>2.0</td><td>제564조 1항 5호</td></tr>
+<tr><td>6호</td><td>사기파산</td><td>2.5</td><td>제564조 1항 2호</td></tr>
+<tr><td>7호</td><td>가상자산</td><td>3.0</td><td>제564조 1항 5호</td></tr>
+<tr><td>8호</td><td>자산은닉</td><td>3.5</td><td>제564조 1항 1호</td></tr>
+<tr><td>9호</td><td>과소비</td><td>4.0</td><td>제564조 1항 5호</td></tr>
+<tr><td>10호</td><td>사행성</td><td>5.0</td><td>제564조 1항 5호</td></tr>
+</tbody></table>
+<p>VASP 3단계: (a) 카테고리 → (b) 접두번호 정규식 → (c) 사업자명.</p>
+<h3>4.5 R 점수 산출 (제5도)</h3>
+<p>R = w × log₁₀(1 + f × avg_a) × T × Θ × S</p>
+<p><strong>T</strong>: T = 1 + 0.3×C + 0.2×P (C=집중도, P=최근성, 범위 1.00~1.50)</p>
+<p><strong>Θ</strong>: Θ = amount_factor × count_factor (범위 0.00~2.60)</p>
+<p><strong>S</strong>: S = 1−(입금/출금), 하한 0.3 (범위 0.30~1.00)</p>
+<p><strong>등급</strong>: 합산 R<50 안전, <100 보통, <150 주의, ≥150 심각.</p>
+<h3>4.6 선행기술 대비 차별적 기술 구성</h3>
+<p>#### T 계수 vs 문헌5(KR102486186B1) 시계열 분석</p>
+<p>문헌5는 ARIMA/LSTM으로 기업 자금 흐름의 <strong>미래 예측</strong>을 수행하며, 원인-결과 거래의 <strong>최소 비용값 매칭</strong>에 시계열을 활용한다. 반면, 본 발명의 T 계수는 <strong>과거 거래의 시간적 집중도(C)와 최근성(P)</strong>을 산출하여 파산 신청 직전의 의심 거래 패턴을 탐지하는 것으로, 예측이 아닌 <strong>탐지·진단</strong> 목적이며, 산출 수식(T=1+αC+βP)도 근본적으로 상이하다.</p>
+<p>#### Θ 계수 vs 문헌6(KR101914620B1) 신뢰도 임계치</p>
+<p>문헌6의 신뢰도 임계치는 ML 분류 결과의 <strong>확실성</strong>을 평가하여 임계치 이하 시 복수 후보를 추천하는 메커니즘이다. 반면, 본 발명의 Θ 계수는 <strong>금액 규모에 대한 누진 가중(amount_factor)</strong>과 <strong>거래 빈도에 대한 비례 가중(count_factor)</strong>의 곱으로, 법적 위험도의 <strong>크기를 보정</strong>하는 승수이다. 목적(분류 확실성 vs 위험도 크기 보정)과 산출 방식이 근본적으로 상이하다.</p>
+<p>#### 5단계 캐스케이드 vs 문헌7(KR101892671B1) 주계정과목</p>
+<p>문헌7은 거래처 상호와 계정과목의 1:1 매칭에서 복수 계정과목이 존재할 때 <strong>주계정과목등록부(R)</strong>를 통해 사전 지정된 하나를 선택한다. 반면, 본 발명은 키워드 매칭 시 <strong>동적으로</strong> (i) 키워드 길이, (ii) 위험도 코드 우선순위, (iii) 텍스트 내 출현 위치, (iv) 소분류 코드, (v) 기존 분류 유지의 5단계 기준을 자동 적용한다. 사전 지정(정적) vs 동적 다기준 해결이라는 근본적 차이가 있다.</p>
+<h3>4.7 소명서 자동 생성 (제6도)</h3>
+<p>단계 1. 위험거래 집계(≥0.5). 단계 2. 상위 5개 선정. 단계 3. SUGGESTION_TEMPLATES 10종. 단계 4. LEGAL_REFERENCES 매칭. 단계 5. 보고서 합성.</p>
+<h3>4.8 다른 실시예</h3>
+<p><strong>생성형 AI 소명 합성</strong>: LLM 연동, 정형 생성 폴백.</p>
+<p><strong>인터랙티브 Q&A</strong>: 지표별 맞춤 질문→답변→소명서 재생성.</p>
+<p><strong>외부 사업자 검증</strong>: 국세청/VAN/PG API, 법적 제약 명시.</p>
+<hr>
+<h2>제5장 도면의 간단한 설명</h2>
+<p><strong>제1도</strong>: 시스템 블록도 (100~400 계층).</p>
+<p><strong>제2도</strong>: 전체 파이프라인 흐름도.</p>
+<p><strong>제3도</strong>: 3단계 카테고리 분류 상세도.</p>
+<p><strong>제4도</strong>: 1~10호 위험도 산정 순서도 (VASP 포함).</p>
+<p><strong>제5도</strong>: R 점수·등급·소명서 생성 프로세스 맵.</p>
+<p><strong>제6도</strong>: 모듈 구성도.</p>
+<p><strong>제7도</strong>: 웹 UI 예시도.</p>
+<table>
+<thead><tr><th>부호</th><th>명칭</th></tr></thead>
+<tbody>
+<tr><td>100</td><td>데이터 입력 계층</td></tr>
+<tr><td>110</td><td>은행 거래 내역 파일</td></tr>
+<tr><td>120</td><td>신용카드 승인 내역 파일</td></tr>
+<tr><td>200</td><td>처리 엔진 계층</td></tr>
+<tr><td>210</td><td>은행 전처리 엔진</td></tr>
+<tr><td>220</td><td>카드 전처리 엔진</td></tr>
+<tr><td>230</td><td>카테고리 분류 엔진</td></tr>
+<tr><td>240</td><td>금융정보 통합 엔진</td></tr>
+<tr><td>250</td><td>위험도 산정 엔진</td></tr>
+<tr><td>260</td><td>소명서 생성 엔진</td></tr>
+<tr><td>300</td><td>데이터 저장 계층</td></tr>
+<tr><td>400</td><td>출력 보고서 계층</td></tr>
+</tbody></table>
+<hr>
+<h2>제6장 요약서</h2>
+<p>본 발명은 개인회생 및 파산 절차에서 채무자의 금융 거래 내역을 자동 분석하여 법적 소명 자료를 생성하는 시스템이다. 이기종 거래 데이터를 통합한 후, 3단계 분류(최장 일치+5단계 캐스케이드)로 정밀 분류하고, 채무자회생법 제564조에 대응하는 1~10호 위험도를 Step-up Scoring으로 산정한다. T(시계열 근접성)·Θ(동적 임계)·S(입출금 대칭성)의 복합 보정과 로그 스케일 가중치로 R 점수를 산출하고, 소명 전략 템플릿·법적 근거를 자동 매칭하여 소명서 초안을 생성한다.</p>
+<p><strong>대표도</strong>: 제4도</p>
+<hr>
+<h2>제7장 변리사 전달용 체크리스트</h2>
+<h3>7.1 명세서 최종 점검</h3>
+<p>- [x] 발명 명칭: '금융거래 위험도 분석' 포함</p>
+<p>- [x] 청구항: 11개(독립 2, 종속 9), 코드 파일명 제거</p>
+<p>- [x] 진보성: 5단계 캐스케이드 + T·Θ·S + VASP 3단계</p>
+<p>- [x] 수식: R = w × log₁₀(1+f×avg_a) × T × Θ × S</p>
+<p>- [x] 선행기술: <strong>7건</strong> (4건+3건 추가)</p>
+<p>- [x] 선행기술 차별점: 문5(시계열)·문6(신뢰도)·문7(1:1매칭) 대비 명확 기술</p>
+<p>- [x] 하드웨어 결합성: "프로세서 및 메모리" 명시</p>
+<p>- [x] 도면: 7개, 부호 100~400</p>
+<p>- [x] 구현: T, Θ, S, VASP 3단계 모두 확인</p>
+<p>- [x] 선택적 확장: AI(5항), Q&A(8항), API(10항) "할 수 있다"</p>
+<p>- [x] 코드 안정화: 3차 전수조사 완료</p>
+<h3>7.2 v2 대비 v3 변경사항</h3>
+<table>
+<thead><tr><th>항목</th><th>v2</th><th>v3</th></tr></thead>
+<tbody>
+<tr><td>선행기술</td><td>4건</td><td>**7건**</td></tr>
+<tr><td>배경기술</td><td>문1~4 언급</td><td>**문5~7 시계열/ML/매칭 차별점 명시**</td></tr>
+<tr><td>해결과제</td><td>일반적 기술</td><td>**문5 시계열 vs T, 문6 신뢰도 vs Θ 명확 대비**</td></tr>
+<tr><td>실시예 4.6절</td><td>없음</td><td>**선행기술 대비 차별적 기술 구성 신설**</td></tr>
+</tbody></table>
+<h3>7.3 추가 권장</h3>
+<p>1. <strong>KIPRIS 정밀 조사</strong>: IPC G06Q50/18, G06Q40/02</p>
+<p>2. <strong>도면 제작</strong>: system_flow.md Mermaid → PNG + 부호 표기</p>
+<p>3. <strong>실시 가능성</strong>: 클라우드 운영 시 "실시예 실제 운용" 근거</p>
+<p>4. <strong>IP 디딤돌/특허 바우처</strong>: 출원 비용 절감</p>
+<p>5. <strong>해외(PCT)</strong>: 일본·독일 등 법체계 유사 국가</p>
+<hr>
+<blockquote><strong>본 문서는 Claude Opus가 MyRisk_v200 코드베이스를 직접 분석하고, 3차 코드 전수조사 결과, 선행기술 7건 조사, 기존 출원서·보강안·시스템 구성도를 종합하여 작성한 의견서 겸 명세서 초안입니다. 최종 출원 전 변리사의 전문적 검토가 필수적입니다.</strong></blockquote>
+</body>
+</html>

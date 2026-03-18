@@ -80,6 +80,7 @@ htmlcov/
 logs/
 run_full_flow.log
 temp/
+export/
 
 # Docker (선택)
 # docker-compose.override.yml

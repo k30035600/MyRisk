@@ -34,13 +34,14 @@ CLASS_ACCOUNT = '계정과목'
 CLASS_APPLICANT = '신청인'
 CLASS_NIGHT = '심야구분'
 CLASS_RISK = '위험도분류'
+CLASS_VASP = 'VASP계좌'
 CLASS_INDUSTRY = '업종분류'
 EXCLUDED_CLASSES = ['거래방법', '거래지점']
 
 VALID_CLASSES = [
     CLASS_PRE, CLASS_POST, CLASS_ACCOUNT,
     '신용카드', '가상자산', '증권투자', '해외송금',
-    CLASS_NIGHT, CLASS_INDUSTRY,
+    CLASS_NIGHT, CLASS_INDUSTRY, CLASS_VASP,
 ]
 
 # ── 차수↔분류 매핑 (구 xlsx '차수' 컬럼 호환) ──
@@ -105,6 +106,7 @@ def get_template_constants(app_type='bank'):
         'CLASS_POST': CLASS_POST,
         'CLASS_NIGHT': CLASS_NIGHT,
         'CLASS_RISK': CLASS_RISK,
+        'CLASS_VASP': CLASS_VASP,
         'CLASS_INDUSTRY': CLASS_INDUSTRY,
         'CLASS_APPLICANT': CLASS_APPLICANT,
         'DEFAULT_CATEGORY': DEFAULT_CATEGORY,

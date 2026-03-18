@@ -5,8 +5,8 @@
 전처리 페이지·카테고리 페이지를 제공하고,
 process_bank_data로 bank_after 생성 및 data 저장을 수행한다.
 """
+import logging
 from flask import Flask, render_template, jsonify, request, make_response
-import traceback
 import pandas as pd
 from pathlib import Path
 import sys
@@ -21,6 +21,8 @@ if sys.platform == 'win32':
         ctypes.windll.kernel32.SetConsoleCP(65001)
     except (OSError, AttributeError):
         pass  # 콘솔 CP 설정 실패 시 무시(통합 서버에서 app.py가 이미 설정)
+
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
@@ -73,7 +75,7 @@ except ImportError:
     BANK_AFTER_PATH = str(Path(PROJECT_ROOT) / 'data' / 'bank_after.json')
     SOURCE_BANK_DIR = os.path.join(PROJECT_ROOT, '.source', 'Bank')
 from lib.category_table_io import (
-    load_category_table, normalize_category_df, CATEGORY_TABLE_COLUMNS,
+    load_category_table, CATEGORY_TABLE_COLUMNS,
     CATEGORY_TABLE_EXTENDED_COLUMNS,
     get_category_table as _io_get_category_table,
     apply_category_action,
@@ -98,9 +100,9 @@ def _remove_bad_data_file(path, recreate_empty=None):
             winerr = getattr(ex, 'winerror', None)
             errno_val = getattr(ex, 'errno', None)
             if winerr == 32 or errno_val == 13:
-                print(f"안내: {p.name}이(가) 다른 프로그램에서 열려 있어 삭제할 수 없습니다. 파일을 닫은 뒤 다시 시도하세요.", flush=True)
+                logger.warning("안내: %s이(가) 다른 프로그램에서 열려 있어 삭제할 수 없습니다. 파일을 닫은 뒤 다시 시도하세요.", p.name)
             elif winerr != 2 and errno_val != 2:
-                print(f"삭제 실패 {p}: {ex}", flush=True)
+                logger.error("삭제 실패 %s: %s", p, ex)
     if recreate_empty is not None:
         try:
             from lib.data_json_io import safe_write_data_json
@@ -108,7 +110,7 @@ def _remove_bad_data_file(path, recreate_empty=None):
             safe_write_data_json(p, empty)
         except Exception as ex:
             # 빈 데이터 재생성 실패 시에도 삭제는 유지
-            print(f"빈 데이터 파일 재생성 실패 {p}: {ex}", flush=True)
+            logger.error("빈 데이터 파일 재생성 실패 %s: %s", p, ex)
 
 
 def _is_file_in_use_error(e):
@@ -160,7 +162,7 @@ from lib.shared_app_utils import (
     time_to_seconds as _time_to_seconds,
 )
 from lib.analysis_common import (
-    apply_bank_filter, apply_category_filters,
+    apply_category_filters,
     compute_summary, compute_by_category, compute_by_category_group,
     compute_by_month, compute_by_category_monthly, compute_by_content,
     compute_by_division, compute_by_bank, compute_transactions_by_content,
@@ -208,12 +210,12 @@ def load_category_file():
             df = _read_bank_after_raw(BANK_AFTER_PATH)
             return df if df is not None else pd.DataFrame()
         except Exception as e:
-            print(f"Error in load_category_file: {str(e)}", flush=True)
+            logger.error("load_category_file 오류: %s", e)
             return pd.DataFrame()
     try:
         return _bank_after_cache_obj.get(BANK_AFTER_PATH, _read_bank_after_raw)
     except Exception as e:
-        print(f"Error in load_category_file: {str(e)}", flush=True)
+        logger.error("load_category_file 오류: %s", e)
         return pd.DataFrame()
 
 @app.route('/')
@@ -306,7 +308,7 @@ def get_source_files():
 
         return response
     except Exception as e:
-        traceback.print_exc()
+        logger.exception("파일 목록 로드 중 오류")
         current_dir = os.getcwd()
         return jsonify({
             'error': f'파일 목록 로드 중 오류가 발생했습니다: {str(e)}\n현재 작업 디렉토리: {current_dir}\n스크립트 디렉토리: {SCRIPT_DIR}',
@@ -537,7 +539,7 @@ def get_processed_data():
 
         return response
     except Exception as e:
-        traceback.print_exc()
+        logger.exception("get_processed_data 오류")
         category_file_exists = Path(BANK_AFTER_PATH).exists()
         return jsonify({
             'error': str(e),
@@ -579,7 +581,7 @@ def get_simya_ranges():
             ranges.append({'start': start_s if ':' in start_s else f'{start_s[0:2]}:{start_s[2:4]}:{start_s[4:6]}', 'end': end_s if ':' in end_s else f'{end_s[0:2]}:{end_s[2:4]}:{end_s[4:6]}'})
         return jsonify({'ranges': ranges})
     except Exception as e:
-        traceback.print_exc()
+        logger.exception("get_simya_ranges 오류")
         return jsonify({'ranges': [], 'error': str(e)})
 
 
@@ -600,7 +602,7 @@ def get_category_applied_data():
                 import process_bank_data as _pbd
                 _pbd.ensure_bank_before_and_category()
             except Exception as _e:
-                print(f"[WARN] ensure_bank_before_and_category 실패: {_e}", flush=True)
+                logger.warning("ensure_bank_before_and_category 실패: %s", _e)
             finally:
                 if _path_added and str(SCRIPT_DIR) in sys.path:
                     sys.path.remove(str(SCRIPT_DIR))
@@ -608,8 +610,7 @@ def get_category_applied_data():
         try:
             df = load_category_file()
         except Exception as e:
-            print(f"Error loading category file: {str(e)}")
-            traceback.print_exc()
+            logger.exception("카테고리 파일 로드 오류")
             # 파일 로드 실패 시 빈 DataFrame 반환
             df = pd.DataFrame()
         
@@ -639,7 +640,7 @@ def get_category_applied_data():
             df = df[s.isin(allowed)].copy()
         
         if account_filter and '계좌번호' in df.columns:
-            df = df[df['계좌번호'].fillna('').astype(str).str.strip() == account_filter]
+            df = df[df['계좌번호'].fillna('').astype(str).str.strip() == account_filter].copy()
         
         if date_filter and '거래일' in df.columns:
             try:
@@ -647,15 +648,13 @@ def get_category_applied_data():
                 df['거래일_str'] = df['거래일'].astype(str)
                 df = df[df['거래일_str'].str.startswith(date_filter, na=False)]
                 df = df.drop('거래일_str', axis=1)
-            except (TypeError, ValueError, KeyError) as e:
-                # 날짜 필터링 실패 시 필터 없이 진행
-                print(f"Error filtering by date: {str(e)}")
+            except (TypeError, ValueError, KeyError):
+                pass
         
         # 필수 컬럼 확인
         required_columns = ['입금액', '출금액']
         missing_columns = [col for col in required_columns if col not in df.columns]
         if missing_columns and not df.empty:
-            print(f"Warning: Missing columns in data: {missing_columns}")
             for col in missing_columns:
                 df[col] = 0
         # 카테고리 적용후 테이블용: 키워드·카테고리·기타거래 없으면 빈 컬럼 추가
@@ -716,7 +715,7 @@ def get_category_applied_data():
 
         return response
     except Exception as e:
-        traceback.print_exc()
+        logger.exception("get_category_applied_data 오류")
         category_file_exists = Path(BANK_AFTER_PATH).exists()
         return jsonify({
             'error': str(e),
@@ -819,7 +818,7 @@ def get_source_data():
 
         return response
     except Exception as e:
-        traceback.print_exc()
+        logger.exception("get_source_data 오류")
         response = jsonify({
             'error': str(e),
             'count': 0,
@@ -854,7 +853,7 @@ def get_category_table():
             if path.exists():
                 _pbd.migrate_bank_category_file(str(path))
         except Exception as _e:
-            print(f"[WARN] ensure_bank_before_and_category/migrate 실패 (기존 파일 유지): {_e}", flush=True)
+            logger.warning("ensure_bank_before_and_category/migrate 실패 (기존 파일 유지): %s", _e)
             if not path.exists():
                 try:
                     from lib.category_table_io import create_empty_category_table
@@ -876,7 +875,7 @@ def get_category_table():
             except (ValueError, _json.JSONDecodeError):
                 _corrupted = True
             if _corrupted and str(path).endswith('.json'):
-                print(f"[WARN] category_table.json 손상 감지 → 빈 파일로 재생성", flush=True)
+                logger.warning("category_table.json 손상 감지 → 빈 파일로 재생성")
                 try:
                     path.unlink()
                     from lib.category_table_io import create_empty_category_table
@@ -917,13 +916,13 @@ def get_category_table():
 
         return response
     except Exception as e:
-        traceback.print_exc()
+        logger.exception("get_category_table 오류")
         if str(path).endswith('.json') and not path.exists():
             try:
                 from lib.category_table_io import create_empty_category_table
                 create_empty_category_table(str(path))
             except Exception as _e:
-                print(f"[WARN] category_table 빈 파일 생성 실패: {_e}", flush=True)
+                logger.warning("category_table 빈 파일 생성 실패: %s", _e)
         df = pd.DataFrame(columns=['분류', '키워드', '카테고리'])
         file_exists = path.exists()
         response = jsonify({
@@ -952,10 +951,10 @@ def save_category_table():
             ok, _, err = export_category_table_to_xlsx(path)
             if not ok:
                 xlsx_warn = err
-                print(f"[WARN] category_table → xlsx 내보내기 실패: {err}", flush=True)
+                logger.warning("category_table → xlsx 내보내기 실패: %s", err)
         except Exception as _xe:
             xlsx_warn = str(_xe)
-            print(f"[WARN] category_table → xlsx 내보내기 예외: {_xe}", flush=True)
+            logger.warning("category_table → xlsx 내보내기 예외: %s", _xe)
         try:
             from lib.path_config import delete_all_after_files
             delete_all_after_files()
@@ -972,7 +971,7 @@ def save_category_table():
 
         return response
     except Exception as e:
-        traceback.print_exc()
+        logger.exception("save_category_table 오류")
         response = jsonify({
             'success': False,
             'error': str(e)
@@ -1000,7 +999,6 @@ def _get_daechae_info(df):
         return info
     dc_vals = df_dc['대체구분'].fillna('').astype(str).str.strip()
     for label, mask in [('은행대체', dc_vals == '은행대체'), ('카드대체', dc_vals == '카드대체'), ('취소거래', dc_vals == '취소거래')]:
-        key = label[:2]
         cnt = int(mask.sum())
         dep = int(df_dc.loc[mask, '입금액'].sum()) if '입금액' in df_dc.columns else 0
         wit = int(df_dc.loc[mask, '출금액'].sum()) if '출금액' in df_dc.columns else 0
@@ -1127,8 +1125,6 @@ def print_analysis():
 
         major_summary = []
         try:
-            from lib.category_table_io import load_category_table
-            from lib.path_config import get_category_table_json_path
             ct_path = get_category_table_json_path()
             ct_df = load_category_table(ct_path)
             if not ct_df.empty and '분류' in ct_df.columns:
@@ -1189,7 +1185,7 @@ def print_analysis():
                              major_summary=major_summary,
                              **daechae_info)
     except Exception as e:
-        traceback.print_exc()
+        logger.exception("print_analysis 오류")
         return f"오류 발생: {str(e)}", 500
 
 # 분석 API 라우트
@@ -1237,7 +1233,7 @@ def get_analysis_by_category_group():
             카테고리_filter=request.args.get('카테고리', ''))
         return jsonify({'data': compute_by_category_group(df, bank_col='은행명', include_category_groupby=True)})
     except Exception as e:
-        traceback.print_exc()
+        logger.exception("by-category-group 오류")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/analysis/by-month')
@@ -1272,7 +1268,7 @@ def get_analysis_by_category_monthly():
             카테고리_filter=request.args.get('카테고리', ''))
         return jsonify(compute_by_category_monthly(df, include_category_groupby=True, label_cols=['거래유형', '카테고리']))
     except Exception as e:
-        traceback.print_exc()
+        logger.exception("by-category-monthly 오류")
         return jsonify({'error': str(e), 'months': [], 'categories': []}), 500
 
 @app.route('/api/analysis/by-content')
@@ -1323,7 +1319,7 @@ def get_transactions_by_content():
             output_cols=out_cols, json_safe_fn=_json_safe)
         return jsonify({'data': data})
     except Exception as e:
-        traceback.print_exc()
+        logger.exception("transactions-by-content 오류")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/analysis/transactions')
@@ -1346,7 +1342,7 @@ def get_analysis_transactions():
             filter_col=filter_col, extra_col=extra_col,
             json_safe_fn=_json_safe))
     except Exception as e:
-        traceback.print_exc()
+        logger.exception("transactions 오류")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/analysis/content-by-category')
@@ -1358,7 +1354,7 @@ def get_content_by_category():
         data = compute_content_by_category(df, filter_col=filter_col, category_filter=request.args.get('category', ''))
         return jsonify({'data': data})
     except Exception as e:
-        traceback.print_exc()
+        logger.exception("content-by-category 오류")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/analysis/date-range')
@@ -1413,7 +1409,7 @@ def generate_category():
             success = False
             detail = str(e)
             count = 0
-            traceback.print_exc()
+            logger.exception("classify_and_save 오류")
         finally:
             os.chdir(_orig_cwd)
             if _path_added and str(SCRIPT_DIR) in sys.path:
@@ -1441,7 +1437,7 @@ def generate_category():
     except FileNotFoundError as e:
         return _json_500({'success': False, 'error': f'파일을 찾을 수 없습니다: {str(e)}'})
     except Exception as e:
-        error_trace = traceback.format_exc()
+        logger.exception("bank_after 생성 API 오류")
         return _json_500({
             'success': False,
             'error': f'{str(e)}\n상세 정보는 서버 로그를 확인하세요.'
