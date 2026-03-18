@@ -44,11 +44,11 @@
 <h1>기보(KIBO) 기술평가 및 벤처인증 전략 보고서</h1>
 
 <table class="meta-table">
-<tr><td>작성일</td><td>2026-03-15</td></tr>
+<tr><td>작성일</td><td>2026-03-15 (4차 전수조사 반영: 2026-03-18)</td></tr>
 <tr><td>대상 기업</td><td>주식회사 나눔과 어울림 (ShareHarmony)</td></tr>
 <tr><td>대상 기술</td><td>MyRisk — 인공지능 기반 금융거래 위험도 분석 및 법적 소명 자료 자동 생성 시스템</td></tr>
 <tr><td>특허 출원</td><td>출원 준비 완료 (청구항 11개, 독립 2 + 종속 9)</td></tr>
-<tr><td>관련 문서</td><td>특허출원서(Opus의견)_v3.md, system_flow.md, 선행기술_청구항_조사.md</td></tr>
+<tr><td>관련 문서</td><td>260318_p-14_s(특허출원서).pdf, 특허출원서(Opus의견)_v4.md, system_flow.md, 선행기술_청구항_조사.md</td></tr>
 <tr><td>본 문서 목적</td><td>기보(KIBO) 기술보증기금 기술평가(TCB), 벤처기업 인증 신청 시 핵심 기술 논리 및 전략적 어필 포인트 정리</td></tr>
 </table>
 
@@ -82,7 +82,7 @@
 <table>
 <tr><th>TCB 평가 항목</th><th>MyRisk 대응 포인트</th><th>참조</th></tr>
 <tr><td><strong>기술성</strong> — 독창성·차별성</td><td>R 점수 공식(T·Θ·S 복합 계수), 5단계 캐스케이드, Step-up Scoring</td><td>제2장</td></tr>
-<tr><td><strong>기술성</strong> — 완성도</td><td>코드 전수조사 3차 완료, 원자적 파일 쓰기, 스레드 안전 캐시</td><td>제3장</td></tr>
+<tr><td><strong>기술성</strong> — 완성도</td><td>코드 전수조사 4차 완료, 원자적 파일 쓰기 전면 적용, SECRET_KEY·업로드 제한 보안 강화</td><td>제3장</td></tr>
 <tr><td><strong>시장성</strong> — 시장 규모·성장성</td><td>2025년 개인파산 22만건, 리걸테크 시장 CAGR 23%</td><td>제4장</td></tr>
 <tr><td><strong>사업성</strong> — 수익 모델·확장성</td><td>B2B SaaS(법무사·변호사), B2G(법원·관재인), B2C</td><td>제4장</td></tr>
 <tr><td><strong>경영 능력</strong> — 지식재산권</td><td>특허 출원(11개 청구항), 선행기술 7건 차별점 확보</td><td>제5장</td></tr>
@@ -140,7 +140,7 @@ R = Σ<sub>i=1</sub><sup>n</sup> ( w<sub>i</sub> × log<sub>10</sub>(1 + f<sub>i
 <tr><th>재무 약점</th><th>기술 독보성 방어</th><th>구체적 논거</th></tr>
 <tr><td>자본 잠식</td><td>R 공식은 국내 유일의 <strong>법률-수학 융합 모델</strong></td><td>선행기술 7건 조사에서 동일 결합 미발견</td></tr>
 <tr><td>매출 부족</td><td><strong>독점 가능한 기술 기반 매출 창출</strong> 잠재력</td><td>특허 등록 시 B2B SaaS 독점 가능</td></tr>
-<tr><td>영업이익 적자</td><td><strong>선행투자 단계의 기술 완성도</strong> 입증</td><td>코드 3차 전수조사 완료, TRL 7 수준</td></tr>
+<tr><td>영업이익 적자</td><td><strong>선행투자 단계의 기술 완성도</strong> 입증</td><td>코드 4차 전수조사 완료(누적: print→logging 103곳, 보안 5건, 원자적 쓰기 전면 적용), 특허 청구항 11개 전부 코드 구현 검증</td></tr>
 </table>
 
 <!-- T 계수 -->
@@ -230,7 +230,9 @@ S = 1 − (입금합계 / 출금합계), &nbsp; 하한 = 0.3
 <!-- =============== 제3장 =============== -->
 <h2 id="ch3">제3장 기술 완성도 및 상용화 수준</h2>
 
-<h3>3.1 코드 전수조사 결과 (3차 완료)</h3>
+<h3>3.1 코드 전수조사 결과 (4차 완료)</h3>
+
+<h4>1~3차 전수조사 (2026-03-15 완료)</h4>
 <table>
 <tr><th>조사 항목</th><th>건수</th><th>조치 내용</th></tr>
 <tr><td>보안 취약점</td><td>3건</td><td>Path Traversal 방지, Zip Slip 방어, 원자적 파일 쓰기</td></tr>
@@ -241,6 +243,19 @@ S = 1 − (입금합계 / 출금합계), &nbsp; 하한 = 0.3
 <tr><td>미사용 import 정리</td><td>11건</td><td>불필요 모듈 참조 제거</td></tr>
 <tr><td>중복 코드 통합</td><td>5패턴</td><td>_parse_amt, major_map 등 공통 유틸화</td></tr>
 <tr><td>Docker·배포 설정</td><td>3건</td><td>포트, CMD, 의존성 최적화</td></tr>
+</table>
+
+<h4>4차 전수조사 (2026-03-18 완료) — 특허출원서 기반 정합성 검증</h4>
+<table>
+<tr><th>조사 항목</th><th>건수</th><th>조치 내용</th></tr>
+<tr><td><strong>런타임 버그</strong></td><td>1건</td><td>bank_app.py: traceback 미import → NameError 방지. logger.exception() 전환</td></tr>
+<tr><td><strong>보안 강화</strong></td><td>2건</td><td>app.py: SECRET_KEY 환경변수 설정, MAX_CONTENT_LENGTH 50MB 제한 (DoS 방어)</td></tr>
+<tr><td><strong>원자적 파일 쓰기 전면 적용</strong></td><td>4곳</td><td>cash_app.py 대체구분 저장 2곳, category_table_io.py pandas-None 경로 2곳 → mkstemp + os.replace</td></tr>
+<tr><td><strong>Excel 쓰기 안전성</strong></td><td>1건</td><td>excel_io.py: remove→write 패턴 → mkstemp + os.replace 원자적 교체</td></tr>
+<tr><td><strong>print→logging 전환</strong></td><td>24곳</td><td>process_bank_data.py: _safe_print 래퍼 → logger.error/warning/info 내부 전환</td></tr>
+<tr><td><strong>R 공식 표기 통일</strong></td><td>3곳</td><td>HTML 템플릿 a<sub>i</sub> → avg_a<sub>i</sub> (코드 _calculate_risk_report와 일치)</td></tr>
+<tr><td><strong>데드코드 제거</strong></td><td>2건</td><td>risk_indicators.py 미사용 정규식, shared_app_utils.py 중복 import</td></tr>
+<tr><td><strong>특허 청구항 11개 구현 검증</strong></td><td>11항 전부</td><td>코드와 청구항 1:1 대조 완료. 모든 청구항 <strong>완전 구현</strong> 확인</td></tr>
 </table>
 
 <h3>3.2 시스템 아키텍처 성숙도</h3>
@@ -380,7 +395,7 @@ S = 1 − (입금합계 / 출금합계), &nbsp; 하한 = 0.3
 <tr><td><strong>기술성</strong></td><td>A~AA</td><td>R 공식(법률-수학 융합), T·Θ·S 3차원 보정, 5단계 캐스케이드</td><td>특허출원서, 선행기술 조사 보고서</td></tr>
 <tr><td><strong>시장성</strong></td><td>A</td><td>개인파산 22만건, TAM 3,400억+, CAGR 23%</td><td>시장 분석 자료</td></tr>
 <tr><td><strong>사업성</strong></td><td>BBB~A</td><td>B2B SaaS + B2G + B2C + API 4중 모델</td><td>사업계획서</td></tr>
-<tr><td><strong>경영 능력</strong></td><td>BBB</td><td>특허 11건 청구항, 코드 3차 전수조사, TRL 7</td><td>특허 출원 증빙</td></tr>
+<tr><td><strong>경영 능력</strong></td><td>BBB</td><td>특허 11건 청구항, 코드 4차 전수조사, TRL 7</td><td>특허 출원 증빙</td></tr>
 </table>
 
 <h3>7.2 벤처인증 추진 로드맵</h3>
@@ -414,7 +429,7 @@ S = 1 − (입금합계 / 출금합계), &nbsp; 하한 = 0.3
 <hr style="margin-top: 40px;">
 <p style="font-size: 9pt; color: #666; text-align: center; margin-top: 20px;">
 본 문서는 기보(KIBO) 기술평가 및 벤처인증 신청 시 기술 독창성·완성도·시장성·사회적 가치를 체계적으로 어필하기 위한 전략 문서입니다.<br>
-특허출원서(Opus의견)_v3.md, system_flow.md, 선행기술_청구항_조사.md, 코드 전수조사 결과를 종합하여 작성되었습니다.
+260318_p-14_s(특허출원서).pdf, 특허출원서(Opus의견)_v4.md, system_flow.md, 선행기술_청구항_조사.md, 코드 전수조사(4차) 결과를 종합하여 작성되었습니다.
 </p>
 
 </body>
