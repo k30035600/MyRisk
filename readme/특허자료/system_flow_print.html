@@ -1,90 +1,109 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MyRisk 시스템 구성도 · 순서도</title>
-<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
-<style>
-  @media print {
-    .page-break { page-break-before: always; }
-    body { font-size: 11pt; }
-    .no-print { display: none; }
-  }
-  body {
-    font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 24px;
-    color: #222;
-    line-height: 1.7;
-  }
-  h1 { font-size: 22pt; border-bottom: 3px solid #333; padding-bottom: 8px; margin-top: 0; }
-  h2 { font-size: 15pt; border-bottom: 1px solid #999; padding-bottom: 4px; margin-top: 32px; }
-  h3 { font-size: 12pt; margin-top: 20px; }
-  .subtitle { color: #555; font-size: 10pt; margin-bottom: 24px; }
-  .mermaid { margin: 16px 0; text-align: center; overflow-x: auto; }
-  table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 10pt; }
-  th, td { border: 1px solid #aaa; padding: 6px 10px; text-align: left; }
-  th { background: #f0f0f0; font-weight: bold; }
-  blockquote { margin: 8px 0; padding: 6px 14px; background: #f8f8f0; border-left: 4px solid #cca; font-size: 10pt; color: #555; }
-  pre { background: #f5f5f5; padding: 12px; border-radius: 4px; font-size: 10pt; overflow-x: auto; white-space: pre-wrap; }
-  code { font-family: 'Consolas', 'D2Coding', monospace; font-size: 10pt; }
-  hr { border: none; border-top: 1px solid #ccc; margin: 24px 0; }
-  .print-btn { position: fixed; top: 16px; right: 16px; padding: 10px 20px; background: #2563eb; color: #fff; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; z-index: 999; }
-  .print-btn:hover { background: #1d4ed8; }
+<meta charset="utf-8">
+<title>MyRisk 시스템 구성도·순서도</title>
+<style>@page { size: A4; margin: 20mm 15mm; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Malgun Gothic','맑은 고딕',sans-serif;
+  font-size: 11pt; line-height: 1.75; color: #1a1a1a;
+  max-width: 210mm; margin: 0 auto; padding: 20mm 15mm;
+  text-align: justify; word-break: keep-all;
+}
+h1 { font-size: 18pt; color: #0d47a1; border-bottom: 3px solid #0d47a1;
+     padding-bottom: 8px; margin: 0 0 18px; }
+h2 { font-size: 15pt; color: #1565c0; border-bottom: 2px solid #1565c0;
+     padding-bottom: 6px; margin: 32px 0 14px;
+     page-break-after: avoid; }
+h3 { font-size: 13pt; color: #1976d2; margin: 22px 0 10px;
+     border-left: 4px solid #1976d2; padding-left: 10px;
+     page-break-after: avoid; }
+h4 { font-size: 11.5pt; color: #1e88e5; margin: 16px 0 8px;
+     page-break-after: avoid; }
+table { width: 100%; border-collapse: collapse; margin: 10px 0 16px;
+        font-size: 10pt; page-break-inside: avoid; }
+th { background: #e3f2fd; border: 1px solid #90caf9; padding: 6px 8px;
+     text-align: center; font-weight: bold; color: #0d47a1; }
+td { border: 1px solid #bbdefb; padding: 5px 8px; vertical-align: top; }
+tr:nth-child(even) td { background: #f5f9ff; }
+blockquote { background: #e8f5e9; border-left: 4px solid #2e7d32;
+             padding: 10px 14px; margin: 12px 0; font-size: 10.5pt;
+             color: #1b5e20; page-break-inside: avoid; }
+hr { border: none; border-top: 1.5px solid #90caf9; margin: 20px 0; }
+code { background: #eceff1; padding: 1px 5px; border-radius: 3px;
+       font-size: 9.5pt; color: #37474f; }
+pre { background: #263238; color: #eee; padding: 12px 16px;
+      border-radius: 6px; overflow-x: auto; font-size: 9pt;
+      line-height: 1.5; margin: 10px 0 16px; white-space: pre-wrap;
+      page-break-inside: avoid; }
+pre code { background: none; padding: 0; color: inherit; }
+ul, ol { margin: 8px 0 8px 24px; }
+li { margin: 3px 0; }
+p { margin: 6px 0; }
+.footer { font-size: 9pt; color: #666; text-align: center;
+          margin-top: 30px; border-top: 1px solid #ccc; padding-top: 10px; }
+@media print {
+  body { padding: 0; }
+  h2 { page-break-before: auto; }
+  table, blockquote, pre { page-break-inside: avoid; }
+}
+.mermaid { text-align: center; margin: 16px 0; }
+pre.mermaid { background: #fff; color: #000; border: 1px solid #ccc; }
 </style>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true, theme: 'default' });
+</script>
 </head>
 <body>
+<h1 id="myrisk">MyRisk 시스템 구성도 · 순서도</h1>
+<blockquote>
+<p><strong>특허 명세서 첨부용 기술 문서</strong><br />
+주식회사 나눔과 어울림 ShareHarmony · 금융정보 분석 시스템 MyRisk v200<br />
+작성일: 2026-03-18</p>
+</blockquote>
+<hr />
+<h2 id="1">1. 시스템 전체 구성도</h2>
+<blockquote>
+<p>특허 도면 스타일: 흑백 선화, 부호 번호(100~450) 기입, 고딕 계열 글꼴 통일<br />
+Mermaid Live Editor에 아래 코드 블록 내용만 붙여넣기 → PNG/SVG 변환</p>
+</blockquote>
+<p><pre class="mermaid">
+%%{init: {'theme': 'default'}}%%
+flowchart TB
+    classDef W fill:#ffffff,stroke:#000000,stroke-width:1px,color:#000000
 
-<button class="print-btn no-print" onclick="window.print()">🖨️ 인쇄</button>
-
-<h1>MyRisk 시스템 구성도 · 순서도</h1>
-<div class="subtitle">
-  <strong>특허 명세서 첨부용 기술 문서</strong><br>
-  주식회사 나눔과 어울림 ShareHarmony · 금융정보 분석 시스템 MyRisk v200<br>
-  작성일: 2026-03-18
-</div>
-
-<hr>
-
-<!-- ==================== 1. 시스템 전체 구성도 ==================== -->
-<h2>1. 시스템 전체 구성도</h2>
-
-<div class="mermaid">
-graph TB
-    subgraph INPUT["1 데이터 입력 계층"]
-        SRC_B[".source/Bank\n국민 신한 하나은행\nxls xlsx"]
-        SRC_C[".source/Card\n전 카드사\nxls xlsx"]
-        SRC_CT[".source/category_table.xlsx\n분류 규칙 원본"]
+    subgraph INPUT["100 데이터 입력 계층"]
+        SRC_B["110 은행 거래 내역 파일\n국민·신한·하나은행 xls/xlsx"]:::W
+        SRC_C["120 신용카드 승인 내역 파일\n전 카드사 xls/xlsx"]:::W
+        SRC_CT["130 카테고리 규칙 원본\ncategory_table.xlsx"]:::W
     end
 
-    subgraph CORE["2 처리 엔진 계층"]
-        PP_B["은행 전처리 엔진\nprocess_bank_data"]
-        PP_C["카드 전처리 엔진\nprocess_card_data"]
-        CAT["카테고리 분류 엔진\ncategory_table_io"]
-        CACHE["mtime 캐시\nafter_cache\ncategory_table_io"]
-        MERGE["금융정보 통합 엔진\ncash_app"]
-        RISK["위험도 산정 엔진\nrisk_indicators"]
-        OPINION["소명서 생성 엔진\ncash_app"]
+    subgraph CORE["200 처리 엔진 계층"]
+        PP_B["210 은행 전처리 엔진\n은행별 파서+정규화"]:::W
+        PP_C["220 카드 전처리 엔진\n카드사별 파서+정규화"]:::W
+        CAT["230 카테고리 분류 엔진\n3단계 분류"]:::W
+        MERGE["240 금융정보 통합 엔진\n은행+카드 병합"]:::W
+        RISK["250 위험도 산정 엔진\n1~10호 Step-up Scoring"]:::W
+        OPINION["260 소명서 생성 엔진\nR 점수 산출+법적근거 매칭"]:::W
     end
 
-    subgraph DATA["3 데이터 저장 계층"]
-        BB["bank_before.json"]
-        CB["card_before.json"]
-        CT["category_table.json\n분류 키워드 카테고리\n위험도 위험지표"]
-        BA["bank_after.json"]
-        CA["card_after.json"]
-        CASH["cash_after.json\n은행 카드 통합\n위험도 위험도분류 위험도키워드"]
+    subgraph DATA["300 데이터 저장 계층"]
+        BB["310 bank_before"]:::W
+        CB["320 card_before"]:::W
+        CT["330 category_table\n분류·키워드·카테고리·위험도"]:::W
+        BA["340 bank_after"]:::W
+        CA["350 card_after"]:::W
+        CASH["360 cash_after\n통합 분석 데이터"]:::W
     end
 
-    subgraph OUTPUT["4 출력 계층"]
-        RPT_BANK["은행거래 분석 보고서"]
-        RPT_CARD["신용카드 분석 보고서"]
-        RPT_CASH["금융정보 종합분석 보고서"]
-        RPT_RISK["위험도 분석 리포트\nR 점수 등급"]
-        RPT_OPIN["종합의견서 소명서 초안"]
-        RPT_PRINT["인쇄용 통합 보고서"]
+    subgraph OUTPUT["400 출력 보고서 계층"]
+        RPT_BANK["410 은행거래 분석 보고서"]:::W
+        RPT_CARD["420 신용카드 분석 보고서"]:::W
+        RPT_CASH["430 금융정보 종합분석 보고서"]:::W
+        RPT_RISK["440 위험거래 분석 보고서\nR 점수·등급"]:::W
+        RPT_OPIN["450 종합의견서\n소명서 초안"]:::W
     end
 
     SRC_CT --> CT
@@ -95,8 +114,8 @@ graph TB
     CAT --> PP_C
     BB --> CAT --> BA
     CB --> CAT --> CA
-    BA --> CACHE --> MERGE
-    CA --> CACHE --> MERGE
+    BA --> MERGE
+    CA --> MERGE
     CT --> MERGE
     MERGE --> CASH
     CASH --> RISK --> OPINION
@@ -106,257 +125,384 @@ graph TB
     CASH --> RPT_CASH
     RISK --> RPT_RISK
     OPINION --> RPT_OPIN
-    RPT_RISK --> RPT_PRINT
-    RPT_OPIN --> RPT_PRINT
-</div>
 
-<hr>
-<div class="page-break"></div>
-
-<!-- ==================== 2. 데이터 처리 순서도 ==================== -->
-<h2>2. 데이터 처리 순서도 — 전체 파이프라인</h2>
-
-<div class="mermaid">
+    style INPUT fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000
+    style CORE fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000
+    style DATA fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000
+    style OUTPUT fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000
+</pre></p>
+<hr />
+<h2 id="2">2. 데이터 처리 순서도 — 전체 파이프라인</h2>
+<p><pre class="mermaid">
+%%{init: {'theme': 'default'}}%%
 flowchart TD
-    START(["시작"]) --> CHK_SRC{"source 폴더에\nxlsx 파일 존재"}
+    classDef W fill:#ffffff,stroke:#000000,stroke-width:1px,color:#000000
 
-    CHK_SRC -- 예 --> LOAD_B["은행 xlsx 로드\nintegrate_bank_transactions\n은행별 파서 자동 선택"]
-    CHK_SRC -- 예 --> LOAD_C["카드 xlsx 로드\nintegrate_card_excel\n헤더 자동감지 표준컬럼 매핑"]
-    CHK_SRC -- 아니오 --> CHK_BF{"before json\n존재"}
+    START(["시작"]):::W --> CHK_SRC{"100 데이터 입력 계층\nxlsx 파일 존재 여부"}:::W
 
-    LOAD_B --> CLEAN_B["데이터 정제\n금액 정리 잔액 제거 정렬"]
-    LOAD_C --> CLEAN_C["데이터 정제\n가맹점명 보정 입출금 변환"]
+    CHK_SRC -- 예 --> LOAD_B["210 은행 전처리 엔진\n은행 xlsx 로드\n은행별 파서 자동 선택"]:::W
+    CHK_SRC -- 예 --> LOAD_C["220 카드 전처리 엔진\n카드 xlsx 로드\n헤더 자동감지·표준컬럼 매핑"]:::W
+    CHK_SRC -- 아니오 --> CHK_BF{"300 저장 계층\nbefore 데이터 존재 여부"}:::W
 
-    CLEAN_B --> PRE_B["S1 전처리 적용\ncategory_table 전처리 규칙"]
-    CLEAN_C --> PRE_C["S1 전처리 적용\ncategory_table 전처리 규칙"]
+    LOAD_B --> CLEAN_B["210 데이터 정제\n금액 정리·잔액 제거·정렬"]:::W
+    LOAD_C --> CLEAN_C["220 데이터 정제\n가맹점명 보정·입출금 변환"]:::W
 
-    PRE_B --> SAVE_BB["bank_before.json 저장"]
-    PRE_C --> SAVE_CB["card_before.json 저장"]
+    CLEAN_B --> PRE_B["230-S1 전처리 적용\n카테고리 규칙 330 참조"]:::W
+    CLEAN_C --> PRE_C["230-S1 전처리 적용\n카테고리 규칙 330 참조"]:::W
 
-    SAVE_BB --> CLASS_B["S2 계정과목 분류\napply_category_from_bank\n키워드 매칭 긴 키워드 우선"]
-    SAVE_CB --> CLASS_C["S2 계정과목 분류\napply_category_from_merchant\n가맹점명 기반 매칭"]
+    PRE_B --> SAVE_BB["310 bank_before 저장"]:::W
+    PRE_C --> SAVE_CB["320 card_before 저장"]:::W
+
+    SAVE_BB --> CLASS_B["230-S2 계정과목 분류\n최장 일치 키워드 매칭"]:::W
+    SAVE_CB --> CLASS_C["230-S2 계정과목 분류\n가맹점명 기반 매칭"]:::W
 
     CHK_BF -- 예 --> CLASS_B
     CHK_BF -- 예 --> CLASS_C
 
-    CLASS_B --> POST_B["S3 후처리 적용\napply_후처리_bank\ncategory_table 후처리 규칙"]
-    CLASS_C --> POST_C["S3 후처리 적용\ncategory_table 후처리 규칙"]
+    CLASS_B --> POST_B["230-S3 후처리 적용\n법적 용어 재정규화"]:::W
+    CLASS_C --> POST_C["230-S3 후처리 적용\n법적 용어 재정규화"]:::W
 
-    POST_B --> SAVE_BA["bank_after.json 저장\nsafe_write_data_json"]
-    POST_C --> SAVE_CA["card_after.json 저장\nsafe_write_data_json"]
+    POST_B --> SAVE_BA["340 bank_after 저장"]:::W
+    POST_C --> SAVE_CA["350 card_after 저장"]:::W
 
-    SAVE_BA --> MERGE_CASH["merge_bank_card_to_cash_after\n은행 카드 병합\n통합 DataFrame 생성"]
+    SAVE_BA --> MERGE_CASH["240 금융정보 통합 엔진\n은행+카드 병합"]:::W
     SAVE_CA --> MERGE_CASH
 
-    MERGE_CASH --> RISK_IND["apply_risk_indicators\n위험도 1호~10호 순차 판정"]
-    RISK_IND --> SAVE_CASH["cash_after.json 저장"]
+    MERGE_CASH --> RISK_IND["250 위험도 산정 엔진\n1호~10호 순차 판정"]:::W
+    RISK_IND --> SAVE_CASH["360 cash_after 저장"]:::W
 
-    SAVE_CASH --> ANALYSIS["분석 API 제공\nanalysis_common"]
-    SAVE_CASH --> RISK_RPT["_calculate_risk_report\nR 점수 산출 등급 판정"]
-    RISK_RPT --> OPINION_GEN["_generate_draft_explanation\n소명서 초안 자동 생성"]
-    RISK_RPT --> SUGGEST["SUGGESTION_TEMPLATES\n소명 전략 제공"]
+    SAVE_CASH --> RISK_RPT["260 소명서 생성 엔진\nR 점수 산출·등급 판정"]:::W
+    RISK_RPT --> OPINION_GEN["260 소명서 초안 자동 생성\n템플릿+법적근거 매칭"]:::W
+    RISK_RPT --> RPT_RISK["440 위험거래 분석 보고서"]:::W
+    OPINION_GEN --> RPT_OPIN["450 종합의견서"]:::W
 
-    ANALYSIS --> END(["완료"])
-    OPINION_GEN --> END
-    SUGGEST --> END
-</div>
-
-<hr>
-<div class="page-break"></div>
-
-<!-- ==================== 3. 카테고리 3단계 분류 ==================== -->
-<h2>3. 카테고리 3단계 분류 상세도</h2>
-
-<div class="mermaid">
+    RPT_RISK --> END(["완료"]):::W
+    RPT_OPIN --> END
+</pre></p>
+<hr />
+<h2 id="3-3">3. 카테고리 3단계 분류 상세도</h2>
+<p><pre class="mermaid">
+%%{init: {'theme': 'default'}}%%
 flowchart LR
-    subgraph STAGE1["1단계 전처리"]
+    classDef W fill:#ffffff,stroke:#000000,stroke-width:1px,color:#000000
+
+    subgraph STAGE1["230-S1 전처리"]
         direction TB
-        S1_IN["원본 거래 데이터"] --> S1_LOAD["category_table에서\n분류=전처리 행 로드"]
-        S1_LOAD --> S1_MATCH["키워드를 카테고리로 치환\n긴 키워드 우선 적용"]
-        S1_MATCH --> S1_OUT["정제된 적요 가맹점명"]
+        S1_IN["원본 거래 데이터\n110/120"]:::W --> S1_LOAD["330 카테고리 규칙\n분류=전처리 행 로드"]:::W
+        S1_LOAD --> S1_MATCH["키워드→카테고리 치환\n긴 키워드 우선 적용"]:::W
+        S1_MATCH --> S1_OUT["정제된 적요·가맹점명"]:::W
     end
 
-    subgraph STAGE2["2단계 계정과목 분류"]
+    subgraph STAGE2["230-S2 계정과목 분류"]
         direction TB
-        S2_IN["정제된 거래 데이터"] --> S2_TEXT["검색 문자열 생성\n적요 내용 송금메모 거래점"]
-        S2_TEXT --> S2_MATCH["분류=계정과목 키워드 매칭\n최장 일치 방식"]
-        S2_MATCH --> S2_CHK{"매칭\n성공"}
-        S2_CHK -- 예 --> S2_CAT["해당 카테고리 부여"]
-        S2_CHK -- 아니오 --> S2_DEF["기타거래 부여"]
+        S2_IN["정제된 거래 데이터"]:::W --> S2_TEXT["검색 문자열 생성\n적요·내용·송금메모·거래점"]:::W
+        S2_TEXT --> S2_MATCH["분류=계정과목 키워드 매칭\n최장 일치 방식"]:::W
+        S2_MATCH --> S2_CHK{"매칭\n성공"}:::W
+        S2_CHK -- 예 --> S2_CAT["해당 카테고리 부여"]:::W
+        S2_CHK -- 아니오 --> S2_DEF["기타거래 부여"]:::W
     end
 
-    subgraph STAGE3["3단계 후처리"]
+    subgraph STAGE3["230-S3 후처리"]
         direction TB
-        S3_IN["분류 완료 데이터"] --> S3_LOAD["category_table에서\n분류=후처리 행 로드"]
-        S3_LOAD --> S3_MATCH["키워드를 카테고리로 재치환\n최종 보정"]
-        S3_MATCH --> S3_OUT["after json 저장"]
+        S3_IN["분류 완료 데이터"]:::W --> S3_LOAD["330 카테고리 규칙\n분류=후처리 행 로드"]:::W
+        S3_LOAD --> S3_MATCH["키워드→카테고리 재치환\n법적 용어 최종 보정"]:::W
+        S3_MATCH --> S3_OUT["340/350 after 저장"]:::W
     end
 
     STAGE1 --> STAGE2 --> STAGE3
-</div>
 
-<h3>카테고리 테이블 구조 (category_table.json)</h3>
+    style STAGE1 fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000
+    style STAGE2 fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000
+    style STAGE3 fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000
+</pre></p>
+<h3 id="category_tablejson">카테고리 테이블 구조 (category_table.json)</h3>
 <table>
-  <tr><th>컬럼</th><th>설명</th><th>예시</th></tr>
-  <tr><td><strong>분류</strong></td><td>처리 단계 구분</td><td>전처리, 계정과목, 후처리, 위험도분류, 업종분류, 심야구분, VASP계좌, 신청인</td></tr>
-  <tr><td><strong>키워드</strong></td><td>매칭 대상 문자열</td><td>카카오페이, 스타벅스, 국민연금</td></tr>
-  <tr><td><strong>카테고리</strong></td><td>분류 결과</td><td>간편결제, 식음료, 사회보험</td></tr>
-  <tr><td><strong>위험도</strong></td><td>위험도 수치 (5호~10호)</td><td>2.0, 3.0, 5.0</td></tr>
-  <tr><td><strong>위험지표</strong></td><td>최소 출금액 기준 (원)</td><td>50000, 100000</td></tr>
+<thead>
+<tr>
+<th>컬럼</th>
+<th>설명</th>
+<th>예시</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>분류</strong></td>
+<td>처리 단계 구분</td>
+<td><code>전처리</code>, <code>계정과목</code>, <code>후처리</code>, <code>위험도분류</code>, <code>업종분류</code>, <code>심야구분</code>, <code>VASP계좌</code>, <code>신청인</code></td>
+</tr>
+<tr>
+<td><strong>키워드</strong></td>
+<td>매칭 대상 문자열</td>
+<td><code>카카오페이</code>, <code>스타벅스</code>, <code>국민연금</code></td>
+</tr>
+<tr>
+<td><strong>카테고리</strong></td>
+<td>분류 결과</td>
+<td><code>간편결제</code>, <code>식음료</code>, <code>사회보험</code></td>
+</tr>
+<tr>
+<td><strong>위험도</strong></td>
+<td>위험도 수치 (5호~10호)</td>
+<td><code>2.0</code>, <code>3.0</code>, <code>5.0</code></td>
+</tr>
+<tr>
+<td><strong>위험지표</strong></td>
+<td>최소 출금액 기준 (원)</td>
+<td><code>50000</code>, <code>100000</code></td>
+</tr>
+</tbody>
 </table>
-
-<h3>업종분류와 법적 근거</h3>
-<p>카테고리 테이블의 <strong>분류=업종분류</strong> 행은 거래 적요·가맹점명에서 추출한 사업자의 업종을
+<h3 id="_1">업종분류와 법적 근거</h3>
+<p>카테고리 테이블의 <strong>분류=업종분류</strong> 행은 거래 적요·가맹점명에서 추출한 사업자의 업종을<br />
 법적으로 정의된 업종 분류 체계와 대조하여 위험도 산정의 보조 판단 자료로 활용한다.</p>
-<p>특히, <strong>중소기업진흥에 관한 법률 시행령 제33조제1항제2호가목 [별표 1]</strong>에서 규정하는
-<strong>협업기업 선정에서 제외되는 업종</strong> (사행시설관리·운영업, 무도장운영업, 주점업 등)은
-채무자회생법 제564조의 면책불허가 사유인 <strong>사치·낭비·사행행위</strong> 판단과 직접적으로
-연관되므로, 해당 업종 목록을 카테고리 테이블에 포함하여 위험도 지표 5호(투기성)·
+<p>특히, <strong>중소기업진흥에 관한 법률 시행령 제33조제1항제2호가목 [별표 1]</strong>에서 규정하는<br />
+<strong>협업기업 선정에서 제외되는 업종</strong> (사행시설관리·운영업, 무도장운영업, 주점업 등)은<br />
+채무자회생법 제564조의 면책불허가 사유인 <strong>사치·낭비·사행행위</strong> 판단과 직접적으로<br />
+연관되므로, 해당 업종 목록을 카테고리 테이블에 포함하여 위험도 지표 5호(투기성)·<br />
 9호(과소비)·10호(사행성) 판정의 근거 데이터로 활용한다.</p>
 <table>
-  <tr><th>법적 근거</th><th>적용 영역</th></tr>
-  <tr><td>중소기업진흥에 관한 법률 시행령 [별표 1] 협업기업 제외 업종</td><td>업종분류 키워드 소스 — 사행·유흥·도박 관련 업종 식별</td></tr>
-  <tr><td>통계청 한국표준산업분류(KSIC) 10차</td><td>업종코드 체계 기반 분류</td></tr>
-  <tr><td>국세청 기준(단순)경비율 업종코드</td><td>사업자번호 기반 업종 대조</td></tr>
-  <tr><td>채무자회생법 제564조 1항 각호</td><td>위험도 지표 1~10호 최종 판정</td></tr>
+<thead>
+<tr>
+<th>법적 근거</th>
+<th>적용 영역</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>중소기업진흥에 관한 법률 시행령 [별표 1] 협업기업 제외 업종</td>
+<td>업종분류 키워드 소스 — 사행·유흥·도박 관련 업종 식별</td>
+</tr>
+<tr>
+<td>통계청 한국표준산업분류(KSIC) 10차</td>
+<td>업종코드 체계 기반 분류</td>
+</tr>
+<tr>
+<td>국세청 기준(단순)경비율 업종코드</td>
+<td>사업자번호 기반 업종 대조</td>
+</tr>
+<tr>
+<td>채무자회생법 제564조 1항 각호</td>
+<td>위험도 지표 1~10호 최종 판정</td>
+</tr>
+</tbody>
 </table>
-
-<h3>외부 사업자 검증 — 선택적 확장 경로</h3>
-
-<p>현재 시스템은 금융기관이 제공하는 거래내역(xls/xlsx)의 텍스트 정보(적요·가맹점명·사업자번호)만을 기반으로 분류 및 위험도를 산정한다.
-다른 실시예에서는 외부 API를 통해 사업자등록번호의 업종 정보를 조회·대조하여 분류 정확도를 높일 수 있다.</p>
-
-<p>다만, 현재 이 확장이 적용되지 않는 이유는 기술적 한계가 아닌 <strong>법적·제도적 제약</strong>에 기인한다:</p>
-
+<h3 id="_2">외부 사업자 검증 — 선택적 확장 경로</h3>
+<p>현재 시스템은 금융기관이 제공하는 거래내역(xls/xlsx)의 텍스트 정보(적요·가맹점명·<br />
+사업자번호)만을 기반으로 분류 및 위험도를 산정한다. 다른 실시예에서는 외부 API를<br />
+통해 사업자등록번호의 업종 정보를 조회·대조하여 분류 정확도를 높일 수 있다.</p>
+<p>다만, 현재 이 확장이 적용되지 않는 이유는 기술적 한계가 아닌 <strong>법적·제도적 제약</strong><br />
+에 기인한다:</p>
 <table>
-  <tr><th>제약 요인</th><th>상세</th></tr>
-  <tr><td>금융기관 제공 데이터의 한계</td><td>은행 이체 내역에는 사업자등록번호가 포함되지 않으며, 카드 매출전표에만 일부 포함</td></tr>
-  <tr><td>개인정보보호법</td><td>사업자등록번호 조회·대조 시 정보주체 동의 또는 법률상 근거 필요</td></tr>
-  <tr><td>국세청 업종분류 접근 제한</td><td>주업종/부업종 코드만 공개 조회 가능. 상세 업태·종목은 사업자 본인만 조회</td></tr>
-  <tr><td>VAN/PG 사업자 정보</td><td>가맹점 상세 정보(업종·폐업 여부) 조회 시 사업자등록번호·본인 동의 등 별도 절차 필요</td></tr>
-  <tr><td>실명확인법·전자금융거래법</td><td>API 연동 시 본인확인·전자서명 등 추가 법적 절차 요구 가능</td></tr>
+<thead>
+<tr>
+<th>제약 요인</th>
+<th>상세</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>금융기관 제공 데이터의 한계</td>
+<td>은행 이체 내역에는 사업자등록번호가 포함되지 않으며, 카드 매출전표에만 일부 포함</td>
+</tr>
+<tr>
+<td>개인정보보호법</td>
+<td>사업자등록번호 조회·대조 시 정보주체 동의 또는 법률상 근거 필요</td>
+</tr>
+<tr>
+<td>국세청 업종분류 접근 제한</td>
+<td>주업종/부업종 코드만 공개 조회 가능. 상세 업태·종목은 사업자 본인만 조회</td>
+</tr>
+<tr>
+<td>VAN/PG 사업자 정보</td>
+<td>가맹점 상세 정보(업종·폐업 여부) 조회 시 사업자등록번호·본인 동의 등 별도 절차 필요</td>
+</tr>
+<tr>
+<td>실명확인법·전자금융거래법</td>
+<td>API 연동 시 본인확인·전자서명 등 추가 법적 절차 요구 가능</td>
+</tr>
+</tbody>
 </table>
-
-<p>상기 법적·제도적 장치가 보완되는 경우, 시스템은 다음과 같이 확장될 수 있다:</p>
-<ol>
-  <li>카드 매출전표의 사업자등록번호를 국세청 API로 조회하여 업종 자동 분류</li>
-  <li>VAN/PG 사업자 API를 통해 가맹점 폐업 여부를 실시간 확인</li>
-  <li>은행 이체의 수취인 계좌에 대해 금융정보분석원(FIU) 등록 정보를 대조</li>
-</ol>
-
-<hr>
-<div class="page-break"></div>
-
-<!-- ==================== 4. 위험도 산정 순서도 ==================== -->
-<h2>4. 위험도 산정 순서도 — 1호~10호 지표</h2>
-
-<div class="mermaid">
+<p>상기 법적·제도적 장치가 보완되는 경우, 시스템은 다음과 같이 확장될 수 있다:<br />
+1. 카드 매출전표의 사업자등록번호를 국세청 API로 조회하여 업종 자동 분류<br />
+2. VAN/PG 사업자 API를 통해 가맹점 폐업 여부를 실시간 확인<br />
+3. 은행 이체의 수취인 계좌에 대해 금융정보분석원(FIU) 등록 정보를 대조</p>
+<hr />
+<h2 id="4-110">4. 위험도 산정 순서도 — 1호~10호 지표</h2>
+<p><pre class="mermaid">
+%%{init: {'theme': 'default'}}%%
 flowchart TD
-    IN["cash_after 거래 1건"] --> BASE["1호 분류제외지표\n위험도 0.1\n기본값 부여"]
+    classDef W fill:#ffffff,stroke:#000000,stroke-width:1px,color:#000000
 
-    BASE --> CHK2{"2호 조건\n폐업 Y OR\n심야시간대 AND\n출금 GTE 기준액"}
-    CHK2 -- 예 --> SET2["2호 심야폐업지표\n위험도 0.5\n위험도키워드 폐업 심야"]
+    IN["360 cash_after 거래 1건"]:::W --> BASE["250-1호 분류제외지표\n위험도 0.1 기본값"]:::W
+
+    BASE --> CHK2{"250-2호 조건\n폐업 Y OR\n심야시간대 AND\n출금 ≥ 기준액"}:::W
+    CHK2 -- 예 --> SET2["250-2호 심야폐업지표\n위험도 0.5"]:::W
     CHK2 -- 아니오 --> CHK3
 
-    SET2 --> SKIP_2["2호 적용 행은\n3호~10호 건너뜀"]
+    SET2 --> SKIP_2["2호 적용 시\n3호~10호 판정 생략"]:::W
     SKIP_2 --> OUT
 
-    CHK3{"3호 조건\n출금액 GTE 기준액"} -- 예 --> SET3["3호 자료소명지표\n위험도 1.0\n위험도키워드=해당 키워드"]
+    CHK3{"250-3호 조건\n출금액 ≥ 기준액"}:::W -- 예 --> SET3["250-3호 자료소명지표\n위험도 1.0"]:::W
     CHK3 -- 아니오 --> CHK4
 
-    SET3 --> CHK4{"4호 조건\n입금 0원 AND\n출금 GTE 기준액 AND\n동일키워드 3회 이상"}
-    CHK4 -- 예 --> SET4["4호 비정형지표\n위험도 1.5\n위험도키워드=기준액 이상"]
+    SET3 --> CHK4{"250-4호 조건\n입금 0원 AND\n출금 ≥ 기준액 AND\n동일키워드 3회 이상"}:::W
+    CHK4 -- 예 --> SET4["250-4호 비정형지표\n위험도 1.5"]:::W
     CHK4 -- 아니오 --> CHK5
 
-    SET4 --> CHK5{"5호~10호\n카테고리 키워드 기타거래에서\n위험도분류 키워드 매칭\nAND 출금 GTE 기준액"}
+    SET4 --> CHK5{"250-5호~10호\n위험도분류 키워드 매칭\nAND 출금 ≥ 기준액"}:::W
 
-    CHK5 -- 5호 투기성 --> SET5["위험도 2.0"]
-    CHK5 -- 6호 사기파산 --> SET6["위험도 2.5"]
-    CHK5 -- 7호 가상자산 --> VASP{"VASP 식별\ndetect_vasp"}
-    VASP -- "카테고리=가상자산\nOR 계좌접두번호 매칭\nOR VASP사업자명 매칭" --> SET7["위험도 3.0\n위험도키워드=가상계좌 등"]
-    VASP -- 미해당 --> CHK5B{"기존 키워드\n매칭"}
+    CHK5 -- 5호 투기성 --> SET5["위험도 2.0"]:::W
+    CHK5 -- 6호 사기파산 --> SET6["위험도 2.5"]:::W
+    CHK5 -- 7호 가상자산 --> VASP{"VASP 식별\n카테고리·계좌번호·사업자명"}:::W
+    VASP -- "카테고리=가상자산\nOR 접두번호 매칭\nOR 사업자명 매칭" --> SET7["위험도 3.0"]:::W
+    VASP -- 미해당 --> CHK5B{"기존 키워드\n매칭"}:::W
     CHK5B -- 매칭 --> SET7
     CHK5B -- 미해당 --> KEEP
-    CHK5 -- 8호 자산은닉 --> SET8["위험도 3.5"]
-    CHK5 -- 9호 과소비 --> SET9["위험도 4.0"]
-    CHK5 -- 10호 사행성 --> SET10["위험도 5.0"]
-    CHK5 -- 미해당 --> KEEP["이전 단계 위험도 유지"]
+    CHK5 -- 8호 자산은닉 --> SET8["위험도 3.5"]:::W
+    CHK5 -- 9호 과소비 --> SET9["위험도 4.0"]:::W
+    CHK5 -- 10호 사행성 --> SET10["위험도 5.0"]:::W
+    CHK5 -- 미해당 --> KEEP["이전 단계 위험도 유지"]:::W
 
-    SET5 --> OUT["최종 위험도 확정\n위험도분류 위험도키워드 저장"]
+    SET5 --> OUT["360 최종 위험도 확정\n위험도분류·위험도키워드 저장"]:::W
     SET6 --> OUT
     SET7 --> OUT
     SET8 --> OUT
     SET9 --> OUT
     SET10 --> OUT
     KEEP --> OUT
-</div>
-
-<h3>위험도 지표 상세 정의</h3>
+</pre></p>
+<h3 id="_3">위험도 지표 상세 정의</h3>
 <table>
-  <tr><th>호수</th><th>지표명</th><th>위험도 값</th><th>판정 조건</th><th>법적 근거</th></tr>
-  <tr><td>1호</td><td>분류제외지표</td><td>0.1</td><td>2~10호 미해당 기본값</td><td>—</td></tr>
-  <tr><td>2호</td><td>심야폐업지표</td><td>0.5</td><td>폐업 업소 OR 심야시간대 AND 출금 ≥ 기준액</td><td>채무자회생법 제564조</td></tr>
-  <tr><td>3호</td><td>자료소명지표</td><td>1.0</td><td>출금액 ≥ 기준액</td><td>채무자회생법 제564조</td></tr>
-  <tr><td>4호</td><td>비정형지표</td><td>1.5</td><td>입금 0원 · 출금 ≥ 기준액 · 동일키워드 3회 이상</td><td>채무자회생법 제564조</td></tr>
-  <tr><td>5호</td><td>투기성지표</td><td>2.0</td><td>위험도분류 투기 키워드 · 출금 ≥ 기준액</td><td>동법 제564조 1항 5호</td></tr>
-  <tr><td>6호</td><td>사기파산지표</td><td>2.5</td><td>위험도분류 사기 키워드 · 출금 ≥ 기준액</td><td>동법 제564조 1항 2호</td></tr>
-  <tr><td>7호</td><td>가상자산지표</td><td>3.0</td><td>카테고리=가상자산 OR VASP 가상계좌 접두번호 매칭 OR VASP 사업자명 매칭 · 출금 ≥ 기준액</td><td>동법 제564조 1항 5호</td></tr>
-  <tr><td>8호</td><td>자산은닉지표</td><td>3.5</td><td>위험도분류 은닉 키워드 · 출금 ≥ 기준액</td><td>동법 제564조 1항 1호</td></tr>
-  <tr><td>9호</td><td>과소비지표</td><td>4.0</td><td>위험도분류 과소비 키워드 · 출금 ≥ 기준액</td><td>동법 제564조 1항 5호</td></tr>
-  <tr><td>10호</td><td>사행성지표</td><td>5.0</td><td>위험도분류 사행성 키워드 · 출금 ≥ 기준액</td><td>동법 제564조 1항 5호</td></tr>
+<thead>
+<tr>
+<th>호수</th>
+<th>지표명</th>
+<th>위험도 값</th>
+<th>판정 조건</th>
+<th>법적 근거</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1호</td>
+<td>분류제외지표</td>
+<td>0.1</td>
+<td>2~10호 미해당 기본값</td>
+<td>—</td>
+</tr>
+<tr>
+<td>2호</td>
+<td>심야폐업지표</td>
+<td>0.5</td>
+<td>폐업 업소 OR 심야시간대 AND 출금 GTE 기준액</td>
+<td>채무자회생법 제564조</td>
+</tr>
+<tr>
+<td>3호</td>
+<td>자료소명지표</td>
+<td>1.0</td>
+<td>출금액 GTE 기준액</td>
+<td>채무자회생법 제564조</td>
+</tr>
+<tr>
+<td>4호</td>
+<td>비정형지표</td>
+<td>1.5</td>
+<td>입금 0원·출금 GTE 기준액·동일키워드 3회 이상 반복</td>
+<td>채무자회생법 제564조</td>
+</tr>
+<tr>
+<td>5호</td>
+<td>투기성지표</td>
+<td>2.0</td>
+<td>위험도분류 투기 키워드·출금 GTE 기준액</td>
+<td>동법 제564조 1항 5호</td>
+</tr>
+<tr>
+<td>6호</td>
+<td>사기파산지표</td>
+<td>2.5</td>
+<td>위험도분류 사기 키워드·출금 GTE 기준액</td>
+<td>동법 제564조 1항 2호</td>
+</tr>
+<tr>
+<td>7호</td>
+<td>가상자산지표</td>
+<td>3.0</td>
+<td>카테고리=가상자산 OR VASP 가상계좌 접두번호 매칭 OR VASP 사업자명 매칭·출금 GTE 기준액</td>
+<td>동법 제564조 1항 5호</td>
+</tr>
+<tr>
+<td>8호</td>
+<td>자산은닉지표</td>
+<td>3.5</td>
+<td>위험도분류 은닉 키워드·출금 GTE 기준액</td>
+<td>동법 제564조 1항 1호</td>
+</tr>
+<tr>
+<td>9호</td>
+<td>과소비지표</td>
+<td>4.0</td>
+<td>위험도분류 과소비 키워드·출금 GTE 기준액</td>
+<td>동법 제564조 1항 5호</td>
+</tr>
+<tr>
+<td>10호</td>
+<td>사행성지표</td>
+<td>5.0</td>
+<td>위험도분류 사행성 키워드·출금 GTE 기준액</td>
+<td>동법 제564조 1항 5호</td>
+</tr>
+</tbody>
 </table>
-
 <blockquote>
-  <strong>심야시간대</strong>: category_table 분류=심야구분 행의 키워드로 정의 (기본 22:00~06:00)<br>
-  <strong>기준액</strong>: category_table 분류=위험도분류 행의 위험지표 값 (단위: 원)<br>
-  <strong>2호 적용 행</strong>: 2호 조건 충족 시 해당 행은 3~10호 조건을 판정하지 않음
+<p><strong>심야시간대</strong>: category_table 분류=심야구분 행의 키워드로 정의 (기본 22:00~06:00)<br />
+<strong>기준액</strong>: category_table 분류=위험도분류 행의 위험지표 값 (단위: 원)<br />
+<strong>GTE</strong>: 이상 (Greater Than or Equal)<br />
+<strong>2호 적용 행</strong>: 2호 조건 충족 시 해당 행은 3~10호 조건을 판정하지 않음</p>
 </blockquote>
-
-<hr>
-<div class="page-break"></div>
-
-<!-- ==================== 5. 소명서 자동 생성 ==================== -->
-<h2>5. 위험도 분석 리포트 · 소명서 자동 생성 순서도</h2>
-
-<div class="mermaid">
+<hr />
+<h2 id="5">5. 위험도 분석 리포트 · 소명서 자동 생성 순서도</h2>
+<p><pre class="mermaid">
+%%{init: {'theme': 'default'}}%%
 flowchart TD
-    CASH["cash_after.json\n위험도 적용 완료"] --> CALC["_calculate_risk_report\n위험거래 집계"]
+    classDef W fill:#ffffff,stroke:#000000,stroke-width:1px,color:#000000
 
-    CALC --> FILTER{"위험도\nGTE 0.5"}
-    FILTER -- 예 --> SCORE["R 점수 산출\nR = w x log10 1 + f x avg_a x T x Θ x S"]
-    FILTER -- 아니오 --> SKIP["분석 대상 제외"]
+    CASH["360 cash_after\n위험도 적용 완료"]:::W --> CALC["260 위험거래 집계"]:::W
 
-    SCORE --> TCOEF["T 계수 산출\n_compute_temporal_proximity\n집중도C 최근성P"]
-    TCOEF --> GROUP["지표별 그룹핑\n건수 금액 합산"]
-    GROUP --> GRADE["등급 판정\n안전 / 보통 / 주의 / 심각"]
+    CALC --> FILTER{"위험도 ≥ 0.5"}:::W
+    FILTER -- 예 --> SCORE["260 R 점수 산출\nR = w × log₁₀(1+f×avg_a) × T × Θ × S"]:::W
+    FILTER -- 아니오 --> SKIP["분석 대상 제외"]:::W
 
-    GRADE --> TOP5["상위 항목 선정\n금액 기준 정렬"]
+    SCORE --> TCOEF["260 T 계수 산출\n집중도 C · 최근성 P"]:::W
+    TCOEF --> GROUP["260 지표별 그룹핑\n건수·금액 합산"]:::W
+    GROUP --> GRADE["260 등급 판정\n안전 / 보통 / 주의 / 심각"]:::W
 
-    TOP5 --> MODE{"소명 생성\n방식 선택"}
+    GRADE --> TOP5["260 상위 항목 선정\n금액 기준 정렬"]:::W
 
-    MODE -- 정형 생성 --> GEN_SUGGEST["소명 전략 생성\nSUGGESTION_TEMPLATES"]
-    MODE -- 정형 생성 --> GEN_LEGAL["법적 근거 매칭\nLEGAL_REFERENCES"]
-    MODE -- 정형 생성 --> GEN_DRAFT["소명서 초안 생성\n_generate_draft_explanation\n템플릿 치환 방식"]
+    TOP5 --> MODE{"소명 생성\n방식 선택"}:::W
 
-    MODE -. "AI 합성\n(선택적 확장)" .-> GEN_AI["생성형 AI 소명 합성\n구조화 위험도 데이터\n+ 법적 맥락 입력\n→ 사건별 맞춤 문안 출력"]
+    MODE -- 정형 생성 --> GEN_SUGGEST["260a 소명 전략 생성\n지표별 템플릿"]:::W
+    MODE -- 정형 생성 --> GEN_LEGAL["260a 법적 근거 매칭\n법조항 참조"]:::W
+    MODE -- 정형 생성 --> GEN_DRAFT["260a 소명서 초안 생성\n템플릿 치환 방식"]:::W
 
-    MODE -. "인터랙티브 Q&A\n(선택적 확장)" .-> QA_GEN["지표별 질의 생성\n위험 항목 기반\n맞춤 질문 출력"]
-    QA_GEN -.-> QA_COLLECT["사용자 답변 수집"]
-    QA_COLLECT -.-> QA_MERGE["답변 반영\n소명서 초안 재생성"]
+    MODE -. "AI 합성\n선택적 확장" .-> GEN_AI["260b 생성형 AI 소명 합성\n구조화 위험도 데이터\n+ 법적 맥락 → 맞춤 문안"]:::W
 
-    GEN_SUGGEST --> COMPOSE["보고서 구성"]
+    MODE -. "인터랙티브 Q&A\n선택적 확장" .-> QA_GEN["260c 지표별 질의 생성\n위험 항목 기반 맞춤 질문"]:::W
+    QA_GEN -.-> QA_COLLECT["260c 사용자 답변 수집"]:::W
+    QA_COLLECT -.-> QA_MERGE["260c 답변 반영\n소명서 초안 재생성"]:::W
+
+    GEN_SUGGEST --> COMPOSE["400 보고서 구성"]:::W
     GEN_LEGAL --> COMPOSE
     GEN_DRAFT --> COMPOSE
     GEN_AI -.-> COMPOSE
     QA_MERGE -.-> COMPOSE
 
-    COMPOSE --> RPT_RISK["위험도 분석 리포트\nanalysis/risk-report"]
-    COMPOSE --> RPT_OPIN["종합의견서\nanalysis/opinion"]
-    COMPOSE --> RPT_PRINT["인쇄용 통합 보고서\nanalysis/print"]
-</div>
-
-<h3>R 점수 산출 공식</h3>
-<pre>R = w × log₁₀(1 + f × avg_a) × T × Θ × S
+    COMPOSE --> RPT_RISK["440 위험거래 분석 보고서"]:::W
+    COMPOSE --> RPT_OPIN["450 종합의견서"]:::W
+</pre></p>
+<h3 id="r">R 점수 산출 공식</h3>
+<pre class="codehilite"><code>R = w × log₁₀(1 + f × avg_a) × T × Θ × S
 
 w    : 위험도 가중치 (1호 0.1 ~ 10호 5.0)
 f    : 해당 지표 거래 건수
@@ -396,25 +542,26 @@ S = 1 − (입금합계 / 출금합계)
   R &lt; 10  → 안전(Safe)
   R &lt; 20  → 보통(Normal)
   R &lt; 30  → 주의(Caution)
-  R ≥ 30  → 심각(Critical)</pre>
+  R ≥ 30  → 심각(Critical)
+</code></pre>
 
-<h3>소명서 초안 생성 방식</h3>
+<h3 id="_4">소명서 초안 생성 방식</h3>
+<h4 id="a">(a) 정형 생성 — 템플릿 치환 방식 (현재 구현)</h4>
+<pre class="codehilite"><code>입력: 지표명, 거래 건수, 총 금액
 
-<h4>(a) 정형 생성 — 템플릿 치환 방식 (현재 구현)</h4>
-<pre>입력: 지표명, 거래 건수, 총 금액
-
-_generate_draft_explanation("가상자산지표", 5, "3,500,000원")
+_generate_draft_explanation(&quot;가상자산지표&quot;, 5, &quot;3,500,000원&quot;)
 
 출력:
-"위 가상자산 관련 거래 5건(3,500,000원)은 투자 목적이었으며,
+&quot;위 가상자산 관련 거래 5건(3,500,000원)은 투자 목적이었으며,
  현재는 모든 가상자산 계정을 해지하였고, 향후 가상자산 거래를
- 하지 않겠습니다."
+ 하지 않겠습니다.&quot;
 
 ※ 지표별 10종의 법적 소명 템플릿(SUGGESTION_TEMPLATES) 내장
-※ 법조항 참조(LEGAL_REFERENCES) 자동 매칭</pre>
+※ 법조항 참조(LEGAL_REFERENCES) 자동 매칭
+</code></pre>
 
-<h4>(b) 생성형 AI 소명 합성 — 선택적 확장 경로</h4>
-<pre>입력: 구조화된 위험도 분석 결과 (지표명, R 점수, T 계수, 건수, 금액)
+<h4 id="b-ai">(b) 생성형 AI 소명 합성 — 선택적 확장 경로</h4>
+<pre class="codehilite"><code>입력: 구조화된 위험도 분석 결과 (지표명, R 점수, T 계수, 건수, 금액)
      + 법적 맥락 (LEGAL_REFERENCES, 채무자회생법 조문)
      + 사건 개별 정보 (채무자 직업, 가족 구성 등 선택적)
 
@@ -424,17 +571,18 @@ _generate_draft_explanation("가상자산지표", 5, "3,500,000원")
 
 ※ 정형 생성(a)의 템플릿 출력을 기본값으로 하되,
   AI 합성 결과가 가용한 경우 이를 우선 사용
-※ AI 합성 불가 시 자동으로 정형 생성(a)으로 폴백</pre>
+※ AI 합성 불가 시 자동으로 정형 생성(a)으로 폴백
+</code></pre>
 
-<h4>(c) 인터랙티브 질의응답 — 선택적 확장 경로</h4>
-<pre>[1단계: 질의 생성]
+<h4 id="c">(c) 인터랙티브 질의응답 — 선택적 확장 경로</h4>
+<pre class="codehilite"><code>[1단계: 질의 생성]
   입력: 위험도 분석 결과 (상위 위험 항목, 지표명, R 점수, 법조항)
   처리: 지표별 사전 정의된 질의 템플릿에서 맞춤 질문 생성
 
   예시 (가상자산지표, R=12.5):
-    Q1. "가상자산 거래 5건(3,500,000원)의 투자 원금 출처는?"
-    Q2. "현재 가상자산 보유 여부 및 잔여 수량은?"
-    Q3. "향후 거래 중단 의사가 있습니까?"
+    Q1. &quot;가상자산 거래 5건(3,500,000원)의 투자 원금 출처는?&quot;
+    Q2. &quot;현재 가상자산 보유 여부 및 잔여 수량은?&quot;
+    Q3. &quot;향후 거래 중단 의사가 있습니까?&quot;
 
 [2단계: 답변 수집]
   사용자가 UI를 통해 각 질문에 답변 입력
@@ -445,51 +593,51 @@ _generate_draft_explanation("가상자산지표", 5, "3,500,000원")
   정형 생성(a)의 자동 문구를 사용자 실제 답변으로 대체
 
   출력 예시:
-  "위 가상자산 관련 거래 5건(3,500,000원)은 퇴직금 일부를
+  &quot;위 가상자산 관련 거래 5건(3,500,000원)은 퇴직금 일부를
    사용한 투자 목적이었으며, 현재 보유 자산은 없습니다.
-   향후 가상자산 거래를 하지 않겠습니다."
+   향후 가상자산 거래를 하지 않겠습니다.&quot;
 
 ※ 정형 생성(a)을 기본값으로 하되,
   사용자 답변이 입력된 항목만 선택적으로 교체
-※ 답변 미입력 시 정형 생성(a) 문구를 그대로 유지 (폴백)</pre>
+※ 답변 미입력 시 정형 생성(a) 문구를 그대로 유지 (폴백)
+</code></pre>
 
-<hr>
-<div class="page-break"></div>
+<hr />
+<h2 id="6">6. 모듈 구성도</h2>
+<p><pre class="mermaid">
+%%{init: {'theme': 'default'}}%%
+flowchart LR
+    classDef W fill:#ffffff,stroke:#000000,stroke-width:1px,color:#000000
 
-<!-- ==================== 6. 모듈 구성도 ==================== -->
-<h2>6. 모듈 구성도</h2>
-
-<div class="mermaid">
-graph LR
-    subgraph MAIN["메인 애플리케이션 app.py"]
-        FLASK["Flask 웹 서버\nwaitress"]
-        ROUTER["라우트 등록 프록시"]
-        GZIP["gzip 응답 압축"]
+    subgraph MAIN["메인 애플리케이션"]
+        FLASK["웹 서버\nFlask+Waitress"]:::W
+        ROUTER["라우트 등록"]:::W
+        GZIP["응답 압축"]:::W
     end
 
-    subgraph BANK["MyBank 모듈"]
-        B_APP["bank_app\n웹 인터페이스 API"]
-        B_PROC["process_bank_data\n전처리 분류 저장"]
+    subgraph BANK["210 은행 처리 모듈"]
+        B_APP["은행 웹 인터페이스"]:::W
+        B_PROC["210 은행 전처리 엔진"]:::W
     end
 
-    subgraph CARD["MyCard 모듈"]
-        C_APP["card_app\n웹 인터페이스 API"]
-        C_PROC["process_card_data\n전처리 분류 저장"]
+    subgraph CARD["220 카드 처리 모듈"]
+        C_APP["카드 웹 인터페이스"]:::W
+        C_PROC["220 카드 전처리 엔진"]:::W
     end
 
-    subgraph CASHMOD["MyCash 모듈"]
-        CASH_APP["cash_app\n병합 분석 보고서"]
-        RISK_IND["risk_indicators\n1호~10호 위험도 산정"]
+    subgraph CASHMOD["240/250/260 통합·위험도·소명 모듈"]
+        CASH_APP["240 통합 엔진\n+ 260 소명 생성"]:::W
+        RISK_IND["250 위험도 산정 엔진\n1호~10호"]:::W
     end
 
-    subgraph LIB["공통 라이브러리 lib/"]
-        PATH["path_config\n경로 관리"]
-        DJIO["data_json_io\nJSON 안전 읽기 쓰기"]
-        CTIO["category_table_io\n카테고리 관리 mtime 캐시"]
-        AC["after_cache\nafter JSON mtime 캐시"]
-        ANAL["analysis_common\n분석 API 공통 로직"]
-        CONST["category_constants\n분류 상수 정의"]
-        SHARED["shared_app_utils\n공통 유틸리티"]
+    subgraph LIB["공통 라이브러리"]
+        PATH["경로 관리"]:::W
+        DJIO["300 JSON 안전 읽기·쓰기"]:::W
+        CTIO["330 카테고리 관리\nmtime 캐시"]:::W
+        AC["after 캐시"]:::W
+        ANAL["분석 API 공통"]:::W
+        CONST["분류 상수"]:::W
+        SHARED["공통 유틸"]:::W
     end
 
     FLASK --> ROUTER
@@ -513,221 +661,478 @@ graph LR
     DJIO --> PATH
     B_PROC --> SHARED
     C_PROC --> SHARED
-</div>
 
-<h3>lib/ 모듈 상세</h3>
+    style MAIN fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000
+    style BANK fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000
+    style CARD fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000
+    style CASHMOD fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000
+    style LIB fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000
+</pre></p>
+<h3 id="lib">lib/ 모듈 상세</h3>
 <table>
-  <tr><th>모듈</th><th>역할</th></tr>
-  <tr><td>path_config</td><td>프로젝트 루트 · data · .source 경로 중앙 관리</td></tr>
-  <tr><td>data_json_io</td><td>DataFrame ↔ JSON 안전 읽기 · 쓰기 (datetime · numpy 변환)</td></tr>
-  <tr><td>category_table_io</td><td>category_table.json 로드 · 저장 · 정규화 · 액션 · mtime 캐시</td></tr>
-  <tr><td>after_cache</td><td>bank_after · card_after · cash_after mtime 기반 캐시</td></tr>
-  <tr><td>analysis_common</td><td>분석 API 공통 로직 (summary · by-category · by-month 등 12종)</td></tr>
-  <tr><td>category_constants</td><td>분류 상수 (CLASS_PRE · CLASS_POST · RISK_CLASS_TO_VALUE 등)</td></tr>
-  <tr><td>shared_app_utils</td><td>공통 유틸 (setup_win32_utf8 · safe_str · json_safe 등)</td></tr>
-  <tr><td>category_table_defaults</td><td>기본 규칙 · .source/xlsx → json 동기화</td></tr>
-  <tr><td>audit_report</td><td>계정과목 전수조사 HTML 검수보고서 생성</td></tr>
-  <tr><td>excel_io</td><td>Excel 안전 쓰기</td></tr>
+<thead>
+<tr>
+<th>모듈</th>
+<th>역할</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>path_config</td>
+<td>프로젝트 루트·data·.source 경로 중앙 관리</td>
+</tr>
+<tr>
+<td>data_json_io</td>
+<td>DataFrame ↔ JSON 안전 읽기·쓰기 (datetime·numpy 변환)</td>
+</tr>
+<tr>
+<td>category_table_io</td>
+<td>category_table.json 로드·저장·정규화·액션·mtime 캐시</td>
+</tr>
+<tr>
+<td>after_cache</td>
+<td>bank_after·card_after·cash_after mtime 기반 캐시</td>
+</tr>
+<tr>
+<td>analysis_common</td>
+<td>분석 API 공통 로직 (summary·by-category·by-month 등 12종)</td>
+</tr>
+<tr>
+<td>category_constants</td>
+<td>분류 상수 (CLASS_PRE·CLASS_POST·RISK_CLASS_TO_VALUE 등)</td>
+</tr>
+<tr>
+<td>shared_app_utils</td>
+<td>공통 유틸 (setup_win32_utf8·safe_str·json_safe 등)</td>
+</tr>
+<tr>
+<td>category_table_defaults</td>
+<td>기본 규칙·.source/xlsx → json 동기화</td>
+</tr>
+<tr>
+<td>audit_report</td>
+<td>계정과목 전수조사 HTML 검수보고서 생성</td>
+</tr>
+<tr>
+<td>excel_io</td>
+<td>Excel 안전 쓰기</td>
+</tr>
+</tbody>
 </table>
-
-<hr>
-<div class="page-break"></div>
-
-<!-- ==================== 7. 청구항 ==================== -->
-<h2>7. 발명의 핵심 청구항 구성 참고</h2>
-
-<pre>[청구항 1]
-
-금융기관 발행 거래 내역 데이터를 입력받는 수신 단계;
-
-사전 정의된 카테고리 테이블을 이용하여
-전처리, 계정과목 분류, 후처리의 3단계로
-상기 거래 내역을 자동 분류하는 분류 단계;
-
-이기종 금융 데이터(은행 거래 + 신용카드 거래)를
-단일 통합 데이터로 병합하는 통합 단계;
-
-상기 통합 데이터의 각 거래에 대해
-소정의 위험도 지표(1호~10호)를 순차 적용하여
-위험도 점수를 산정하는 위험도 산정 단계;
-
-산정된 위험도에 기초하여 R 점수(가중 로그 점수)를 산출하고,
-법적 소명 문안을 자동 생성하는 소명서 생성 단계;
-
-를 포함하는, 법원 회생/파산/면책 절차를 위한
-금융 거래 위험도 분석 및 소명서 자동 생성 방법.
-
-
-[청구항 2]
-
-제1항에 있어서,
-상기 위험도 산정 단계는
-기본값(1호, 0.1)을 부여한 후
-2호(심야폐업)~10호(사행성)를 순차 판정하되,
-상위 호수 조건 충족 시 하위 호수를 덮어쓰는
-단계적 위험도 상향 방식이며,
-2호(심야폐업) 해당 거래는 3~10호 판정을 생략하는
-것을 특징으로 하는 방법.
-
-
-[청구항 3]
-
-제1항에 있어서,
-상기 3단계 분류에서
-전처리는 원본 데이터의 비정형 텍스트를 정규화하고,
-계정과목 분류는 키워드 길이 역순으로 매칭하여
-최장 일치(Longest Match) 방식으로 분류하며,
-후처리는 분류 결과를 법적 용어로 재정규화하는 것을
-특징으로 하는 방법.
-
-
-[청구항 4]
-
-제1항에 있어서,
-상기 소명서 생성 단계는
-위험도 지표별 가중치(w), 거래 건수(f), 평균 거래 금액(avg_a),
-시계열 근접성 계수(T), 동적 임계 계수(Θ), 입출금 대칭성 계수(S)를 사용하여
-R = w × log₁₀(1 + f × avg_a) × T × Θ × S 공식으로 R 점수를 산출하되,
-T = 1 + α × C + β × P
-(C: 거래 집중도, P: 최근성 비율, α·β: 가중 상수)로 산출하여
-단기간 집중 거래 및 파산 직전 의심 거래 패턴을 정량적으로 반영하고,
-지표별 사전 정의된 법적 소명 템플릿을 적용하여
-법조항 참조를 포함한 소명서 초안을 자동 생성하는 것을
-특징으로 하는 방법.
-
-
-[청구항 5]
-
-제1항에 있어서,
-상기 소명서 생성 단계는
-(a) 사전 정의된 지표별 소명 템플릿에 거래 건수·금액을
-    치환하여 정형 소명 문안을 생성하는 정형 생성 방식, 또는
-(b) 상기 구조화된 위험도 분석 결과(지표명, R 점수, T 계수,
-    건수, 금액)와 법적 참조 정보(LEGAL_REFERENCES)를
-    자연어 생성 모델에 입력하여 사건별 맞춤 소명 문안을
-    합성하는 생성형 합성 방식
-중 하나 이상을 선택적으로 수행하되,
-생성형 합성 방식이 불가한 경우 정형 생성 방식으로 자동 전환하는
-것을 특징으로 하는 방법.
-
-
-[청구항 6]
-
-제1항에 있어서,
-상기 위험도 산정 단계에서 가상자산 관련 거래의 식별은
-(a) 분류 단계에서 부여된 카테고리(가상자산)에 의한 매칭,
-(b) 거래 내역의 비정형 텍스트(적요, 내용, 송금메모)에서
-    정규표현식으로 VASP(가상자산사업자) 가상계좌번호의
-    접두번호 대역을 추출하여 사전 정의된 접두번호 테이블과
-    대조하는 계좌번호 식별 방식, 또는
-(c) 상기 비정형 텍스트에서 등록 VASP 사업자명·서비스명을
-    탐색하는 사업자명 매칭 방식
-중 하나 이상을 단계적으로 수행하되,
-(a) → (b) → (c) 순서로 우선 적용하고,
-상기 접두번호 테이블은 카테고리 테이블의 VASP계좌 분류 행으로
-동적 확장이 가능한 것을 특징으로 하는 방법.
-
-
-[청구항 7]
-
-제4항에 있어서,
-상기 R 점수 산출 단계는 동적 임계 계수(Θ)를 추가 승수로 적용하되,
-Θ = amount_factor × count_factor 로 산출하며,
-(a) amount_factor는 해당 지표의 거래 총액이 사전 정의된 임계값
-    미만인 경우 선형 감점(총액/임계값), 임계값의 3배 이내인 경우
-    1.0, 3배를 초과하는 경우 누진 가중
-    (1 + γ × log₂(총액/임계값), γ: 가중 상수, 상한 2.0)을 적용하고,
-(b) count_factor는 해당 지표의 거래 건수가 기준 건수 이상인 경우
-    건수 비례 가중(1 + δ × (건수/기준건수 − 1), δ: 가중 상수,
-    상한 1.3)을 적용하여,
-금액 규모와 거래 빈도를 복합적으로 반영한 위험도 보정을
-수행하는 것을 특징으로 하는 방법.
-
-
-[청구항 8]
-
-제1항에 있어서,
-상기 소명서 생성 단계는
-(a) 위험도 분석 결과에서 추출한 상위 위험 항목의 지표명,
-    거래 건수, 금액, 법조항을 기반으로 지표별 사전 정의된
-    질의 템플릿에서 맞춤형 질문을 생성하는 단계,
-(b) 사용자 인터페이스를 통해 상기 질문에 대한 사용자의
-    답변을 수집하는 단계, 및
-(c) 수집된 답변을 소명서 초안 템플릿의 가변 구간에 치환하여
-    사용자 실제 답변이 반영된 소명서 초안을 재생성하는 단계
-를 선택적으로 추가 수행하되,
-답변이 미입력된 항목에 대해서는 정형 생성 방식(제5항 (a))의
-자동 생성 문구를 기본값으로 유지하는 것을
-특징으로 하는 방법.
-
-
-[청구항 9]
-
-제4항에 있어서,
-상기 R 점수 산출 단계는 입출금 대칭성 계수(S)를 추가 승수로 적용하되,
-S = 1 − (해당 지표 입금 합계 / 출금 합계) 로 산출하며,
-입금(회수) 비율이 높을수록 S가 감소하여 R 점수를 하향 보정하고,
-완전 회수 시에도 최소 위험도를 유지하기 위해 하한(0.3)을 적용하며,
-투기성지표(5호), 가상자산지표(7호), 자산은닉지표(8호) 등
-입금 회수가 의미 있는 지표에만 선택적으로 적용하고,
-비적용 지표에 대해서는 S = 1.0 으로 하여 보정을 생략하는 것을
-특징으로 하는 방법.
-
-[청구항 10]
-
-제4항에 있어서,
-상기 위험도 산정 시스템은,
-거래내역에 포함된 사업자등록번호를 외부 사업자 정보 API에 조회하여
-해당 사업자의 업종코드·업태·종목을 수신하고,
-수신된 업종 정보를 카테고리 테이블의 업종분류와 대조하여
-분류 정확도를 보강할 수 있으며,
-동일한 외부 API를 통해 사업자의 폐업 여부를 실시간 확인하여
-폐업 가맹점 거래에 대한 위험도를 가중할 수 있고,
-상기 외부 API 연동은 개인정보보호법, 실명확인법,
-전자금융거래법 등 관련 법령이 허용하는 범위 내에서
-정보주체의 동의 또는 법률상 근거에 따라 수행되는 것을
-특징으로 하는 방법.</pre>
-
-<hr>
-
-<!-- ==================== 8. 용어 정의 ==================== -->
-<h2>8. 용어 정의</h2>
-
+<hr />
+<h2 id="_5">도면 부호 설명</h2>
 <table>
-  <tr><th>용어</th><th>정의</th></tr>
-  <tr><td><strong>전처리</strong></td><td>금융기관별로 상이한 원본 데이터의 적요 · 가맹점명을 표준화하는 과정</td></tr>
-  <tr><td><strong>계정과목 분류</strong></td><td>표준화된 거래 텍스트를 사전 정의된 키워드와 대조하여 회계 카테고리를 부여하는 과정</td></tr>
-  <tr><td><strong>후처리</strong></td><td>분류 완료된 데이터에 대해 법적 절차에 적합한 용어로 최종 보정하는 과정</td></tr>
-  <tr><td><strong>위험도 지표</strong></td><td>채무자회생법 제564조에 근거한 면책불허가 사유 해당 여부를 수치화한 등급 (0.1~5.0)</td></tr>
-  <tr><td><strong>R 점수</strong></td><td>위험도 가중치 · 건수 · 금액 · 시간 패턴 · 임계값 · 입출금 대칭성을 종합한 위험도 정량 지표. R = w × log₁₀(1 + f × avg_a) × T × Θ × S</td></tr>
-  <tr><td><strong>T (시계열 근접성 계수)</strong></td><td>거래의 시간적 집중도(C)와 최근성(P)을 반영하는 승수. T = 1 + α×C + β×P (1.00~1.50)</td></tr>
-  <tr><td><strong>Θ (동적 임계 계수)</strong></td><td>지표별 임계값 대비 거래 금액의 미달 감점 · 초과 가중과 거래 건수의 복합 가중을 반영하는 승수. Θ = amount_factor × count_factor (0.00~2.60)</td></tr>
-  <tr><td><strong>S (입출금 대칭성 계수)</strong></td><td>지표별 출금 대비 입금(회수) 비율을 반영하는 승수. S = 1 − (입금/출금). 회수 비율이 높을수록 위험도를 하향 보정 (0.30~1.00)</td></tr>
-  <tr><td><strong>인터랙티브 질의응답</strong></td><td>위험도 분석 결과를 기반으로 지표별 맞춤 질문을 생성하고, 사용자 답변을 수집하여 소명서 초안에 반영하는 양방향 선택적 확장 방식</td></tr>
-  <tr><td><strong>소명서 초안</strong></td><td>위험 거래에 대해 채무자가 법원에 제출할 해명 문안의 자동 생성본</td></tr>
-  <tr><td><strong>생성형 AI 소명 합성</strong></td><td>구조화된 위험도 분석 결과와 법적 맥락을 자연어 생성 모델에 입력하여 사건별 맞춤 소명 문안을 합성하는 선택적 확장 방식</td></tr>
-  <tr><td><strong>카테고리 테이블</strong></td><td>분류 · 키워드 · 카테고리 · 위험도 · 위험지표를 정의한 규칙 데이터베이스</td></tr>
-  <tr><td><strong>최장 일치 방식</strong></td><td>복수의 키워드가 동시에 매칭될 때 가장 긴 키워드를 우선 적용하는 알고리즘</td></tr>
-  <tr><td><strong>업종분류</strong></td><td>거래 상대방의 업종을 법적 분류 체계(표준산업분류·기준경비율 업종코드·협업기업 제외 업종)와 대조하여 위험도 산정의 보조 판단 자료를 제공하는 분류 단계</td></tr>
-  <tr><td><strong>협업기업 제외 업종</strong></td><td>중소기업진흥에 관한 법률 시행령 [별표 1]에서 규정하는 사행시설관리·운영업, 무도장운영업, 주점업 등 — 면책불허가 사유(사치·낭비·사행) 판단의 법적 근거</td></tr>
-  <tr><td><strong>VASP</strong></td><td>가상자산사업자 (Virtual Asset Service Provider). 금감원 신고 사업자 27개소 (2026.01 기준)</td></tr>
-  <tr><td><strong>VASP 가상계좌 접두번호</strong></td><td>VASP가 제휴 은행에서 발급받은 가상계좌의 고유 번호 대역. 정규표현식으로 매칭</td></tr>
-  <tr><td><strong>외부 사업자 검증</strong></td><td>사업자등록번호를 외부 API(국세청·VAN/PG 등)에 조회하여 업종·폐업 여부를 확인하는 선택적 확장 경로. 개인정보보호법·실명확인법 등 관련 법령 허용 범위 내에서 수행</td></tr>
-  <tr><td><strong>mtime 캐시</strong></td><td>파일 수정 시각을 기준으로 변경 시에만 재로드하는 성능 최적화 기법</td></tr>
+<thead>
+<tr>
+<th>부호</th>
+<th>명칭</th>
+<th>설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>100</td>
+<td>데이터 입력 계층</td>
+<td>금융기관 발행 거래 내역 데이터 수신부</td>
+</tr>
+<tr>
+<td>110</td>
+<td>은행 거래 내역 파일</td>
+<td>국민·신한·하나은행 등 xls/xlsx</td>
+</tr>
+<tr>
+<td>120</td>
+<td>신용카드 승인 내역 파일</td>
+<td>전 카드사 xls/xlsx</td>
+</tr>
+<tr>
+<td>130</td>
+<td>카테고리 규칙 원본</td>
+<td>category_table.xlsx</td>
+</tr>
+<tr>
+<td>200</td>
+<td>처리 엔진 계층</td>
+<td>핵심 데이터 처리 로직</td>
+</tr>
+<tr>
+<td>210</td>
+<td>은행 전처리 엔진</td>
+<td>은행별 파서+정규화</td>
+</tr>
+<tr>
+<td>220</td>
+<td>카드 전처리 엔진</td>
+<td>카드사별 파서+정규화</td>
+</tr>
+<tr>
+<td>230</td>
+<td>카테고리 분류 엔진</td>
+<td>3단계 분류(전처리→계정과목→후처리)</td>
+</tr>
+<tr>
+<td>230-S1</td>
+<td>전처리 단계</td>
+<td>비정형 텍스트 정규화</td>
+</tr>
+<tr>
+<td>230-S2</td>
+<td>계정과목 분류 단계</td>
+<td>최장 일치 키워드 매칭</td>
+</tr>
+<tr>
+<td>230-S3</td>
+<td>후처리 단계</td>
+<td>법적 용어 재정규화</td>
+</tr>
+<tr>
+<td>240</td>
+<td>금융정보 통합 엔진</td>
+<td>은행+카드 병합</td>
+</tr>
+<tr>
+<td>250</td>
+<td>위험도 산정 엔진</td>
+<td>1~10호 Step-up Scoring</td>
+</tr>
+<tr>
+<td>260</td>
+<td>소명서 생성 엔진</td>
+<td>R 점수 산출+법적근거 매칭</td>
+</tr>
+<tr>
+<td>260a</td>
+<td>정형 생성 방식</td>
+<td>지표별 템플릿 치환</td>
+</tr>
+<tr>
+<td>260b</td>
+<td>생성형 AI 합성 방식</td>
+<td>LLM 기반 맞춤 문안 합성 (선택적 확장)</td>
+</tr>
+<tr>
+<td>260c</td>
+<td>인터랙티브 Q&amp;A 방식</td>
+<td>질의응답 기반 소명서 재생성 (선택적 확장)</td>
+</tr>
+<tr>
+<td>300</td>
+<td>데이터 저장 계층</td>
+<td>JSON 기반 데이터 저장소 (원자적 쓰기)</td>
+</tr>
+<tr>
+<td>310</td>
+<td>bank_before</td>
+<td>은행 전처리 완료 데이터</td>
+</tr>
+<tr>
+<td>320</td>
+<td>card_before</td>
+<td>카드 전처리 완료 데이터</td>
+</tr>
+<tr>
+<td>330</td>
+<td>category_table</td>
+<td>카테고리 규칙 데이터베이스</td>
+</tr>
+<tr>
+<td>340</td>
+<td>bank_after</td>
+<td>은행 분류 완료 데이터</td>
+</tr>
+<tr>
+<td>350</td>
+<td>card_after</td>
+<td>카드 분류 완료 데이터</td>
+</tr>
+<tr>
+<td>360</td>
+<td>cash_after</td>
+<td>통합 분석 데이터(위험도 포함)</td>
+</tr>
+<tr>
+<td>400</td>
+<td>출력 보고서 계층</td>
+<td>분석 결과 보고서 생성부</td>
+</tr>
+<tr>
+<td>410</td>
+<td>은행거래 분석 보고서</td>
+<td></td>
+</tr>
+<tr>
+<td>420</td>
+<td>신용카드 분석 보고서</td>
+<td></td>
+</tr>
+<tr>
+<td>430</td>
+<td>금융정보 종합분석 보고서</td>
+<td></td>
+</tr>
+<tr>
+<td>440</td>
+<td>위험거래 분석 보고서</td>
+<td>R 점수, T, Θ, S, 등급</td>
+</tr>
+<tr>
+<td>450</td>
+<td>종합의견서(소명서 초안)</td>
+<td></td>
+</tr>
+</tbody>
 </table>
-
-<hr>
+<hr />
+<h2 id="7">7. 발명의 구성 요소 개념도</h2>
 <blockquote>
-  본 문서의 Mermaid 다이어그램은 특허 명세서 첨부 시 이미지로 변환하여 사용합니다.
+<p><strong>참고</strong>: 본 절은 발명의 전체 구성을 이해하기 위한 개념도이며,<br />
+법적 효력을 가지는 특허청구범위는 명세서의 【특허청구범위】에 기재되어 있습니다.</p>
 </blockquote>
-
-<script>
-  mermaid.initialize({
-    startOnLoad: true,
-    theme: 'default',
-    flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' },
-    securityLevel: 'loose'
-  });
-</script>
+<table>
+<thead>
+<tr>
+<th>구성</th>
+<th>명칭</th>
+<th>대응 도면</th>
+<th>핵심 기술</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>구성 1</td>
+<td>데이터 전처리</td>
+<td>도 1(100), 도 2(210, 220)</td>
+<td>이기종 금융기관 데이터 수신·정규화</td>
+</tr>
+<tr>
+<td>구성 2</td>
+<td>3단계 카테고리 분류</td>
+<td>도 3(230)</td>
+<td>전처리→계정과목(최장 일치)→후처리, 5단계 충돌 해결 캐스케이드</td>
+</tr>
+<tr>
+<td>구성 3</td>
+<td>이기종 데이터 통합</td>
+<td>도 2(240)</td>
+<td>은행+카드 → 단일 통합 데이터 병합</td>
+</tr>
+<tr>
+<td>구성 4</td>
+<td>위험도 산정 (Step-up Scoring)</td>
+<td>도 4(250)</td>
+<td>1호(0.1)~10호(5.0) 순차 판정, 상위 호수 갱신, VASP 3단계 식별</td>
+</tr>
+<tr>
+<td>구성 5</td>
+<td>R 점수 산출 (T·Θ·S)</td>
+<td>도 5(260)</td>
+<td>R = w × log₁₀(1+f×avg_a) × T × Θ × S</td>
+</tr>
+<tr>
+<td>구성 6</td>
+<td>소명서 초안 자동 생성</td>
+<td>도 5(260)</td>
+<td>법적 소명 템플릿 + 채무자회생법 조항 자동 매칭</td>
+</tr>
+<tr>
+<td>구성 7</td>
+<td>정형/AI 합성 선택</td>
+<td>도 5(260a/b)</td>
+<td>정형 생성(a) 또는 생성형 AI(b) 중 선택, AI 불가 시 자동 전환</td>
+</tr>
+<tr>
+<td>구성 8</td>
+<td>VASP 3단계 식별</td>
+<td>도 4(250)</td>
+<td>(a) 카테고리 → (b) 접두번호 정규식 → (c) 사업자명 매칭</td>
+</tr>
+<tr>
+<td>구성 9</td>
+<td>동적 임계 계수 Θ</td>
+<td>도 5</td>
+<td>Θ = amount_factor × count_factor (금액 누진 + 건수 비례)</td>
+</tr>
+<tr>
+<td>구성 10</td>
+<td>입출금 대칭성 계수 S</td>
+<td>도 5</td>
+<td>S = 1 − (입금/출금), 하한 0.3, 투기·가상·은닉 지표만 적용</td>
+</tr>
+<tr>
+<td>구성 11</td>
+<td>인터랙티브 Q&amp;A</td>
+<td>도 5(260c)</td>
+<td>위험 항목 기반 맞춤 질문 → 답변 수집 → 소명서 재생성</td>
+</tr>
+<tr>
+<td>구성 12</td>
+<td>외부 API 검증</td>
+<td>도 3 확장</td>
+<td>사업자등록번호 → 업종·폐업 여부 확인 (법적 제약 범위 내)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="8">8. 용어 정의</h2>
+<table>
+<thead>
+<tr>
+<th>용어</th>
+<th>정의</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>전처리</strong></td>
+<td>금융기관별로 상이한 원본 데이터의 적요·가맹점명을 표준화하는 과정</td>
+</tr>
+<tr>
+<td><strong>계정과목 분류</strong></td>
+<td>표준화된 거래 텍스트를 사전 정의된 키워드와 대조하여 회계 카테고리를 부여하는 과정</td>
+</tr>
+<tr>
+<td><strong>후처리</strong></td>
+<td>분류 완료된 데이터에 대해 법적 절차에 적합한 용어로 최종 보정하는 과정</td>
+</tr>
+<tr>
+<td><strong>위험도 지표</strong></td>
+<td>채무자회생법 제564조에 근거한 면책불허가 사유 해당 여부를 수치화한 등급 (0.1~5.0)</td>
+</tr>
+<tr>
+<td><strong>R 점수</strong></td>
+<td>위험도 가중치·건수·금액·시간 패턴·임계값·입출금 대칭성을 종합한 위험도 정량 지표. R = w × log₁₀(1 + f × avg_a) × T × Θ × S</td>
+</tr>
+<tr>
+<td><strong>T (시계열 근접성 계수)</strong></td>
+<td>거래의 시간적 집중도(C)와 최근성(P)을 반영하는 승수. T = 1 + α×C + β×P (1.00~1.50)</td>
+</tr>
+<tr>
+<td><strong>Θ (동적 임계 계수)</strong></td>
+<td>지표별 임계값 대비 거래 금액의 미달 감점·초과 가중과 거래 건수의 복합 가중을 반영하는 승수. Θ = amount_factor × count_factor (0.00~2.60)</td>
+</tr>
+<tr>
+<td><strong>S (입출금 대칭성 계수)</strong></td>
+<td>지표별 출금 대비 입금(회수) 비율을 반영하는 승수. S = 1 − (입금/출금). 회수 비율이 높을수록 위험도를 하향 보정 (0.30~1.00)</td>
+</tr>
+<tr>
+<td><strong>인터랙티브 질의응답</strong></td>
+<td>위험도 분석 결과를 기반으로 지표별 맞춤 질문을 생성하고, 사용자 답변을 수집하여 소명서 초안에 반영하는 양방향 선택적 확장 방식</td>
+</tr>
+<tr>
+<td><strong>소명서 초안</strong></td>
+<td>위험 거래에 대해 채무자가 법원에 제출할 해명 문안의 자동 생성본</td>
+</tr>
+<tr>
+<td><strong>생성형 AI 소명 합성</strong></td>
+<td>구조화된 위험도 분석 결과와 법적 맥락을 자연어 생성 모델에 입력하여 사건별 맞춤 소명 문안을 합성하는 선택적 확장 방식</td>
+</tr>
+<tr>
+<td><strong>카테고리 테이블</strong></td>
+<td>분류·키워드·카테고리·위험도·위험지표를 정의한 규칙 데이터베이스</td>
+</tr>
+<tr>
+<td><strong>최장 일치 방식</strong></td>
+<td>복수의 키워드가 동시에 매칭될 때 가장 긴 키워드를 우선 적용하는 알고리즘</td>
+</tr>
+<tr>
+<td><strong>mtime 캐시</strong></td>
+<td>파일 수정 시각을 기준으로 변경 시에만 재로드하는 성능 최적화 기법</td>
+</tr>
+<tr>
+<td><strong>업종분류</strong></td>
+<td>거래 상대방의 업종을 법적 분류 체계(표준산업분류·기준경비율 업종코드·협업기업 제외 업종)와 대조하여 위험도 산정의 보조 판단 자료를 제공하는 분류 단계</td>
+</tr>
+<tr>
+<td><strong>협업기업 제외 업종</strong></td>
+<td>중소기업진흥에 관한 법률 시행령 [별표 1]에서 규정하는 사행시설관리·운영업, 무도장운영업, 주점업 등 — 면책불허가 사유(사치·낭비·사행) 판단의 법적 근거</td>
+</tr>
+<tr>
+<td><strong>VASP</strong></td>
+<td>가상자산사업자 (Virtual Asset Service Provider). 금감원 신고 사업자 27개소 (2026.01 기준)</td>
+</tr>
+<tr>
+<td><strong>VASP 가상계좌 접두번호</strong></td>
+<td>VASP가 제휴 은행에서 발급받은 가상계좌의 고유 번호 대역. 정규표현식으로 매칭</td>
+</tr>
+<tr>
+<td><strong>외부 사업자 검증</strong></td>
+<td>사업자등록번호를 외부 API(국세청·VAN/PG 등)에 조회하여 업종·폐업 여부를 확인하는 선택적 확장 경로. 개인정보보호법·실명확인법 등 관련 법령 허용 범위 내에서 수행</td>
+</tr>
+<tr>
+<td><strong>GTE</strong></td>
+<td>이상 (Greater Than or Equal)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<blockquote>
+<p><strong>본 문서의 Mermaid 다이어그램은 특허 도면 스타일(흑백 선화, 부호 번호, 고딕 글꼴)로 작성되었습니다.</strong><br />
+각 다이어그램을 개별적으로 Mermaid Live Editor에 붙여넣어 PNG/SVG로 변환하세요.<br />
+변환 도구: https://mermaid.live<br />
+※ 모든 노드에 <code>classDef W fill:#ffffff</code> + <code>:::W</code>, subgraph에 <code>style ... fill:#ffffff</code>가 적용되어 있어 어떤 렌더러에서도 흰색 배경으로 출력됩니다.</p>
+</blockquote>
+<hr />
+<h2 id="9-7">9. 선행기술 대비 차별점 요약 (7건)</h2>
+<blockquote>
+<p>상세: 선행기술_청구항_조사.md, 특허출원서(Opus의견)_v4.md</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>선행기술</th>
+<th>등록번호</th>
+<th>핵심</th>
+<th>MyRisk 차별</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AI 법률문서 분석</td>
+<td>KR102289935B1</td>
+<td>NLP 분류</td>
+<td>금융 거래 위험도 수식</td>
+</tr>
+<tr>
+<td>법률문서 자동작성</td>
+<td>KR102022412B1</td>
+<td>Q&amp;A 생성</td>
+<td>금융 데이터 자동, Step-up</td>
+</tr>
+<tr>
+<td>스크래핑 회계처리</td>
+<td>KR102824993B1</td>
+<td>입출금 분개</td>
+<td>법적 위험도(1~10호), 소명서</td>
+</tr>
+<tr>
+<td>푸시 가계부</td>
+<td>KR101580947B1</td>
+<td>SMS 가계부</td>
+<td>3단계 분류, 5단계 캐스케이드</td>
+</tr>
+<tr>
+<td>AI 재무관리</td>
+<td>KR102486186B1</td>
+<td>ARIMA/LSTM</td>
+<td>T 계수(파산직전 탐지)</td>
+</tr>
+<tr>
+<td>ML 자동분개</td>
+<td>KR101914620B1</td>
+<td>신뢰도 임계</td>
+<td>Θ 계수(위험도 보정)</td>
+</tr>
+<tr>
+<td>계정과목 분류</td>
+<td>KR101892671B1</td>
+<td>1:1 매칭</td>
+<td>5단계 캐스케이드(동적)</td>
+</tr>
+</tbody>
+</table>
+<p>본 시스템의 핵심 결합(이기종 통합+3단계 분류+Step-up+R 점수(T·Θ·S)+소명서)은 7건의 선행기술 어디에서도 개시되지 않았다.</p>
+<div class="footer">
+주식회사 나눔과 어울림 ShareHarmony | MyRisk v200 | 2026-03-18
+</div>
 </body>
 </html>

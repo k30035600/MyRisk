@@ -1,217 +1,927 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MyRisk v2.0 — 최종 전수조사 보고서</title>
+<title>MyRisk v2.0 최종 전수조사 보고서</title>
 <style>
-  @page { size: A4; margin: 20mm 15mm; }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; font-size: 11pt; line-height: 1.7; color: #1a1a1a; max-width: 210mm; margin: 0 auto; padding: 20mm 15mm; text-align: justify; }
-  h1 { font-size: 20pt; color: #0d47a1; border-bottom: 3px solid #0d47a1; padding-bottom: 8px; margin: 30px 0 20px; }
-  h2 { font-size: 16pt; color: #1565c0; border-bottom: 2px solid #1565c0; padding-bottom: 6px; margin: 40px 0 16px; page-break-before: always; }
-  h2:first-of-type { page-break-before: avoid; }
-  h3 { font-size: 13pt; color: #1976d2; margin: 24px 0 10px; border-left: 4px solid #1976d2; padding-left: 10px; }
-  h4 { font-size: 11.5pt; color: #1e88e5; margin: 18px 0 8px; }
-  table { width: 100%; border-collapse: collapse; margin: 12px 0 18px; font-size: 10pt; page-break-inside: avoid; }
-  th { background: #e3f2fd; color: #0d47a1; font-weight: 700; border: 1px solid #90caf9; padding: 6px 8px; text-align: center; }
-  td { border: 1px solid #bbdefb; padding: 5px 8px; vertical-align: top; }
-  tr:nth-child(even) td { background: #f5f9ff; }
-  blockquote { background: #e8f5e9; border-left: 4px solid #2e7d32; padding: 12px 16px; margin: 14px 0; font-size: 10.5pt; color: #1b5e20; }
-  .ok { color: #2e7d32; font-weight: 700; }
-  .warn { color: #e65100; font-weight: 700; }
-  .meta td:first-child { font-weight: 700; width: 120px; background: #e3f2fd; }
-  .grade-a { background: #e8f5e9; color: #1b5e20; font-weight: 700; text-align: center; }
-  .conclusion { background: #e3f2fd; border: 2px solid #1565c0; border-radius: 8px; padding: 16px 20px; margin: 20px 0; }
-  pre { background: #f5f5f5; border: 1px solid #ddd; border-radius: 4px; padding: 12px; font-size: 10pt; overflow-x: auto; white-space: pre-wrap; }
+@page { size: A4; margin: 20mm 15mm; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Malgun Gothic','맑은 고딕',sans-serif;
+  font-size: 11pt; line-height: 1.75; color: #1a1a1a;
+  max-width: 210mm; margin: 0 auto; padding: 20mm 15mm;
+  text-align: justify; word-break: keep-all;
+}
+h1 { font-size: 18pt; color: #0d47a1; border-bottom: 3px solid #0d47a1;
+     padding-bottom: 8px; margin: 0 0 18px; }
+h2 { font-size: 15pt; color: #1565c0; border-bottom: 2px solid #1565c0;
+     padding-bottom: 6px; margin: 32px 0 14px;
+     page-break-after: avoid; }
+h3 { font-size: 13pt; color: #1976d2; margin: 22px 0 10px;
+     border-left: 4px solid #1976d2; padding-left: 10px;
+     page-break-after: avoid; }
+h4 { font-size: 11.5pt; color: #1e88e5; margin: 16px 0 8px;
+     page-break-after: avoid; }
+table { width: 100%; border-collapse: collapse; margin: 10px 0 16px;
+        font-size: 10pt; page-break-inside: avoid; }
+th { background: #e3f2fd; border: 1px solid #90caf9; padding: 6px 8px;
+     text-align: center; font-weight: bold; color: #0d47a1; }
+td { border: 1px solid #bbdefb; padding: 5px 8px; vertical-align: top; }
+tr:nth-child(even) td { background: #f5f9ff; }
+blockquote { background: #e8f5e9; border-left: 4px solid #2e7d32;
+             padding: 10px 14px; margin: 12px 0; font-size: 10.5pt;
+             color: #1b5e20; page-break-inside: avoid; }
+hr { border: none; border-top: 1.5px solid #90caf9; margin: 20px 0; }
+code { background: #eceff1; padding: 1px 5px; border-radius: 3px;
+       font-size: 9.5pt; color: #37474f; }
+pre { background: #263238; color: #eee; padding: 12px 16px;
+      border-radius: 6px; overflow-x: auto; font-size: 9pt;
+      line-height: 1.5; margin: 10px 0 16px; white-space: pre-wrap;
+      page-break-inside: avoid; }
+pre code { background: none; padding: 0; color: inherit; }
+ul, ol { margin: 8px 0 8px 24px; }
+li { margin: 3px 0; }
+p { margin: 6px 0; }
+.footer { font-size: 9pt; color: #666; text-align: center;
+          margin-top: 30px; border-top: 1px solid #ccc; padding-top: 10px; }
+@media print {
+  body { padding: 0; }
+  h2 { page-break-before: auto; }
+  table, blockquote, pre { page-break-inside: avoid; }
+}
 </style>
 </head>
 <body>
-
-<h1>MyRisk v2.0 — 최종 전수조사 보고서</h1>
-
-<table class="meta">
-<tr><td>조사일</td><td>2026-03-18</td></tr>
-<tr><td>대상</td><td>MyRisk v2.0 전체 코드베이스 (20개 Python, 31개 HTML 템플릿, 122+ 라우트)</td></tr>
-<tr><td>조사 방법</td><td>코드 정적 분석 + 전수 실행 검증 + 문서 정합성 대조</td></tr>
-<tr><td>조사 범위</td><td>① 전수 실행 ② 특허 청구항 vs 코드 ③ 코드 품질 ④ 보안·안정성 ⑤ 문서 정합성 ⑥ 특허 관련 문서 총정리</td></tr>
-</table>
-
-<h2>제1장 전수 실행 검증</h2>
-
-<h3>1.1 페이지 엔드포인트 (21개)</h3>
+<h1 id="myrisk-v20">MyRisk v2.0 — 최종 전수조사 보고서</h1>
 <table>
-<tr><th>#</th><th>URL</th><th>상태</th><th>용도</th></tr>
-<tr><td>1</td><td>/</td><td class="ok">200</td><td>홈</td></tr>
-<tr><td>2</td><td>/help</td><td class="ok">200</td><td>도움말</td></tr>
-<tr><td>3</td><td>/reset</td><td class="ok">200</td><td>초기화</td></tr>
-<tr><td>4</td><td>/category-standard</td><td class="ok">200</td><td>계정과목 표준</td></tr>
-<tr><td>5</td><td>/health</td><td class="ok">200</td><td>헬스체크</td></tr>
-<tr><td>6</td><td>/bank/</td><td class="ok">200</td><td>은행 전처리</td></tr>
-<tr><td>7</td><td>/bank/category</td><td class="ok">200</td><td>은행 카테고리</td></tr>
-<tr><td>8</td><td>/bank/analysis/basic</td><td class="ok">200</td><td>은행 분석</td></tr>
-<tr><td>9</td><td>/bank/analysis/print</td><td class="ok">200</td><td>은행 인쇄</td></tr>
-<tr><td>10</td><td>/bank/help</td><td class="ok">200</td><td>은행 도움말</td></tr>
-<tr><td>11</td><td>/card/</td><td class="ok">200</td><td>카드 전처리</td></tr>
-<tr><td>12</td><td>/card/category</td><td class="ok">200</td><td>카드 카테고리</td></tr>
-<tr><td>13</td><td>/card/analysis/basic</td><td class="ok">200</td><td>카드 분석</td></tr>
-<tr><td>14</td><td>/card/analysis/print</td><td class="ok">200</td><td>카드 인쇄</td></tr>
-<tr><td>15</td><td>/card/help</td><td class="ok">200</td><td>카드 도움말</td></tr>
-<tr><td>16</td><td>/cash/</td><td class="ok">200</td><td>금융정보 메인</td></tr>
-<tr><td>17</td><td>/cash/category</td><td class="ok">200</td><td>업종분류</td></tr>
-<tr><td>18</td><td>/cash/analysis/basic</td><td class="ok">200</td><td>금융정보 분석</td></tr>
-<tr><td>19</td><td>/cash/analysis/print</td><td class="ok">200</td><td>금융정보 인쇄</td></tr>
-<tr><td>20</td><td>/cash/analysis/risk-report</td><td class="ok">200</td><td>위험도 분석</td></tr>
-<tr><td>21</td><td>/cash/help</td><td class="ok">200</td><td>금융정보 도움말</td></tr>
+<thead>
+<tr>
+<th>항목</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>조사일</strong></td>
+<td>2026-03-18</td>
+</tr>
+<tr>
+<td><strong>대상</strong></td>
+<td>MyRisk v2.0 전체 코드베이스 (20개 Python, 31개 HTML 템플릿, 122+ 라우트)</td>
+</tr>
+<tr>
+<td><strong>조사 방법</strong></td>
+<td>코드 정적 분석 + 전수 실행 검증 + 문서 정합성 대조</td>
+</tr>
+<tr>
+<td><strong>조사 범위</strong></td>
+<td>① 전수 실행 ② 특허 청구항 vs 코드 ③ 코드 품질 ④ 보안·안정성 ⑤ 문서 정합성 ⑥ 특허 관련 문서 총정리</td>
+</tr>
+</tbody>
 </table>
-
-<h3>1.2 API 엔드포인트 (19개 GET 검증)</h3>
+<hr />
+<h2 id="1">제1장 전수 실행 검증</h2>
+<h3 id="11-21">1.1 페이지 엔드포인트 (21개)</h3>
 <table>
-<tr><th>#</th><th>URL</th><th>상태</th></tr>
-<tr><td>1</td><td>/api/reset-file-sizes</td><td class="ok">200</td></tr>
-<tr><td>2</td><td>/bank/api/cache-info</td><td class="ok">200</td></tr>
-<tr><td>3</td><td>/bank/api/source-files</td><td class="ok">200</td></tr>
-<tr><td>4</td><td>/bank/api/processed-data</td><td class="ok">200</td></tr>
-<tr><td>5</td><td>/bank/api/category</td><td class="ok">200</td></tr>
-<tr><td>6</td><td>/bank/api/simya-ranges</td><td class="ok">200</td></tr>
-<tr><td>7</td><td>/bank/api/analysis/summary</td><td class="ok">200</td></tr>
-<tr><td>8</td><td>/bank/api/analysis/date-range</td><td class="ok">200</td></tr>
-<tr><td>9</td><td>/card/api/cache-info</td><td class="ok">200</td></tr>
-<tr><td>10</td><td>/card/api/source-files</td><td class="ok">200</td></tr>
-<tr><td>11</td><td>/card/api/processed-data</td><td class="ok">200</td></tr>
-<tr><td>12</td><td>/card/api/category</td><td class="ok">200</td></tr>
-<tr><td>13</td><td>/card/api/analysis/summary</td><td class="ok">200</td></tr>
-<tr><td>14</td><td>/cash/api/cache-info</td><td class="ok">200</td></tr>
-<tr><td>15</td><td>/cash/api/processed-data</td><td class="ok">200</td></tr>
-<tr><td>16</td><td>/cash/api/category</td><td class="ok">200</td></tr>
-<tr><td>17</td><td>/cash/api/risk-class-table</td><td class="ok">200</td></tr>
-<tr><td>18</td><td>/cash/api/analysis/summary</td><td class="ok">200</td></tr>
-<tr><td>19</td><td>/cash/api/analysis/date-range</td><td class="ok">200</td></tr>
+<thead>
+<tr>
+<th>#</th>
+<th>URL</th>
+<th>상태</th>
+<th>용도</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>/</code></td>
+<td>200</td>
+<td>홈</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>/help</code></td>
+<td>200</td>
+<td>도움말</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>/reset</code></td>
+<td>200</td>
+<td>초기화</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>/category-standard</code></td>
+<td>200</td>
+<td>계정과목 표준</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>/health</code></td>
+<td>200</td>
+<td>헬스체크</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>/bank/</code></td>
+<td>200</td>
+<td>은행 전처리</td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>/bank/category</code></td>
+<td>200</td>
+<td>은행 카테고리</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>/bank/analysis/basic</code></td>
+<td>200</td>
+<td>은행 분석</td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>/bank/analysis/print</code></td>
+<td>200</td>
+<td>은행 인쇄</td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>/bank/help</code></td>
+<td>200</td>
+<td>은행 도움말</td>
+</tr>
+<tr>
+<td>11</td>
+<td><code>/card/</code></td>
+<td>200</td>
+<td>카드 전처리</td>
+</tr>
+<tr>
+<td>12</td>
+<td><code>/card/category</code></td>
+<td>200</td>
+<td>카드 카테고리</td>
+</tr>
+<tr>
+<td>13</td>
+<td><code>/card/analysis/basic</code></td>
+<td>200</td>
+<td>카드 분석</td>
+</tr>
+<tr>
+<td>14</td>
+<td><code>/card/analysis/print</code></td>
+<td>200</td>
+<td>카드 인쇄</td>
+</tr>
+<tr>
+<td>15</td>
+<td><code>/card/help</code></td>
+<td>200</td>
+<td>카드 도움말</td>
+</tr>
+<tr>
+<td>16</td>
+<td><code>/cash/</code></td>
+<td>200</td>
+<td>금융정보 메인</td>
+</tr>
+<tr>
+<td>17</td>
+<td><code>/cash/category</code></td>
+<td>200</td>
+<td>업종분류</td>
+</tr>
+<tr>
+<td>18</td>
+<td><code>/cash/analysis/basic</code></td>
+<td>200</td>
+<td>금융정보 분석</td>
+</tr>
+<tr>
+<td>19</td>
+<td><code>/cash/analysis/print</code></td>
+<td>200</td>
+<td>금융정보 인쇄</td>
+</tr>
+<tr>
+<td>20</td>
+<td><code>/cash/analysis/risk-report</code></td>
+<td>200</td>
+<td>위험도 분석</td>
+</tr>
+<tr>
+<td>21</td>
+<td><code>/cash/help</code></td>
+<td>200</td>
+<td>금융정보 도움말</td>
+</tr>
+</tbody>
 </table>
-<blockquote><strong>전수 실행 결과</strong>: 페이지 21개 + API 19개 = <strong>총 40개 엔드포인트 전부 200 OK</strong>. 오류 없음.</blockquote>
-
-<h2>제2장 특허 청구항 vs 코드 구현 대조</h2>
+<h3 id="12-api-19-get">1.2 API 엔드포인트 (19개 GET 검증)</h3>
 <table>
-<tr><th>청구항</th><th>핵심 기능</th><th>구현 파일·함수</th><th>상태</th></tr>
-<tr><td><strong>1항 (독립)</strong></td><td>전처리→3단계 분류→통합→위험도→소명서</td><td>전 모듈</td><td class="ok">✅ 완전 구현</td></tr>
-<tr><td><strong>2항</strong></td><td>5단계 캐스케이드 충돌 해결</td><td>process_bank_data._best_match</td><td class="ok">✅ 완전 구현</td></tr>
-<tr><td><strong>3항</strong></td><td>Step-up Scoring 1~10호</td><td>risk_indicators.apply_risk_indicators</td><td class="ok">✅ 완전 구현</td></tr>
-<tr><td><strong>4항</strong></td><td>T 계수 (시계열 근접성)</td><td>cash_app._compute_temporal_proximity</td><td class="ok">✅ 완전 구현</td></tr>
-<tr><td><strong>5항</strong></td><td>소명서 자동 생성</td><td>cash_app.SUGGESTION_TEMPLATES 외</td><td class="ok">✅ 완전 구현</td></tr>
-<tr><td><strong>6항</strong></td><td>VASP 3단계 식별</td><td>risk_indicators.detect_vasp</td><td class="ok">✅ 완전 구현</td></tr>
-<tr><td><strong>7항</strong></td><td>Θ 계수 (동적 임계)</td><td>cash_app._compute_threshold_factor</td><td class="ok">✅ 완전 구현</td></tr>
-<tr><td><strong>8항</strong></td><td>대화형 Q&amp;A UI</td><td>analysis_basic.html 필터·모달</td><td class="ok">✅ 완전 구현</td></tr>
-<tr><td><strong>9항</strong></td><td>S 계수 (입출금 대칭성)</td><td>cash_app._compute_symmetry_factor</td><td class="ok">✅ 완전 구현</td></tr>
-<tr><td><strong>10항</strong></td><td>외부 API 업종 검증</td><td>사업자번호 기반 폐업 확인</td><td class="ok">✅ 구현 확인</td></tr>
-<tr><td><strong>11항 (독립 시스템)</strong></td><td>5대 구성 유닛</td><td>전처리·분류·통합·위험도·소명서부</td><td class="ok">✅ 완전 구현</td></tr>
+<thead>
+<tr>
+<th>#</th>
+<th>URL</th>
+<th>상태</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>/api/reset-file-sizes</code></td>
+<td>200</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>/bank/api/cache-info</code></td>
+<td>200</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>/bank/api/source-files</code></td>
+<td>200</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>/bank/api/processed-data</code></td>
+<td>200</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>/bank/api/category</code></td>
+<td>200</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>/bank/api/simya-ranges</code></td>
+<td>200</td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>/bank/api/analysis/summary</code></td>
+<td>200</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>/bank/api/analysis/date-range</code></td>
+<td>200</td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>/card/api/cache-info</code></td>
+<td>200</td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>/card/api/source-files</code></td>
+<td>200</td>
+</tr>
+<tr>
+<td>11</td>
+<td><code>/card/api/processed-data</code></td>
+<td>200</td>
+</tr>
+<tr>
+<td>12</td>
+<td><code>/card/api/category</code></td>
+<td>200</td>
+</tr>
+<tr>
+<td>13</td>
+<td><code>/card/api/analysis/summary</code></td>
+<td>200</td>
+</tr>
+<tr>
+<td>14</td>
+<td><code>/cash/api/cache-info</code></td>
+<td>200</td>
+</tr>
+<tr>
+<td>15</td>
+<td><code>/cash/api/processed-data</code></td>
+<td>200</td>
+</tr>
+<tr>
+<td>16</td>
+<td><code>/cash/api/category</code></td>
+<td>200</td>
+</tr>
+<tr>
+<td>17</td>
+<td><code>/cash/api/risk-class-table</code></td>
+<td>200</td>
+</tr>
+<tr>
+<td>18</td>
+<td><code>/cash/api/analysis/summary</code></td>
+<td>200</td>
+</tr>
+<tr>
+<td>19</td>
+<td><code>/cash/api/analysis/date-range</code></td>
+<td>200</td>
+</tr>
+</tbody>
 </table>
-
-<h2>제3장 코드 품질·보안·안정성</h2>
-
-<h3>3.1 코드 품질</h3>
+<blockquote>
+<p><strong>전수 실행 결과</strong>: 페이지 21개 + API 19개 = <strong>총 40개 엔드포인트 전부 200 OK</strong>. 오류 없음.</p>
+</blockquote>
+<hr />
+<h2 id="2-vs">제2장 특허 청구항 vs 코드 구현 대조</h2>
+<h3 id="21-11">2.1 청구항 11개 구현 검증 결과</h3>
 <table>
-<tr><th>항목</th><th>상태</th><th>비고</th></tr>
-<tr><td>미사용 import</td><td class="ok">없음</td><td>의도적 re-export 제외</td></tr>
-<tr><td>불필요 print()</td><td class="ok">해결</td><td>4차 조사에서 24곳 logging 전환 완료</td></tr>
-<tr><td>traceback 미사용 버그</td><td class="ok">수정</td><td>bank_app.py NameError 방지</td></tr>
-<tr><td>TODO/FIXME 미처리</td><td class="ok">없음</td><td>전 모듈 점검</td></tr>
-<tr><td>데드코드</td><td class="ok">제거</td><td>_ACCOUNT_RE, 중복 import</td></tr>
+<thead>
+<tr>
+<th>청구항</th>
+<th>핵심 기능</th>
+<th>구현 파일·함수</th>
+<th>상태</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1항 (독립)</strong></td>
+<td>전처리→3단계 분류→통합→위험도→소명서</td>
+<td>전 모듈</td>
+<td>✅ 완전 구현</td>
+</tr>
+<tr>
+<td><strong>2항</strong></td>
+<td>5단계 캐스케이드 충돌 해결</td>
+<td><code>process_bank_data._best_match</code> (L720~760), <code>process_card_data._best_match</code></td>
+<td>✅ 완전 구현</td>
+</tr>
+<tr>
+<td><strong>3항</strong></td>
+<td>Step-up Scoring 1~10호</td>
+<td><code>risk_indicators.apply_risk_indicators</code> (L359~505)</td>
+<td>✅ 완전 구현</td>
+</tr>
+<tr>
+<td><strong>4항</strong></td>
+<td>T 계수 (시계열 근접성)</td>
+<td><code>cash_app._compute_temporal_proximity</code> (L1432~1449)</td>
+<td>✅ 완전 구현</td>
+</tr>
+<tr>
+<td><strong>5항</strong></td>
+<td>소명서 자동 생성</td>
+<td><code>cash_app.SUGGESTION_TEMPLATES</code>, <code>LEGAL_REFERENCES</code>, <code>_generate_draft_explanation</code></td>
+<td>✅ 완전 구현</td>
+</tr>
+<tr>
+<td><strong>6항</strong></td>
+<td>VASP 3단계 식별</td>
+<td><code>risk_indicators.detect_vasp</code>, <code>identify_vasp_account</code>, <code>identify_vasp_name</code></td>
+<td>✅ 완전 구현</td>
+</tr>
+<tr>
+<td><strong>7항</strong></td>
+<td>Θ 계수 (동적 임계)</td>
+<td><code>cash_app._compute_threshold_factor</code> (L1470~1497)</td>
+<td>✅ 완전 구현</td>
+</tr>
+<tr>
+<td><strong>8항</strong></td>
+<td>대화형 Q&amp;A UI</td>
+<td>각 <code>analysis_basic.html</code> 필터·검색·모달</td>
+<td>✅ 완전 구현</td>
+</tr>
+<tr>
+<td><strong>9항</strong></td>
+<td>S 계수 (입출금 대칭성)</td>
+<td><code>cash_app._compute_symmetry_factor</code> (L1450~1469)</td>
+<td>✅ 완전 구현</td>
+</tr>
+<tr>
+<td><strong>10항</strong></td>
+<td>외부 API 업종 검증</td>
+<td>사업자번호 기반 폐업 확인 로직</td>
+<td>✅ 구현 확인</td>
+</tr>
+<tr>
+<td><strong>11항 (독립 시스템)</strong></td>
+<td>5대 구성 유닛</td>
+<td>전처리부·분류엔진부·통합부·위험도부·소명서부</td>
+<td>✅ 완전 구현</td>
+</tr>
+</tbody>
 </table>
-
-<h3>3.2 보안</h3>
+<blockquote>
+<p><strong>결론</strong>: 특허 청구항 11개 전부가 코드에 <strong>완전 구현</strong>되어 있음을 확인.</p>
+</blockquote>
+<hr />
+<h2 id="3">제3장 코드 품질·보안·안정성 평가</h2>
+<h3 id="31">3.1 코드 품질</h3>
 <table>
-<tr><th>항목</th><th>상태</th><th>내용</th></tr>
-<tr><td>경로 탐색 방어</td><td class="ok">✅</td><td>os.path.realpath + startswith</td></tr>
-<tr><td>ZIP Slip 방어</td><td class="ok">✅</td><td>추출 경로 검증</td></tr>
-<tr><td>SECRET_KEY</td><td class="ok">✅</td><td>환경변수 우선, 런타임 폴백</td></tr>
-<tr><td>MAX_CONTENT_LENGTH</td><td class="ok">✅</td><td>50MB 업로드 제한</td></tr>
-<tr><td>Jinja2 자동 이스케이프</td><td class="ok">✅</td><td>XSS 방어</td></tr>
-<tr><td>CSRF</td><td class="warn">△</td><td>미적용 (내부 전제, 공개 배포 시 도입)</td></tr>
+<thead>
+<tr>
+<th>항목</th>
+<th>상태</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>미사용 import</td>
+<td>✅ 없음</td>
+<td>의도적 re-export 제외</td>
+</tr>
+<tr>
+<td>불필요 print()</td>
+<td>✅ 해결</td>
+<td>4차 조사에서 24곳 logging 전환 완료</td>
+</tr>
+<tr>
+<td>traceback 미사용 버그</td>
+<td>✅ 수정</td>
+<td>bank_app.py NameError 방지</td>
+</tr>
+<tr>
+<td>TODO/FIXME 미처리</td>
+<td>✅ 없음</td>
+<td>전 모듈 점검</td>
+</tr>
+<tr>
+<td>주석 처리 코드 블록</td>
+<td>✅ 없음</td>
+<td>삭제 대상 미발견</td>
+</tr>
+<tr>
+<td>데드코드</td>
+<td>✅ 제거</td>
+<td>risk_indicators.py <code>_ACCOUNT_RE</code>, shared_app_utils.py 중복 import</td>
+</tr>
+</tbody>
 </table>
-
-<h3>3.3 데이터 안정성</h3>
+<h3 id="32">3.2 보안</h3>
 <table>
-<tr><th>항목</th><th>상태</th><th>내용</th></tr>
-<tr><td>원자적 JSON 쓰기</td><td class="ok">✅</td><td>mkstemp + os.replace 전면 적용</td></tr>
-<tr><td>원자적 Excel 쓰기</td><td class="ok">✅</td><td>excel_io 패턴 교체</td></tr>
-<tr><td>스레드 안전 캐시</td><td class="ok">✅</td><td>threading.Lock</td></tr>
-<tr><td>파일 인코딩</td><td class="ok">✅</td><td>전 모듈 UTF-8 명시</td></tr>
+<thead>
+<tr>
+<th>항목</th>
+<th>상태</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>경로 탐색 방어</td>
+<td>✅</td>
+<td><code>os.path.realpath</code> + <code>startswith</code> 적용 (img, restore)</td>
+</tr>
+<tr>
+<td>ZIP Slip 방어</td>
+<td>✅</td>
+<td>추출 경로 검증 (app.py <code>/api/restore</code>)</td>
+</tr>
+<tr>
+<td>SECRET_KEY</td>
+<td>✅</td>
+<td>환경변수 우선, 런타임 랜덤 폴백</td>
+</tr>
+<tr>
+<td>MAX_CONTENT_LENGTH</td>
+<td>✅</td>
+<td>50MB 업로드 제한</td>
+</tr>
+<tr>
+<td>Jinja2 자동 이스케이프</td>
+<td>✅</td>
+<td>XSS 방어</td>
+</tr>
+<tr>
+<td>bare except</td>
+<td>✅</td>
+<td>사용 없음 (모두 구체적 예외 타입)</td>
+</tr>
+<tr>
+<td>CSRF</td>
+<td>△</td>
+<td>미적용 (내부/로컬 전제, 공개 배포 시 검토)</td>
+</tr>
+</tbody>
 </table>
-
-<h2>제4장 코드·문서 정합성</h2>
-
-<h3>4.1 system_flow.md vs 코드 대조</h3>
+<h3 id="33">3.3 데이터 안정성</h3>
 <table>
-<tr><th>점검 항목</th><th>결과</th><th>비고</th></tr>
-<tr><td>도면 부호 체계 (100~450)</td><td class="ok">✅ 일치</td><td>15개 부호 전부 대응</td></tr>
-<tr><td>R 공식</td><td class="ok">✅ 일치</td><td>수식·계수·등급 전부</td></tr>
-<tr><td>T 계수</td><td class="ok">✅ 일치</td><td>α=0.3, β=0.2</td></tr>
-<tr><td>Θ 계수</td><td class="ok">✅ 일치</td><td>γ=0.1, δ=0.05</td></tr>
-<tr><td>S 계수</td><td class="ok">✅ 일치</td><td>하한 0.3, 5·7·8호</td></tr>
-<tr><td>VASP 3단계 식별</td><td class="ok">✅ 일치</td><td>카테고리→접두번호→사업자명</td></tr>
-<tr><td>5단계 캐스케이드</td><td class="ok">✅ 일치</td><td>길이→위험도→위치→소분류→기존</td></tr>
-<tr><td>Mermaid 다이어그램</td><td class="ok">✅ 정상</td><td>6개 전부 구문 오류 없음</td></tr>
+<thead>
+<tr>
+<th>항목</th>
+<th>상태</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>원자적 JSON 쓰기</td>
+<td>✅</td>
+<td><code>data_json_io</code>, <code>category_table_io</code>, <code>cash_app</code> 전부 <code>mkstemp</code>+<code>os.replace</code></td>
+</tr>
+<tr>
+<td>원자적 Excel 쓰기</td>
+<td>✅</td>
+<td><code>excel_io.safe_write_excel</code> 패턴 교체</td>
+</tr>
+<tr>
+<td>스레드 안전 캐시</td>
+<td>✅</td>
+<td><code>category_table_io._ct_lock</code> (threading.Lock)</td>
+</tr>
+<tr>
+<td>파일 인코딩</td>
+<td>✅</td>
+<td>전 모듈 <code>encoding='utf-8'</code> 명시</td>
+</tr>
+</tbody>
 </table>
-
-<h3>4.2 HTML 템플릿 R 공식 표기</h3>
+<hr />
+<h2 id="4">제4장 코드·문서 정합성 평가</h2>
+<h3 id="41-system_flowmd-vs">4.1 system_flow.md vs 코드 대조</h3>
 <table>
-<tr><th>파일</th><th>상태</th></tr>
-<tr><td>risk_report_page.html</td><td class="ok">✅ 코드와 일치 (avg_aᵢ 포함)</td></tr>
-<tr><td>_risk_opinion_content.html</td><td class="ok">✅</td></tr>
-<tr><td>_opinion_content.html</td><td class="ok">✅</td></tr>
-<tr><td>_risk_report_content.html</td><td class="ok">✅</td></tr>
+<thead>
+<tr>
+<th>점검 항목</th>
+<th>결과</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>도면 부호 체계 (100~450)</td>
+<td>✅ 일치</td>
+<td>15개 부호 전부 코드 모듈과 대응</td>
+</tr>
+<tr>
+<td>R 공식</td>
+<td>✅ 일치</td>
+<td>수식·계수(α,β,γ,δ)·등급 기준 전부</td>
+</tr>
+<tr>
+<td>T 계수 (시계열 근접성)</td>
+<td>✅ 일치</td>
+<td>T = 1 + α×C + β×P</td>
+</tr>
+<tr>
+<td>Θ 계수 (동적 임계)</td>
+<td>✅ 일치</td>
+<td>amount_factor × count_factor</td>
+</tr>
+<tr>
+<td>S 계수 (입출금 대칭성)</td>
+<td>✅ 일치</td>
+<td>S = 1 − (입금/출금), 하한 0.3</td>
+</tr>
+<tr>
+<td>S 적용 지표</td>
+<td>✅ 일치</td>
+<td>5호·7호·8호</td>
+</tr>
+<tr>
+<td>VASP 3단계 식별</td>
+<td>✅ 일치</td>
+<td>(a) 카테고리→(b) 접두번호→(c) 사업자명</td>
+</tr>
+<tr>
+<td>5단계 캐스케이드</td>
+<td>✅ 일치</td>
+<td>길이→위험도→위치→소분류→기존유지</td>
+</tr>
+<tr>
+<td>Mermaid 다이어그램 구문</td>
+<td>✅ 정상</td>
+<td>6개 전부 오류 없음</td>
+</tr>
+</tbody>
 </table>
-
-<h2>제5장 모듈별 완성도 평가</h2>
+<h3 id="42-html-r">4.2 HTML 템플릿 R 공식 표기</h3>
 <table>
-<tr><th>모듈</th><th>파일 수</th><th>라우트</th><th>품질</th><th>보안</th><th>등급</th></tr>
-<tr><td><strong>루트 (app.py)</strong></td><td>2</td><td>29</td><td class="grade-a">A</td><td class="grade-a">A</td><td class="grade-a">A</td></tr>
-<tr><td><strong>lib/</strong></td><td>11</td><td>—</td><td class="grade-a">A</td><td class="grade-a">A</td><td class="grade-a">A</td></tr>
-<tr><td><strong>MyBank/</strong></td><td>2+7</td><td>29</td><td class="grade-a">A</td><td class="grade-a">A</td><td class="grade-a">A</td></tr>
-<tr><td><strong>MyCard/</strong></td><td>2+7</td><td>30</td><td class="grade-a">A</td><td class="grade-a">A</td><td class="grade-a">A</td></tr>
-<tr><td><strong>MyCash/</strong></td><td>3+12</td><td>34</td><td class="grade-a">A</td><td class="grade-a">A</td><td class="grade-a">A</td></tr>
+<thead>
+<tr>
+<th>파일</th>
+<th>표기</th>
+<th>상태</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>risk_report_page.html</code></td>
+<td>R = Σ(wᵢ × log₁₀(1+fᵢ×avg_aᵢ) × Tᵢ × Θᵢ × Sᵢ)</td>
+<td>✅ 코드와 일치</td>
+</tr>
+<tr>
+<td><code>_risk_opinion_content.html</code></td>
+<td>동일</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>_opinion_content.html</code></td>
+<td>동일</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>_risk_report_content.html</code></td>
+<td>R = w × log₁₀(1+f×avg_a) × T × Θ × S</td>
+<td>✅</td>
+</tr>
+</tbody>
 </table>
-<blockquote><strong>종합 등급: A</strong> — 상용화 직전 단계(TRL 7). 모든 핵심 기능 구현 완료, 보안·안정성 확보.</blockquote>
-
-<h2>제6장 특허 관련 문서 총정리</h2>
-
-<h3>6.1 현행 문서 (readme/특허자료/)</h3>
+<h3 id="43">4.3 지표 명칭 일관성</h3>
 <table>
-<tr><th>#</th><th>파일명</th><th>위치</th><th>형식</th><th>개요</th></tr>
-<tr><td>1</td><td><strong>260318_p-14_s(특허출원서).pdf</strong></td><td>특허자료/</td><td>PDF</td><td>특허출원서 최종본. 청구항 11개, 도면 7장</td></tr>
-<tr><td>2</td><td>260318_p-14_s(특허출원서).hwp</td><td>특허자료/</td><td>HWP</td><td>특허출원서 한글 원문</td></tr>
-<tr><td>3</td><td><strong>특허출원서(Opus의견)_v4.md</strong></td><td>md/</td><td>MD</td><td>AI 기반 보강 초안 v4. 9건 최종 검수 반영</td></tr>
-<tr><td>4</td><td>특허출원서(Opus의견)_v4.html</td><td>특허자료/</td><td>HTML</td><td>v4 HTML 열람 버전</td></tr>
-<tr><td>5</td><td>260318_특허출원서_HWP수정본.md</td><td>md/</td><td>MD</td><td>HWP 명세서 교체용 텍스트</td></tr>
-<tr><td>6</td><td>260318_특허출원서_HWP수정본.html</td><td>특허자료/</td><td>HTML</td><td>HWP 수정본 HTML 버전</td></tr>
-<tr><td>7</td><td><strong>system_flow.md</strong></td><td>md/</td><td>MD</td><td>시스템 구성도·순서도. Mermaid 도면 6종(부호 100~450)</td></tr>
-<tr><td>8</td><td>system_flow_print.html</td><td>특허자료/</td><td>HTML</td><td>도면 인쇄 전용</td></tr>
-<tr><td>9</td><td><strong>선행기술_청구항_조사.md</strong></td><td>md/</td><td>MD</td><td>선행기술 7건 청구항 조사. 차별점 분석</td></tr>
-<tr><td>10</td><td>선행기술_청구항_조사.html</td><td>특허자료/</td><td>HTML</td><td>선행기술 조사 HTML 버전</td></tr>
-<tr><td>11</td><td><strong>기보_벤처인증_기술평가_전략.md</strong></td><td>md/</td><td>MD</td><td>기보 TCB 평가·벤처인증 전략</td></tr>
-<tr><td>12</td><td>기보_벤처인증_기술평가_전략.html</td><td>특허자료/</td><td>HTML</td><td>기보 전략 HTML 버전</td></tr>
-<tr><td>13</td><td><strong>최종_전수조사_보고서.md</strong></td><td>md/</td><td>MD</td><td>본 보고서 (코드 검증 증빙)</td></tr>
-<tr><td>14</td><td>최종_전수조사_보고서.html</td><td>특허자료/</td><td>HTML</td><td>본 보고서 HTML 버전</td></tr>
-<tr><td>15</td><td>260316_특허출원가이드.docx</td><td>특허자료/</td><td>DOCX</td><td>출원 절차·양식·감면 안내</td></tr>
-<tr><td>16</td><td>MyRisk 특허 출원 프로젝트.docx</td><td>특허자료/</td><td>DOCX</td><td>특허 프로젝트 보강안</td></tr>
-<tr><td>17</td><td>[2026.1.14. 기준] 가상자산사업자 현황.xlsx</td><td>특허자료/</td><td>XLSX</td><td>VASP 사업자 목록 (40개 근거)</td></tr>
-<tr><td>18</td><td>000000_파산면책회생조정(김찬식).xlsx</td><td>특허자료/</td><td>XLSX</td><td>파산·면책·회생 관련 참고</td></tr>
-<tr><td>19</td><td>000000_파산신청준비서류.pdf</td><td>특허자료/</td><td>PDF</td><td>파산신청 준비서류 목록</td></tr>
+<thead>
+<tr>
+<th>지표</th>
+<th>risk_indicators.py</th>
+<th>HTML 템플릿</th>
+<th>상태</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1호</td>
+<td>분류제외지표</td>
+<td>1호(업종분류제외)</td>
+<td>△ 표현 상이 (의미 동일)</td>
+</tr>
+<tr>
+<td>2~10호</td>
+<td>○○지표</td>
+<td>○호(○○지표)</td>
+<td>✅ 일치</td>
+</tr>
+</tbody>
 </table>
-
-<h3>6.2 이전 버전 (readme/특허자료/old/)</h3>
+<hr />
+<h2 id="5">제5장 모듈별 완성도 평가</h2>
 <table>
-<tr><th>#</th><th>파일명</th><th>개요</th></tr>
-<tr><td>1</td><td>260204_p-14_s(특허출원서).pdf / .hwp</td><td>초기 출원서 (2026-02-04)</td></tr>
-<tr><td>2</td><td>260316_p-14_s(특허출원서).pdf / .hwp</td><td>중간 출원서 (2026-03-16)</td></tr>
-<tr><td>3</td><td>260316_특허출원서(Opus의견).pdf / .md / .html</td><td>Opus 의견 초기</td></tr>
-<tr><td>4</td><td>특허출원서(Opus의견)_v2.md / .html</td><td>v2 보강안</td></tr>
-<tr><td>5</td><td>특허출원서(Opus의견)_v3.md / .html</td><td>v3 보강안</td></tr>
+<thead>
+<tr>
+<th>모듈</th>
+<th>파일 수</th>
+<th>라우트</th>
+<th>품질</th>
+<th>보안</th>
+<th>테스트</th>
+<th>등급</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>루트 (app.py)</strong></td>
+<td>2</td>
+<td>29</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td><strong>A</strong></td>
+</tr>
+<tr>
+<td><strong>lib/</strong></td>
+<td>11</td>
+<td>—</td>
+<td>A</td>
+<td>A</td>
+<td>—</td>
+<td><strong>A</strong></td>
+</tr>
+<tr>
+<td><strong>MyBank/</strong></td>
+<td>2+7</td>
+<td>29</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td><strong>A</strong></td>
+</tr>
+<tr>
+<td><strong>MyCard/</strong></td>
+<td>2+7</td>
+<td>30</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td><strong>A</strong></td>
+</tr>
+<tr>
+<td><strong>MyCash/</strong></td>
+<td>3+12</td>
+<td>34</td>
+<td>A</td>
+<td>A</td>
+<td>A</td>
+<td><strong>A</strong></td>
+</tr>
+<tr>
+<td><strong>static/</strong></td>
+<td>4+4</td>
+<td>—</td>
+<td>A</td>
+<td>—</td>
+<td>—</td>
+<td><strong>A</strong></td>
+</tr>
+</tbody>
 </table>
-
-<h3>6.3 문서 간 관계도</h3>
-<pre>
-readme/특허자료/
+<blockquote>
+<p><strong>종합 등급: A</strong> — 상용화 직전 단계(TRL 7). 모든 핵심 기능 구현 완료, 보안·안정성 확보.</p>
+</blockquote>
+<hr />
+<h2 id="6">제6장 특허 관련 문서 총정리</h2>
+<h3 id="61-readme">6.1 현행 문서 (readme/특허자료/)</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>파일명</th>
+<th>위치</th>
+<th>형식</th>
+<th>개요</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>260318_p-14_s(특허출원서).pdf</strong></td>
+<td>특허자료/</td>
+<td>PDF</td>
+<td><strong>특허출원서 최종본</strong> (2026-03-18). 청구항 11개, 도면 7장. 접수 준비 완료</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>260318_p-14_s(특허출원서).hwp</strong></td>
+<td>특허자료/</td>
+<td>HWP</td>
+<td>특허출원서 한글 원문</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>특허출원서(Opus의견)_v4.md</strong></td>
+<td>md/</td>
+<td>MD</td>
+<td>AI 기반 보강 초안 v4. 9건 최종 검수 반영. 변리사 검토 참고용</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>특허출원서(Opus의견)_v4.html</strong></td>
+<td>특허자료/</td>
+<td>HTML</td>
+<td>v4의 HTML 열람 버전</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>260318_특허출원서_HWP수정본.md</strong></td>
+<td>md/</td>
+<td>MD</td>
+<td>HWP 명세서 교체용 텍스트. 출원서 9건 수정 사항 반영</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>260318_특허출원서_HWP수정본.html</strong></td>
+<td>특허자료/</td>
+<td>HTML</td>
+<td>HWP 수정본 HTML 열람 버전</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>system_flow.md</strong></td>
+<td>md/</td>
+<td>MD</td>
+<td><strong>시스템 구성도·순서도</strong>. Mermaid 흑백 도면 6종(부호 100~450). 특허 명세서 첨부용</td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong>system_flow_print.html</strong></td>
+<td>특허자료/</td>
+<td>HTML</td>
+<td>도면 인쇄 전용 HTML</td>
+</tr>
+<tr>
+<td>9</td>
+<td><strong>선행기술_청구항_조사.md</strong></td>
+<td>md/</td>
+<td>MD</td>
+<td><strong>선행기술 7건 청구항 조사 보고서</strong>. 등록번호·핵심 청구항·MyRisk 차별점 분석</td>
+</tr>
+<tr>
+<td>10</td>
+<td><strong>선행기술_청구항_조사.html</strong></td>
+<td>특허자료/</td>
+<td>HTML</td>
+<td>선행기술 조사 HTML 열람 버전</td>
+</tr>
+<tr>
+<td>11</td>
+<td><strong>기보_벤처인증_기술평가_전략.md</strong></td>
+<td>md/</td>
+<td>MD</td>
+<td><strong>기보(KIBO) TCB 기술평가·벤처인증 전략</strong>. R 공식 독보성, T·Θ·S 차별점, ESG 사회적 가치</td>
+</tr>
+<tr>
+<td>12</td>
+<td><strong>기보_벤처인증_기술평가_전략.html</strong></td>
+<td>특허자료/</td>
+<td>HTML</td>
+<td>기보 전략 HTML 열람 버전</td>
+</tr>
+<tr>
+<td>13</td>
+<td><strong>최종_전수조사_보고서.md</strong></td>
+<td>md/</td>
+<td>MD</td>
+<td>본 보고서 (코드 검증 증빙)</td>
+</tr>
+<tr>
+<td>14</td>
+<td><strong>최종_전수조사_보고서.html</strong></td>
+<td>특허자료/</td>
+<td>HTML</td>
+<td>본 보고서 HTML 열람 버전</td>
+</tr>
+<tr>
+<td>15</td>
+<td><strong>260316_특허출원가이드.docx</strong></td>
+<td>특허자료/</td>
+<td>DOCX</td>
+<td>출원 절차·양식·감면·우선심사 안내</td>
+</tr>
+<tr>
+<td>16</td>
+<td><strong>MyRisk 특허 출원 프로젝트.docx</strong></td>
+<td>특허자료/</td>
+<td>DOCX</td>
+<td>특허 프로젝트 보강안</td>
+</tr>
+<tr>
+<td>17</td>
+<td><strong>[2026.1.14. 기준] 가상자산사업자 신고에 관한 정보공개현황.xlsx</strong></td>
+<td>특허자료/</td>
+<td>XLSX</td>
+<td>FIU VASP 사업자 목록 (risk_indicators.py VASP_NAMES 40개의 근거)</td>
+</tr>
+<tr>
+<td>18</td>
+<td><strong>000000_파산면책회생조정(김찬식).xlsx</strong></td>
+<td>특허자료/</td>
+<td>XLSX</td>
+<td>파산·면책·회생 관련 참고</td>
+</tr>
+<tr>
+<td>19</td>
+<td><strong>000000_파산신청준비서류.pdf</strong></td>
+<td>특허자료/</td>
+<td>PDF</td>
+<td>파산신청 준비서류 목록</td>
+</tr>
+</tbody>
+</table>
+<h3 id="62-readmeold">6.2 이전 버전 (readme/특허자료/old/)</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>파일명</th>
+<th>형식</th>
+<th>개요</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>260204_p-14_s(특허출원서).pdf / .hwp</td>
+<td>PDF/HWP</td>
+<td>초기 출원서 (2026-02-04)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>260316_p-14_s(특허출원서).pdf / .hwp</td>
+<td>PDF/HWP</td>
+<td>중간 출원서 (2026-03-16)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>260316_특허출원서(Opus의견).pdf / .md / .html</td>
+<td>3종</td>
+<td>Opus 의견 초기 버전</td>
+</tr>
+<tr>
+<td>4</td>
+<td>특허출원서(Opus의견)_v2.md / .html</td>
+<td>2종</td>
+<td>v2 보강안</td>
+</tr>
+<tr>
+<td>5</td>
+<td>특허출원서(Opus의견)_v3.md / .html</td>
+<td>2종</td>
+<td>v3 보강안</td>
+</tr>
+</tbody>
+</table>
+<h3 id="63">6.3 문서 간 관계도</h3>
+<pre class="codehilite"><code>readme/특허자료/
 ├── 260318_p-14_s(특허출원서).pdf / .hwp  ← 최종 접수 대상
 ├── *.html (6개)                          ← HTML 열람 버전
 ├── *.docx / .xlsx / .pdf                 ← 사용자 원본 문서
@@ -228,52 +938,196 @@ readme/특허자료/
     ├── 260316_특허출원서(Opus의견).*
     ├── 특허출원서(Opus의견)_v2.*
     └── 특허출원서(Opus의견)_v3.*
-</pre>
+</code></pre>
 
-<h2>제7장 종합 평가</h2>
-
-<h3>7.1 코드 성숙도</h3>
+<hr />
+<h2 id="7">제7장 종합 평가</h2>
+<h3 id="71">7.1 코드 성숙도 종합</h3>
 <table>
-<tr><th>평가 영역</th><th>등급</th><th>근거</th></tr>
-<tr><td>기능 완전성</td><td class="grade-a">A</td><td>특허 청구항 11개 전부 코드 구현 확인</td></tr>
-<tr><td>코드 품질</td><td class="grade-a">A</td><td>print→logging 완료, 데드코드 제거, 미사용 import 없음</td></tr>
-<tr><td>보안</td><td class="grade-a">A</td><td>경로 탐색·ZIP Slip·SECRET_KEY·업로드 제한</td></tr>
-<tr><td>데이터 안정성</td><td class="grade-a">A</td><td>원자적 파일 쓰기 전면 적용, 스레드 안전</td></tr>
-<tr><td>문서 정합성</td><td class="grade-a">A</td><td>system_flow.md ↔ 코드: 전부 일치</td></tr>
-<tr><td>실행 안정성</td><td class="grade-a">A</td><td>40개 엔드포인트 전수 200 OK</td></tr>
-<tr><td>TRL</td><td class="grade-a">7</td><td>운용 환경 시연 완료 (Railway 배포)</td></tr>
+<thead>
+<tr>
+<th>평가 영역</th>
+<th>등급</th>
+<th>근거</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>기능 완전성</strong></td>
+<td>A</td>
+<td>특허 청구항 11개 전부 코드 구현 확인</td>
+</tr>
+<tr>
+<td><strong>코드 품질</strong></td>
+<td>A</td>
+<td>print→logging 전환 완료, 데드코드 제거, 미사용 import 없음</td>
+</tr>
+<tr>
+<td><strong>보안</strong></td>
+<td>A</td>
+<td>경로 탐색 방어, ZIP Slip, SECRET_KEY, 업로드 제한</td>
+</tr>
+<tr>
+<td><strong>데이터 안정성</strong></td>
+<td>A</td>
+<td>원자적 파일 쓰기 전면 적용, 스레드 안전 캐시</td>
+</tr>
+<tr>
+<td><strong>문서 정합성</strong></td>
+<td>A</td>
+<td>system_flow.md ↔ 코드: 부호·공식·알고리즘 전부 일치</td>
+</tr>
+<tr>
+<td><strong>실행 안정성</strong></td>
+<td>A</td>
+<td>40개 엔드포인트 전수 실행 200 OK</td>
+</tr>
+<tr>
+<td><strong>TRL</strong></td>
+<td>7</td>
+<td>운용 환경 시연 완료 (Railway 클라우드 배포)</td>
+</tr>
+</tbody>
 </table>
-
-<h3>7.2 4차 전수조사 수정 항목 (13건)</h3>
+<h3 id="72-4-13">7.2 4차 전수조사에서 수정한 항목 (총 13건)</h3>
 <table>
-<tr><th>#</th><th>심각도</th><th>파일</th><th>수정 내용</th></tr>
-<tr><td>1</td><td>긴급</td><td>bank_app.py</td><td>traceback 미import NameError → logger.exception()</td></tr>
-<tr><td>2</td><td>긴급</td><td>app.py</td><td>SECRET_KEY 미설정 → 환경변수 기반</td></tr>
-<tr><td>3</td><td>긴급</td><td>app.py</td><td>MAX_CONTENT_LENGTH 미설정 → 50MB</td></tr>
-<tr><td>4</td><td>중요</td><td>cash_app.py</td><td>대체구분 저장 → mkstemp+os.replace 원자적</td></tr>
-<tr><td>5</td><td>중요</td><td>cash_app.py</td><td>_sync_daechae_to_source → 원자적</td></tr>
-<tr><td>6</td><td>중요</td><td>category_table_io.py</td><td>pandas-None 경로 → _atomic_json_write</td></tr>
-<tr><td>7</td><td>중요</td><td>excel_io.py</td><td>remove→write → mkstemp+os.replace</td></tr>
-<tr><td>8</td><td>중요</td><td>process_bank_data.py</td><td>_safe_print 24곳 → logging 전환</td></tr>
-<tr><td>9</td><td>경미</td><td>risk_report_page.html</td><td>R 공식 aᵢ → avg_aᵢ</td></tr>
-<tr><td>10</td><td>경미</td><td>_risk_opinion_content.html</td><td>R 공식 aᵢ → avg_aᵢ</td></tr>
-<tr><td>11</td><td>경미</td><td>_opinion_content.html</td><td>R 공식 aᵢ → avg_aᵢ</td></tr>
-<tr><td>12</td><td>경미</td><td>risk_indicators.py</td><td>미사용 _ACCOUNT_RE 제거</td></tr>
-<tr><td>13</td><td>경미</td><td>shared_app_utils.py</td><td>중복 import sys 제거</td></tr>
+<thead>
+<tr>
+<th>#</th>
+<th>심각도</th>
+<th>파일</th>
+<th>수정 내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>긴급</td>
+<td>bank_app.py</td>
+<td><code>traceback</code> 미import NameError → <code>logger.exception()</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>긴급</td>
+<td>app.py</td>
+<td>SECRET_KEY 미설정 → 환경변수 기반</td>
+</tr>
+<tr>
+<td>3</td>
+<td>긴급</td>
+<td>app.py</td>
+<td>MAX_CONTENT_LENGTH 미설정 → 50MB</td>
+</tr>
+<tr>
+<td>4</td>
+<td>중요</td>
+<td>cash_app.py</td>
+<td>대체구분 저장 비원자적 → <code>mkstemp</code>+<code>os.replace</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td>중요</td>
+<td>cash_app.py</td>
+<td><code>_sync_daechae_to_source</code> 비원자적 → 원자적</td>
+</tr>
+<tr>
+<td>6</td>
+<td>중요</td>
+<td>category_table_io.py</td>
+<td>pandas-None 경로 2곳 → <code>_atomic_json_write</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td>중요</td>
+<td>excel_io.py</td>
+<td><code>remove→write</code> → <code>mkstemp</code>+<code>os.replace</code></td>
+</tr>
+<tr>
+<td>8</td>
+<td>중요</td>
+<td>process_bank_data.py</td>
+<td><code>_safe_print</code> 24곳 → logging 내부 전환</td>
+</tr>
+<tr>
+<td>9</td>
+<td>경미</td>
+<td>risk_report_page.html</td>
+<td>R 공식 <code>aᵢ</code> → <code>avg_aᵢ</code></td>
+</tr>
+<tr>
+<td>10</td>
+<td>경미</td>
+<td>_risk_opinion_content.html</td>
+<td>R 공식 <code>aᵢ</code> → <code>avg_aᵢ</code></td>
+</tr>
+<tr>
+<td>11</td>
+<td>경미</td>
+<td>_opinion_content.html</td>
+<td>R 공식 <code>aᵢ</code> → <code>avg_aᵢ</code></td>
+</tr>
+<tr>
+<td>12</td>
+<td>경미</td>
+<td>risk_indicators.py</td>
+<td>미사용 <code>_ACCOUNT_RE</code> 제거</td>
+</tr>
+<tr>
+<td>13</td>
+<td>경미</td>
+<td>shared_app_utils.py</td>
+<td>중복 <code>import sys</code> 제거</td>
+</tr>
+</tbody>
 </table>
-
-<h2>제8장 결론</h2>
-
-<div class="conclusion">
-<p><strong>MyRisk v2.0은 특허출원서의 11개 청구항이 코드에 완전 구현되어 있으며, system_flow.md의 도면 부호·R 공식·알고리즘이 코드와 정확히 일치한다.</strong></p>
-<p>4차 전수조사를 통해 런타임 버그 1건, 보안 결함 2건, 데이터 안정성 4건을 포함한 총 13건을 수정하였다. 40개 엔드포인트 전수 실행에서 오류가 없으며, TRL 7(운용 환경 시연) 수준의 기술 완성도를 확인하였다.</p>
+<h3 id="73">7.3 잔존 과제 (선택적)</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>항목</th>
+<th>영향</th>
+<th>권장 시점</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>CSRF 토큰 도입</td>
+<td>공개 배포 시 필수</td>
+<td>B2B SaaS 론칭 전</td>
+</tr>
+<tr>
+<td>2</td>
+<td>다수 사용자 동시 접근 테스트</td>
+<td>TRL 8 달성</td>
+<td>베타 론칭 전</td>
+</tr>
+<tr>
+<td>3</td>
+<td>과금·회원 관리</td>
+<td>TRL 9 달성</td>
+<td>상용화 시</td>
+</tr>
+<tr>
+<td>4</td>
+<td>1호 지표 명칭 통일</td>
+<td>경미</td>
+<td>다음 릴리스</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="8">제8장 결론</h2>
+<blockquote>
+<p><strong>MyRisk v2.0은 특허출원서의 11개 청구항이 코드에 완전 구현되어 있으며, system_flow.md의 도면 부호·R 공식·알고리즘이 코드와 정확히 일치한다. 4차 전수조사를 통해 런타임 버그 1건, 보안 결함 2건, 데이터 안정성 4건을 포함한 총 13건을 수정하였다. 40개 엔드포인트 전수 실행에서 오류가 없으며, TRL 7(운용 환경 시연) 수준의 기술 완성도를 확인하였다.</strong></p>
 <p>특허 접수 준비가 완료된 상태이며, 기보(KIBO) 기술평가 시 본 보고서의 코드-문서 정합성 검증 결과를 기술 완성도의 증빙으로 활용할 수 있다.</p>
+</blockquote>
+<hr />
+<p><em>본 보고서는 2026-03-18 기준 MyRisk v2.0 코드베이스 전수조사 결과입니다.</em><br />
+<em>커밋: <code>602307e</code> (fix: 전수조사 코드 안정화 및 보안 강화) + <code>c3cbb26</code> (docs: 기보 전략 문서 4차 반영)</em></p>
+<div class="footer">
+주식회사 나눔과 어울림 ShareHarmony | MyRisk v200 | 2026-03-18
 </div>
-
-<p style="text-align:center; color:#666; margin-top:40px; font-size:9pt;">
-본 보고서는 2026-03-18 기준 MyRisk v2.0 코드베이스 전수조사 결과입니다.<br>
-커밋: 602307e (fix: 전수조사 코드 안정화 및 보안 강화) + c3cbb26 (docs: 기보 전략 문서 4차 반영)
-</p>
-
 </body>
 </html>

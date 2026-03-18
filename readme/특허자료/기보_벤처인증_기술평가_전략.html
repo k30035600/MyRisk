@@ -1,436 +1,1154 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>기보(KIBO) 기술평가 및 벤처인증 전략 보고서</title>
+<title>기보(KIBO) 기술평가 및 벤처인증 전략</title>
 <style>
-  @page { size: A4; margin: 20mm 18mm; }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Malgun Gothic', '맑은 고딕', 'Noto Sans KR', sans-serif; font-size: 11pt; line-height: 1.7; color: #1a1a1a; max-width: 210mm; margin: 0 auto; padding: 20mm 18mm; text-align: justify; }
-  h1 { font-size: 20pt; color: #0d47a1; border-bottom: 3px solid #0d47a1; padding-bottom: 8px; margin: 30px 0 20px; }
-  h2 { font-size: 16pt; color: #1565c0; border-bottom: 2px solid #1565c0; padding-bottom: 6px; margin: 40px 0 16px; page-break-before: always; }
-  h2:first-of-type { page-break-before: avoid; }
-  h3 { font-size: 13pt; color: #1976d2; margin: 24px 0 10px; border-left: 4px solid #1976d2; padding-left: 10px; }
-  h4 { font-size: 11.5pt; color: #1e88e5; margin: 18px 0 8px; }
-  table { width: 100%; border-collapse: collapse; margin: 12px 0 18px; font-size: 10pt; page-break-inside: avoid; }
-  th { background: #e3f2fd; color: #0d47a1; font-weight: 700; border: 1px solid #90caf9; padding: 6px 8px; text-align: center; }
-  td { border: 1px solid #bbdefb; padding: 5px 8px; vertical-align: top; }
-  tr:nth-child(even) td { background: #f5f9ff; }
-  blockquote { background: #e8f5e9; border-left: 4px solid #2e7d32; padding: 12px 16px; margin: 14px 0; font-size: 10.5pt; color: #1b5e20; }
-  .formula-box { background: #fff8e1; border: 2px solid #f9a825; border-radius: 8px; padding: 16px 20px; margin: 16px 0; text-align: center; font-size: 13pt; font-weight: 700; color: #e65100; }
-  .formula-box .sub { font-size: 10pt; font-weight: 400; color: #5d4037; margin-top: 6px; }
-  .highlight { background: #fce4ec; border: 1px solid #e91e63; border-radius: 6px; padding: 12px 16px; margin: 14px 0; }
-  .highlight strong { color: #c62828; }
-  .message-box { background: #e3f2fd; border: 2px solid #1565c0; border-radius: 8px; padding: 14px 18px; margin: 14px 0; }
-  .message-box .msg-title { font-weight: 700; color: #0d47a1; font-size: 11pt; margin-bottom: 6px; }
-  .message-box .msg-body { font-size: 10.5pt; color: #1a1a1a; font-style: italic; }
-  .check { color: #2e7d32; font-weight: 700; }
-  .warn { color: #e65100; font-weight: 700; }
-  .meta-table td:first-child { font-weight: 700; width: 120px; background: #e3f2fd; }
-  code { background: #f5f5f5; padding: 1px 4px; border-radius: 3px; font-family: 'Consolas', monospace; font-size: 10pt; }
-  .page-break { page-break-before: always; }
-  .toc { background: #fafafa; border: 1px solid #ddd; padding: 16px 24px; margin: 20px 0; }
-  .toc a { text-decoration: none; color: #1565c0; }
-  .toc a:hover { text-decoration: underline; }
-  .toc ul { list-style: none; padding-left: 0; }
-  .toc li { margin: 4px 0; }
-  .toc li.l2 { padding-left: 20px; font-size: 10pt; }
-  @media print { body { padding: 0; } h2 { page-break-before: always; } }
+@page { size: A4; margin: 20mm 15mm; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Malgun Gothic','맑은 고딕',sans-serif;
+  font-size: 11pt; line-height: 1.75; color: #1a1a1a;
+  max-width: 210mm; margin: 0 auto; padding: 20mm 15mm;
+  text-align: justify; word-break: keep-all;
+}
+h1 { font-size: 18pt; color: #0d47a1; border-bottom: 3px solid #0d47a1;
+     padding-bottom: 8px; margin: 0 0 18px; }
+h2 { font-size: 15pt; color: #1565c0; border-bottom: 2px solid #1565c0;
+     padding-bottom: 6px; margin: 32px 0 14px;
+     page-break-after: avoid; }
+h3 { font-size: 13pt; color: #1976d2; margin: 22px 0 10px;
+     border-left: 4px solid #1976d2; padding-left: 10px;
+     page-break-after: avoid; }
+h4 { font-size: 11.5pt; color: #1e88e5; margin: 16px 0 8px;
+     page-break-after: avoid; }
+table { width: 100%; border-collapse: collapse; margin: 10px 0 16px;
+        font-size: 10pt; page-break-inside: avoid; }
+th { background: #e3f2fd; border: 1px solid #90caf9; padding: 6px 8px;
+     text-align: center; font-weight: bold; color: #0d47a1; }
+td { border: 1px solid #bbdefb; padding: 5px 8px; vertical-align: top; }
+tr:nth-child(even) td { background: #f5f9ff; }
+blockquote { background: #e8f5e9; border-left: 4px solid #2e7d32;
+             padding: 10px 14px; margin: 12px 0; font-size: 10.5pt;
+             color: #1b5e20; page-break-inside: avoid; }
+hr { border: none; border-top: 1.5px solid #90caf9; margin: 20px 0; }
+code { background: #eceff1; padding: 1px 5px; border-radius: 3px;
+       font-size: 9.5pt; color: #37474f; }
+pre { background: #263238; color: #eee; padding: 12px 16px;
+      border-radius: 6px; overflow-x: auto; font-size: 9pt;
+      line-height: 1.5; margin: 10px 0 16px; white-space: pre-wrap;
+      page-break-inside: avoid; }
+pre code { background: none; padding: 0; color: inherit; }
+ul, ol { margin: 8px 0 8px 24px; }
+li { margin: 3px 0; }
+p { margin: 6px 0; }
+.footer { font-size: 9pt; color: #666; text-align: center;
+          margin-top: 30px; border-top: 1px solid #ccc; padding-top: 10px; }
+@media print {
+  body { padding: 0; }
+  h2 { page-break-before: auto; }
+  table, blockquote, pre { page-break-inside: avoid; }
+}
 </style>
 </head>
 <body>
-
-<h1>기보(KIBO) 기술평가 및 벤처인증 전략 보고서</h1>
-
-<table class="meta-table">
-<tr><td>작성일</td><td>2026-03-18</td></tr>
-<tr><td>대상 기업</td><td>주식회사 나눔과 어울림 (ShareHarmony)</td></tr>
-<tr><td>대상 기술</td><td>MyRisk — 인공지능 기반 금융거래 위험도 분석 및 법적 소명 자료 자동 생성 시스템</td></tr>
-<tr><td>특허 출원</td><td>출원 준비 완료 (청구항 11개, 독립 2 + 종속 9)</td></tr>
-<tr><td>관련 문서</td><td>260318_p-14_s(특허출원서).pdf, md/특허출원서(Opus의견)_v4.md, md/system_flow.md, md/선행기술_청구항_조사.md</td></tr>
-<tr><td>본 문서 목적</td><td>기보(KIBO) 기술보증기금 기술평가(TCB), 벤처기업 인증 신청 시 핵심 기술 논리 및 전략적 어필 포인트 정리</td></tr>
+<h1 id="kibo">기보(KIBO) 기술평가 및 벤처인증 전략 보고서</h1>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>작성일</strong></td>
+<td>2026-03-18</td>
+</tr>
+<tr>
+<td><strong>대상 기업</strong></td>
+<td>주식회사 나눔과 어울림 (ShareHarmony)</td>
+</tr>
+<tr>
+<td><strong>대상 기술</strong></td>
+<td>MyRisk — 인공지능 기반 금융거래 위험도 분석 및 법적 소명 자료 자동 생성 시스템</td>
+</tr>
+<tr>
+<td><strong>특허 출원</strong></td>
+<td>출원 준비 완료 (청구항 11개, 독립 2 + 종속 9)</td>
+</tr>
+<tr>
+<td><strong>관련 문서</strong></td>
+<td>260318_p-14_s(특허출원서).pdf, md/특허출원서(Opus의견)_v4.md, md/system_flow.md, md/선행기술_청구항_조사.md</td>
+</tr>
+<tr>
+<td><strong>본 문서 목적</strong></td>
+<td>기보(KIBO) 기술보증기금 기술평가(TCB), 벤처기업 인증 신청 시 핵심 기술 논리 및 전략적 어필 포인트 정리</td>
+</tr>
+</tbody>
 </table>
-
-<div class="toc">
-<strong>목차</strong>
+<hr />
+<h2 id="1">제1장 기술 개요 및 평가 대응 전략</h2>
+<h3 id="11">1.1 기술 한 줄 요약</h3>
+<blockquote>
+<p><strong>MyRisk</strong>는 이기종 금융기관의 거래 내역을 자동 통합·분류하고, 채무자회생법 제564조에 기반한 정량적 위험도 점수(R)를 산출하여, 파산·회생 절차에 필요한 법적 소명 자료를 자동 생성하는 <strong>리걸테크(Legal-Tech) + 핀테크(Fin-Tech) 융합 시스템</strong>이다.</p>
+</blockquote>
+<h3 id="12-tcb">1.2 기보 기술평가(TCB) 항목별 대응 매핑</h3>
+<table>
+<thead>
+<tr>
+<th>TCB 평가 항목</th>
+<th>MyRisk 대응 포인트</th>
+<th>본 문서 참조</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>기술성</strong> — 기술의 독창성·차별성</td>
+<td>R 점수 공식(T·Θ·S 복합 계수), 5단계 캐스케이드, Step-up Scoring</td>
+<td>제2장</td>
+</tr>
+<tr>
+<td><strong>기술성</strong> — 기술의 완성도</td>
+<td>코드 전수조사 4차 완료, 원자적 파일 쓰기 전면 적용, SECRET_KEY·업로드 제한 보안 강화</td>
+<td>제3장</td>
+</tr>
+<tr>
+<td><strong>시장성</strong> — 시장 규모·성장성</td>
+<td>2025년 개인파산 22만건, 리걸테크 시장 CAGR 23%</td>
+<td>제4장</td>
+</tr>
+<tr>
+<td><strong>사업성</strong> — 수익 모델·확장성</td>
+<td>B2B SaaS(법무사·변호사), B2G(법원·관재인), B2C</td>
+<td>제4장</td>
+</tr>
+<tr>
+<td><strong>경영 능력</strong> — 지식재산권</td>
+<td>특허 출원(11개 청구항), 선행기술 7건 차별점 확보</td>
+<td>제5장</td>
+</tr>
+<tr>
+<td><strong>사회적 가치</strong> (정성 가점)</td>
+<td>ESG(포용금융), 채무자 방어권 보장, 사법 비용 절감</td>
+<td>제6장</td>
+</tr>
+</tbody>
+</table>
+<h3 id="13">1.3 벤처인증 유형 및 요건 충족</h3>
+<table>
+<thead>
+<tr>
+<th>벤처인증 유형</th>
+<th>요건</th>
+<th>MyRisk 충족</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>특허·신기술 벤처</strong></td>
+<td>특허/실용신안 보유 + 매출 비중</td>
+<td>출원 준비 완료 (청구항 11개), 기술 매출 100%</td>
+</tr>
+<tr>
+<td><strong>기술평가 벤처</strong></td>
+<td>기보/중기부 기술평가 BBB 이상</td>
+<td>본 문서의 논리로 TCB 등급 확보 목표</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2">제2장 핵심 기술의 독창성·차별성 논증</h2>
+<h3 id="21-r">2.1 R 점수 산출 공식 — 법률적 판단의 수학적 모델링</h3>
+<h4 id="_1">공식 정의</h4>
+<p>$$R = \sum_{i=1}^{n} \left( w_i \times \log_{10}(1 + f_i \times \overline{a}_i) \times T_i \times \Theta_i \times S_i \right)$$</p>
+<table>
+<thead>
+<tr>
+<th>기호</th>
+<th>의미</th>
+<th>범위</th>
+<th>기술적 근거</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$w_i$</td>
+<td>법적 민감도 가중치</td>
+<td>0.1 ~ 5.0</td>
+<td>채무자회생법 제564조 1~10호에 대응</td>
+</tr>
+<tr>
+<td>$f_i$</td>
+<td>해당 지표 거래 건수</td>
+<td>양의 정수</td>
+<td>통합 데이터에서 지표별 집계</td>
+</tr>
+<tr>
+<td>$\overline{a}_i$</td>
+<td>해당 지표 평균 거래 금액</td>
+<td>양의 실수</td>
+<td>출금 기준 평균</td>
+</tr>
+<tr>
+<td>$T_i$</td>
+<td>시계열 근접성 계수</td>
+<td>1.00 ~ 1.50</td>
+<td>파산 직전 의심 패턴 탐지</td>
+</tr>
+<tr>
+<td>$\Theta_i$</td>
+<td>동적 임계 계수</td>
+<td>0.00 ~ 2.60</td>
+<td>금액·건수 복합 가중</td>
+</tr>
+<tr>
+<td>$S_i$</td>
+<td>입출금 대칭성 계수</td>
+<td>0.30 ~ 1.00</td>
+<td>회수 비율 반영</td>
+</tr>
+</tbody>
+</table>
+<h4 id="_2">왜 "단순 통계"가 아닌가 — 기보 평가관 설득 논리</h4>
+<p><strong>핵심 주장</strong>: 본 R 공식은 단순한 통계적 합산이 아니라, <strong>채무자회생법 제564조의 면책 불허가 사유 10개 항목을 수학적으로 모델링한 법률-수학 융합 알고리즘</strong>이다.</p>
+<ol>
+<li>
+<p><strong>법적 가중치의 비선형 설계</strong>: $w_i$는 법조항의 심각도에 따라 0.1(경미) ~ 5.0(사행성)으로 50배 차이를 두며, 이는 판례 분석에 기초한 법적 판단 기준을 수치화한 것이다.</p>
+</li>
+<li>
+<p><strong>로그 스케일 왜곡 방지</strong>: $\log_{10}(1 + f \times \overline{a})$는 단발성 고액 거래에 의한 위험도 왜곡을 방지하면서, 반복·소액 거래의 누적 위험을 적절히 반영하는 비선형 스케일링이다. 이는 단순 합산(Σ금액)이나 단순 평균(금액/건수)으로는 구현 불가능한 정밀 보정 기법이다.</p>
+</li>
+<li>
+<p><strong>3차원 복합 보정 (T × Θ × S)</strong>: 시간(T), 금액(Θ), 회수율(S)의 3차원 독립 변수가 곱연산으로 결합되어, <strong>어느 하나의 축에서도 경미하면 전체 R이 감소</strong>하는 자기 보정(Self-correction) 구조를 가진다. 이는 단순 가산 모델에서는 불가능한 다차원 위험 평가이다.</p>
+</li>
+<li>
+<p><strong>Step-up Scoring의 법적 정합성</strong>: 1호(0.1) → 10호(5.0)의 순차 덮어쓰기는 법원이 면책 불허가 사유를 판단하는 실무적 순서(경미한 사유에서 중대한 사유로)를 알고리즘으로 구현한 것이다. 상위 호수가 해당되면 하위 점수를 갱신(Overwriting)하여 이중 계산을 방지한다.</p>
+</li>
+</ol>
+<h4 id="_3">자본 잠식 방어 논리 (기보 재무 평가 대응)</h4>
+<blockquote>
+<p><strong>기보(KIBO)는 기술평가 시 재무제표도 병행 검토한다. 자본 잠식이 있는 초기 기업의 경우, 기술의 독보성과 시장성으로 재무적 결함을 상쇄해야 한다.</strong></p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>재무 약점</th>
+<th>기술 독보성 방어</th>
+<th>구체적 논거</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>자본 잠식</td>
+<td>R 공식은 국내 유일의 <strong>법률-수학 융합 모델</strong></td>
+<td>채무자회생법 10개 항목을 5개 수학 변수(w, f, ā, T·Θ·S)로 정량화한 사례는 선행기술 7건 조사에서 미발견</td>
+</tr>
+<tr>
+<td>매출 부족</td>
+<td><strong>독점 가능한 기술 기반 매출 창출</strong> 잠재력</td>
+<td>특허 등록 시 법무사·변호사 사무소 대상 B2B SaaS 독점 가능, 개인파산 사건당 과금 모델</td>
+</tr>
+<tr>
+<td>영업이익 적자</td>
+<td><strong>선행투자 단계의 기술 완성도</strong> 입증</td>
+<td>코드 전수조사 4차 완료(누적: print→logging 103곳, traceback 39곳, 데드코드 21건, 보안 5건, 원자적 쓰기 전면 적용), 특허 청구항 11개 전부 코드 구현 검증 완료</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="22-t">2.2 시계열 근접성 계수(T) — 선행기술 대비 차별점</h3>
+<h4 id="t">T 계수의 정의 및 산출식</h4>
+<p>$$T = 1 + \alpha \times C + \beta \times P$$</p>
+<table>
+<thead>
+<tr>
+<th>변수</th>
+<th>의미</th>
+<th>산출식</th>
+<th>기본값</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$C$</td>
+<td>집중도 (Concentration)</td>
+<td>$C = 1 - \frac{\text{활동기간}}{\text{전체기간}}$</td>
+<td>—</td>
+</tr>
+<tr>
+<td>$P$</td>
+<td>최근성 (Proximity)</td>
+<td>$P = \frac{\text{최근 25\% 구간 건수}}{\text{전체 건수}}$</td>
+<td>—</td>
+</tr>
+<tr>
+<td>$\alpha$</td>
+<td>집중도 가중</td>
+<td>—</td>
+<td>0.3</td>
+</tr>
+<tr>
+<td>$\beta$</td>
+<td>최근성 가중</td>
+<td>—</td>
+<td>0.2</td>
+</tr>
+</tbody>
+</table>
+<h4 id="5-kr102486186b1">선행기술(문헌5, KR102486186B1)과의 차별점</h4>
+<table>
+<thead>
+<tr>
+<th>비교 항목</th>
+<th>문헌5 (AI 재무관리)</th>
+<th>MyRisk T 계수</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>목적</strong></td>
+<td>기업 자금 흐름의 <strong>미래 예측</strong></td>
+<td>파산 <strong>직전</strong> 의심 거래 패턴의 <strong>사후 탐지</strong></td>
+</tr>
+<tr>
+<td><strong>알고리즘</strong></td>
+<td>ARIMA, LSTM, RNN</td>
+<td>선형 결합: $T = 1 + \alpha C + \beta P$</td>
+</tr>
+<tr>
+<td><strong>입력</strong></td>
+<td>기업 재무 시계열 데이터</td>
+<td>개인 금융 거래 일자 배열</td>
+</tr>
+<tr>
+<td><strong>출력</strong></td>
+<td>미래 자금 흐름 예측값</td>
+<td>1.00~1.50 범위의 승수 계수</td>
+</tr>
+<tr>
+<td><strong>기술적 사상</strong></td>
+<td><strong>예측(Prediction)</strong> — 미래 값 추정</td>
+<td><strong>진단(Diagnosis)</strong> — 과거 패턴 이상 탐지</td>
+</tr>
+<tr>
+<td><strong>실무 의미</strong></td>
+<td>"다음 달 자금이 부족할 것이다"</td>
+<td>"파산 3개월 전 도박 지출이 급증했다"</td>
+</tr>
+</tbody>
+</table>
+<p><strong>기보 평가관 핵심 설득 포인트</strong>: 문헌5의 시계열은 기업 재무의 미래를 예측하는 기술이고, MyRisk의 T는 <strong>채무자의 과거 거래에서 법적으로 의심스러운 시간적 패턴(직전 집중, 단기 폭증)을 진단</strong>하는 기술이다. 목적·알고리즘·출력 모두 근본적으로 상이하므로, T 계수는 <strong>독자적 기술 창작물</strong>이다.</p>
+<h4 id="_4">실무 시나리오 (기보 평가 보고서 활용)</h4>
+<blockquote>
+<p>채무자 A가 파산 신청 90일 전, 카지노 관련 출금 15건(총 800만원)을 집중적으로 실행했다고 가정한다.</p>
 <ul>
-<li><a href="#ch1">제1장 기술 개요 및 평가 대응 전략</a></li>
-<li><a href="#ch2">제2장 핵심 기술의 독창성·차별성 논증</a></li>
-<li class="l2"><a href="#ch2-1">2.1 R 점수 — 법률적 판단의 수학적 모델링</a></li>
-<li class="l2"><a href="#ch2-2">2.2 T 계수 — 시계열 근접성 (선행기술 대비 차별점)</a></li>
-<li class="l2"><a href="#ch2-3">2.3 Θ 계수 — 동적 임계</a></li>
-<li class="l2"><a href="#ch2-4">2.4 S 계수 — 입출금 대칭성</a></li>
-<li class="l2"><a href="#ch2-5">2.5 종합 진보성 논증</a></li>
-<li><a href="#ch3">제3장 기술 완성도 및 상용화 수준</a></li>
-<li><a href="#ch4">제4장 시장성 및 사업성</a></li>
-<li><a href="#ch5">제5장 지식재산권 현황 및 진보성</a></li>
-<li><a href="#ch6">제6장 사회적 가치 — ESG 및 포용금융</a></li>
-<li><a href="#ch7">제7장 기보 기술평가 대응 요약 및 권고</a></li>
+<li>전체 분석 기간: 365일, 활동기간: 30일 → C = 1 − 30/365 ≈ 0.918</li>
+<li>최근 25%(91일) 내 건수 15건 / 전체 15건 → P = 1.0</li>
+<li>T = 1 + 0.3 × 0.918 + 0.2 × 1.0 = <strong>1.475</strong></li>
 </ul>
-</div>
-
-<!-- =============== 제1장 =============== -->
-<h2 id="ch1">제1장 기술 개요 및 평가 대응 전략</h2>
-
-<h3>1.1 기술 한 줄 요약</h3>
-<blockquote>
-<strong>MyRisk</strong>는 이기종 금융기관의 거래 내역을 자동 통합·분류하고, 채무자회생법 제564조에 기반한 정량적 위험도 점수(R)를 산출하여, 파산·회생 절차에 필요한 법적 소명 자료를 자동 생성하는 <strong>리걸테크(Legal-Tech) + 핀테크(Fin-Tech) 융합 시스템</strong>이다.
+<p>T가 1.0이면 R 점수 변동 없음. T = 1.475면 해당 지표의 R이 <strong>47.5% 증가</strong>하여, 파산 직전 집중 거래의 법적 의심도를 정량적으로 반영한다.</p>
 </blockquote>
-
-<h3>1.2 기보 기술평가(TCB) 항목별 대응 매핑</h3>
+<hr />
+<h3 id="23">2.3 동적 임계 계수(Θ) — 금액·빈도 복합 가중</h3>
+<p>$$\Theta = \text{amount_factor} \times \text{count_factor}$$</p>
 <table>
-<tr><th>TCB 평가 항목</th><th>MyRisk 대응 포인트</th><th>참조</th></tr>
-<tr><td><strong>기술성</strong> — 독창성·차별성</td><td>R 점수 공식(T·Θ·S 복합 계수), 5단계 캐스케이드, Step-up Scoring</td><td>제2장</td></tr>
-<tr><td><strong>기술성</strong> — 완성도</td><td>코드 전수조사 4차 완료, 원자적 파일 쓰기 전면 적용, SECRET_KEY·업로드 제한 보안 강화</td><td>제3장</td></tr>
-<tr><td><strong>시장성</strong> — 시장 규모·성장성</td><td>2025년 개인파산 22만건, 리걸테크 시장 CAGR 23%</td><td>제4장</td></tr>
-<tr><td><strong>사업성</strong> — 수익 모델·확장성</td><td>B2B SaaS(법무사·변호사), B2G(법원·관재인), B2C</td><td>제4장</td></tr>
-<tr><td><strong>경영 능력</strong> — 지식재산권</td><td>특허 출원(11개 청구항), 선행기술 7건 차별점 확보</td><td>제5장</td></tr>
-<tr><td><strong>사회적 가치</strong> (정성 가점)</td><td>ESG(포용금융), 채무자 방어권 보장, 사법 비용 절감</td><td>제6장</td></tr>
+<thead>
+<tr>
+<th>구간</th>
+<th>amount_factor</th>
+<th>의미</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$a_{total} &lt; threshold$</td>
+<td>$a_{total} / threshold$</td>
+<td>금액 미달 → 선형 감점</td>
+</tr>
+<tr>
+<td>$threshold \le a_{total} \le 3 \times threshold$</td>
+<td>1.0</td>
+<td>기본 구간</td>
+</tr>
+<tr>
+<td>$a_{total} &gt; 3 \times threshold$</td>
+<td>$1 + \gamma \times \log_2(a_{total}/threshold)$, 상한 2.0</td>
+<td>누진 가중</td>
+</tr>
+</tbody>
 </table>
-
-<h3>1.3 벤처인증 유형 및 요건 충족</h3>
 <table>
-<tr><th>벤처인증 유형</th><th>요건</th><th>MyRisk 충족</th></tr>
-<tr><td>특허·신기술 벤처</td><td>특허/실용신안 보유 + 매출 비중</td><td>출원 준비 완료 (청구항 11개), 기술 매출 100%</td></tr>
-<tr><td>기술평가 벤처</td><td>기보/중기부 기술평가 BBB 이상</td><td>본 문서의 논리로 TCB 등급 확보 목표</td></tr>
+<thead>
+<tr>
+<th>구간</th>
+<th>count_factor</th>
+<th>의미</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$f &lt; count_threshold$</td>
+<td>1.0</td>
+<td>기본</td>
+</tr>
+<tr>
+<td>$f \ge count_threshold$</td>
+<td>$1 + \delta \times (f/count_threshold - 1)$, 상한 1.3</td>
+<td>빈도 가중</td>
+</tr>
+</tbody>
 </table>
-
-<!-- =============== 제2장 =============== -->
-<h2 id="ch2">제2장 핵심 기술의 독창성·차별성 논증</h2>
-
-<h3 id="ch2-1">2.1 R 점수 산출 공식 — 법률적 판단의 수학적 모델링</h3>
-
-<div class="formula-box">
-R = Σ<sub>i=1</sub><sup>n</sup> ( w<sub>i</sub> × log<sub>10</sub>(1 + f<sub>i</sub> × avg_a<sub>i</sub>) × T<sub>i</sub> × Θ<sub>i</sub> × S<sub>i</sub> )
-<div class="sub">w: 법적 민감도 가중치(0.1~5.0) &nbsp;|&nbsp; f: 건수 &nbsp;|&nbsp; avg_a: 평균 금액 &nbsp;|&nbsp; T: 시계열 근접성(1.00~1.50) &nbsp;|&nbsp; Θ: 동적 임계(0.00~2.60) &nbsp;|&nbsp; S: 입출금 대칭성(0.30~1.00)</div>
-</div>
-
+<p><strong>선행기술(문헌6, KR101914620B1) 대비 차별점</strong>: 문헌6의 신뢰도 임계치는 ML 분류 결과의 <strong>확실성을 평가</strong>하는 메커니즘이나, Θ는 <strong>법적 위험도의 크기를 금액+빈도 2축으로 보정</strong>하는 승수이다. 목적(분류 확실성 vs 위험도 크기 보정)과 산출 방식이 근본적으로 상이하다.</p>
+<hr />
+<h3 id="24-s">2.4 입출금 대칭성 계수(S) — 투자 회수 반영</h3>
+<p>$$S = 1 - \frac{\text{입금합계}}{\text{출금합계}}, \quad \text{하한} = 0.3$$</p>
+<ul>
+<li><strong>S = 1.0</strong>: 입금 = 0 (전액 유출) → R 변동 없음 (최대 위험)</li>
+<li><strong>S = 0.3</strong>: 입금 ≈ 출금 (대부분 회수) → R <strong>70% 감소</strong> (위험 경감)</li>
+<li>적용 대상: 투기성(5호), 가상자산(7호), 자산은닉(8호)만 해당</li>
+</ul>
+<p><strong>기보 평가관 설득 포인트</strong>: S 계수는 "가상자산에 1,000만원을 보냈지만 900만원을 회수했다면 순유출은 100만원에 불과하다"는 법적 실질 판단을 수학적으로 모델링한 것이다. 이 논리는 법원 실무에서 관재인이 실제로 수행하는 판단이며, 이를 자동화한 사례는 선행기술에서 미발견이다.</p>
+<hr />
+<h3 id="25">2.5 기술 결합의 진보성 — 종합 논증</h3>
 <table>
-<tr><th>기호</th><th>의미</th><th>범위</th><th>기술적 근거</th></tr>
-<tr><td>w<sub>i</sub></td><td>법적 민감도 가중치</td><td>0.1 ~ 5.0</td><td>채무자회생법 제564조 1~10호 대응</td></tr>
-<tr><td>f<sub>i</sub></td><td>거래 건수</td><td>양의 정수</td><td>지표별 집계</td></tr>
-<tr><td>avg_a<sub>i</sub></td><td>평균 거래 금액</td><td>양의 실수</td><td>출금 기준 평균</td></tr>
-<tr><td>T<sub>i</sub></td><td>시계열 근접성 계수</td><td>1.00 ~ 1.50</td><td>파산 직전 의심 패턴 탐지</td></tr>
-<tr><td>Θ<sub>i</sub></td><td>동적 임계 계수</td><td>0.00 ~ 2.60</td><td>금액·건수 복합 가중</td></tr>
-<tr><td>S<sub>i</sub></td><td>입출금 대칭성 계수</td><td>0.30 ~ 1.00</td><td>회수 비율 반영</td></tr>
+<thead>
+<tr>
+<th>핵심 기술 요소</th>
+<th>선행기술 7건 대비</th>
+<th>기보 평가 의미</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3단계 계층적 분류 (전처리→계정과목→후처리)</td>
+<td>7건 중 <strong>없음</strong></td>
+<td>비정형 금융 텍스트 분류의 새로운 패러다임</td>
+</tr>
+<tr>
+<td>최장 일치 + 5단계 충돌 해결 캐스케이드</td>
+<td>7건 중 <strong>없음</strong> (문7은 1:1 정적 매칭)</td>
+<td>동적 다기준 해결의 독자 알고리즘</td>
+</tr>
+<tr>
+<td>Step-up Scoring (1호→10호 순차 덮어쓰기)</td>
+<td>7건 중 <strong>없음</strong></td>
+<td>법적 판단 순서의 알고리즘 구현</td>
+</tr>
+<tr>
+<td>R 점수 (T·Θ·S 복합 보정)</td>
+<td>7건 중 <strong>없음</strong></td>
+<td>3차원 위험 평가의 자기 보정 모델</td>
+</tr>
+<tr>
+<td>VASP 3단계 식별 (카테고리→접두번호→사업자명)</td>
+<td>7건 중 <strong>없음</strong></td>
+<td>가상자산 거래 탐지 전용 알고리즘</td>
+</tr>
+<tr>
+<td>채무자회생법 제564조 자동 매핑</td>
+<td>7건 중 <strong>없음</strong></td>
+<td>법률-기술 융합의 유일한 사례</td>
+</tr>
+<tr>
+<td>소명서 자동 생성 (템플릿+법조항)</td>
+<td>7건 중 <strong>없음</strong></td>
+<td>법률 서비스 자동화</td>
+</tr>
+</tbody>
 </table>
-
-<h4>왜 "단순 통계"가 아닌가 — 기보 평가관 설득 논리</h4>
-
-<div class="highlight">
-<strong>핵심 주장</strong>: 본 R 공식은 단순한 통계적 합산이 아니라, <strong>채무자회생법 제564조의 면책 불허가 사유 10개 항목을 수학적으로 모델링한 법률-수학 융합 알고리즘</strong>이다.
-</div>
-
-<p><strong>1. 법적 가중치의 비선형 설계:</strong> w<sub>i</sub>는 법조항의 심각도에 따라 0.1(경미) ~ 5.0(사행성)으로 50배 차이를 두며, 이는 판례 분석에 기초한 법적 판단 기준을 수치화한 것이다.</p>
-
-<p><strong>2. 로그 스케일 왜곡 방지:</strong> log<sub>10</sub>(1 + f × avg_a)는 단발성 고액 거래에 의한 위험도 왜곡을 방지하면서, 반복·소액 거래의 누적 위험을 적절히 반영하는 비선형 스케일링이다.</p>
-
-<p><strong>3. 3차원 복합 보정 (T × Θ × S):</strong> 시간(T), 금액(Θ), 회수율(S)의 3차원 독립 변수가 곱연산으로 결합되어, 어느 하나의 축에서도 경미하면 전체 R이 감소하는 <strong>자기 보정(Self-correction) 구조</strong>를 가진다.</p>
-
-<p><strong>4. Step-up Scoring의 법적 정합성:</strong> 1호(0.1) → 10호(5.0)의 순차 덮어쓰기는 법원 실무의 판단 순서를 알고리즘으로 구현한 것이다.</p>
-
-<h4>자본 잠식 방어 논리 (기보 재무 평가 대응)</h4>
-
-<div class="highlight">
-<strong>기보(KIBO)는 기술평가 시 재무제표도 병행 검토한다. 자본 잠식이 있는 초기 기업의 경우, 기술의 독보성과 시장성으로 재무적 결함을 상쇄해야 한다.</strong>
-</div>
-
-<table>
-<tr><th>재무 약점</th><th>기술 독보성 방어</th><th>구체적 논거</th></tr>
-<tr><td>자본 잠식</td><td>R 공식은 국내 유일의 <strong>법률-수학 융합 모델</strong></td><td>선행기술 7건 조사에서 동일 결합 미발견</td></tr>
-<tr><td>매출 부족</td><td><strong>독점 가능한 기술 기반 매출 창출</strong> 잠재력</td><td>특허 등록 시 B2B SaaS 독점 가능</td></tr>
-<tr><td>영업이익 적자</td><td><strong>선행투자 단계의 기술 완성도</strong> 입증</td><td>코드 4차 전수조사 완료(누적: print→logging 103곳, 보안 5건, 원자적 쓰기 전면 적용), 특허 청구항 11개 전부 코드 구현 검증</td></tr>
-</table>
-
-<!-- T 계수 -->
-<h3 id="ch2-2">2.2 시계열 근접성 계수(T) — 선행기술 대비 차별점</h3>
-
-<div class="formula-box">
-T = 1 + α × C + β × P
-<div class="sub">C: 집중도 = 1 − (활동기간/전체기간) &nbsp;|&nbsp; P: 최근성 = 최근 25% 구간 건수/전체 건수 &nbsp;|&nbsp; α=0.3, β=0.2 &nbsp;|&nbsp; 범위: 1.00~1.50</div>
-</div>
-
-<h4>선행기술(문헌5, KR102486186B1)과의 차별점</h4>
-<table>
-<tr><th>비교 항목</th><th>문헌5 (AI 재무관리)</th><th>MyRisk T 계수</th></tr>
-<tr><td><strong>목적</strong></td><td>기업 자금 흐름의 <strong>미래 예측</strong></td><td>파산 <strong>직전</strong> 의심 거래 패턴의 <strong>사후 탐지</strong></td></tr>
-<tr><td><strong>알고리즘</strong></td><td>ARIMA, LSTM, RNN</td><td>선형 결합: T = 1 + αC + βP</td></tr>
-<tr><td><strong>입력</strong></td><td>기업 재무 시계열 데이터</td><td>개인 금융 거래 일자 배열</td></tr>
-<tr><td><strong>출력</strong></td><td>미래 자금 흐름 예측값</td><td>1.00~1.50 범위의 승수 계수</td></tr>
-<tr><td><strong>기술적 사상</strong></td><td><strong>예측(Prediction)</strong></td><td><strong>진단(Diagnosis)</strong></td></tr>
-<tr><td><strong>실무 의미</strong></td><td>"다음 달 자금이 부족할 것이다"</td><td>"파산 3개월 전 도박 지출이 급증했다"</td></tr>
-</table>
-
-<div class="message-box">
-<div class="msg-title">기보 평가관 핵심 설득 포인트</div>
-<div class="msg-body">문헌5의 시계열은 기업 재무의 미래를 예측하는 기술이고, MyRisk의 T는 채무자의 과거 거래에서 법적으로 의심스러운 시간적 패턴(직전 집중, 단기 폭증)을 <strong>진단</strong>하는 기술이다. 목적·알고리즘·출력 모두 근본적으로 상이하므로, T 계수는 <strong>독자적 기술 창작물</strong>이다.</div>
-</div>
-
-<h4>실무 시나리오 (기보 평가 보고서 활용)</h4>
 <blockquote>
-채무자 A가 파산 신청 90일 전, 카지노 관련 출금 15건(총 800만원)을 집중 실행했다고 가정한다.<br>
-• 전체 기간: 365일, 활동기간: 30일 → C = 1 − 30/365 ≈ 0.918<br>
-• 최근 25%(91일) 내 건수 15건 / 전체 15건 → P = 1.0<br>
-• T = 1 + 0.3 × 0.918 + 0.2 × 1.0 = <strong>1.475</strong><br>
-→ 해당 지표의 R이 <strong>47.5% 증가</strong>하여, 파산 직전 집중 거래의 법적 의심도를 정량적으로 반영.
+<p><strong>결론</strong>: 상기 7개 핵심 기술 요소의 결합은 선행기술 7건 조사에서 어디에서도 개시(開示)되지 않았다. 개별 기술(금융 분류, 시계열 분석, 법률 문서 생성)은 각각 존재하나, <strong>"채무자회생법 기반 + 정량적 위험도(R) + 다차원 보정(T·Θ·S) + 소명서 자동 생성"의 유기적 결합은 MyRisk가 유일</strong>하다. 이는 기보 기술평가에서 <strong>기술 독창성 최고 등급</strong>에 해당하는 논거이다.</p>
 </blockquote>
-
-<!-- Θ 계수 -->
-<h3 id="ch2-3">2.3 동적 임계 계수(Θ) — 금액·빈도 복합 가중</h3>
-
-<div class="formula-box">
-Θ = amount_factor × count_factor
-<div class="sub">금액 미달: 선형 감점 &nbsp;|&nbsp; 3배 초과: 누진 가중(γ, 상한 2.0) &nbsp;|&nbsp; 건수 기준 이상: 비례 가중(δ, 상한 1.3) &nbsp;|&nbsp; 범위: 0.00~2.60</div>
-</div>
-
+<hr />
+<h2 id="3">제3장 기술 완성도 및 상용화 수준</h2>
+<h3 id="31-4">3.1 코드 전수조사 결과 (4차 완료)</h3>
+<h4 id="13-2026-03-15">1~3차 전수조사 (2026-03-15 완료)</h4>
 <table>
-<tr><th>구간</th><th>amount_factor</th><th>의미</th></tr>
-<tr><td>a<sub>total</sub> &lt; threshold</td><td>a<sub>total</sub> / threshold</td><td>금액 미달 → 선형 감점</td></tr>
-<tr><td>threshold ≤ a<sub>total</sub> ≤ 3×threshold</td><td>1.0</td><td>기본 구간</td></tr>
-<tr><td>a<sub>total</sub> &gt; 3×threshold</td><td>1 + γ × log₂(a/threshold), 상한 2.0</td><td>누진 가중</td></tr>
+<thead>
+<tr>
+<th>조사 항목</th>
+<th>건수</th>
+<th>조치 내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>보안 취약점</td>
+<td>3건</td>
+<td>Path Traversal 방지, Zip Slip 방어, 원자적 파일 쓰기</td>
+</tr>
+<tr>
+<td>스레드 안전성</td>
+<td>1건</td>
+<td>category_table 캐시 threading.Lock 적용</td>
+</tr>
+<tr>
+<td>print()→logging 변환</td>
+<td>79건</td>
+<td>info/warning/error 단계별 로깅</td>
+</tr>
+<tr>
+<td>traceback→logging 변환</td>
+<td>39건</td>
+<td>exception() 구조화 로깅</td>
+</tr>
+<tr>
+<td>데드코드 제거</td>
+<td>19건</td>
+<td>미사용 함수·변수 삭제</td>
+</tr>
+<tr>
+<td>미사용 import 정리</td>
+<td>11건</td>
+<td>불필요 모듈 참조 제거</td>
+</tr>
+<tr>
+<td>중복 코드 통합</td>
+<td>5패턴</td>
+<td>_parse_amt, major_map 등 공통 유틸화</td>
+</tr>
+<tr>
+<td>Docker·배포 설정</td>
+<td>3건</td>
+<td>포트, CMD, 의존성 최적화</td>
+</tr>
+</tbody>
 </table>
-
-<div class="message-box">
-<div class="msg-title">선행기술(문헌6, KR101914620B1) 대비 차별점</div>
-<div class="msg-body">문헌6의 신뢰도 임계치는 ML 분류 결과의 <strong>확실성을 평가</strong>하는 메커니즘이나, Θ는 <strong>법적 위험도의 크기를 금액+빈도 2축으로 보정</strong>하는 승수이다. 목적(분류 확실성 vs 위험도 크기 보정)과 산출 방식이 근본적으로 상이하다.</div>
-</div>
-
-<!-- S 계수 -->
-<h3 id="ch2-4">2.4 입출금 대칭성 계수(S) — 투자 회수 반영</h3>
-
-<div class="formula-box">
-S = 1 − (입금합계 / 출금합계), &nbsp; 하한 = 0.3
-<div class="sub">S=1.0: 전액 유출(최대 위험) &nbsp;|&nbsp; S=0.3: 대부분 회수(위험 70% 감소) &nbsp;|&nbsp; 적용: 투기성(5호)·가상자산(7호)·자산은닉(8호)</div>
-</div>
-
-<div class="message-box">
-<div class="msg-title">기보 평가관 설득 포인트</div>
-<div class="msg-body">S 계수는 "가상자산에 1,000만원을 보냈지만 900만원을 회수했다면 순유출은 100만원에 불과하다"는 법적 실질 판단을 수학적으로 모델링한 것이다. 법원 실무에서 관재인이 실제로 수행하는 판단이며, 이를 자동화한 사례는 선행기술에서 미발견이다.</div>
-</div>
-
-<!-- 종합 진보성 -->
-<h3 id="ch2-5">2.5 기술 결합의 진보성 — 종합 논증</h3>
-
+<h4 id="4-2026-03-18">4차 전수조사 (2026-03-18 완료) — 특허출원서 기반 정합성 검증</h4>
 <table>
-<tr><th>핵심 기술 요소</th><th>선행기술 7건 대비</th><th>기보 평가 의미</th></tr>
-<tr><td>3단계 계층적 분류</td><td>7건 중 <strong class="check">없음</strong></td><td>비정형 금융 텍스트 분류의 새로운 패러다임</td></tr>
-<tr><td>최장 일치 + 5단계 캐스케이드</td><td>7건 중 <strong class="check">없음</strong></td><td>동적 다기준 해결의 독자 알고리즘</td></tr>
-<tr><td>Step-up Scoring (1호→10호)</td><td>7건 중 <strong class="check">없음</strong></td><td>법적 판단 순서의 알고리즘 구현</td></tr>
-<tr><td>R 점수 (T·Θ·S 복합 보정)</td><td>7건 중 <strong class="check">없음</strong></td><td>3차원 위험 평가의 자기 보정 모델</td></tr>
-<tr><td>VASP 3단계 식별</td><td>7건 중 <strong class="check">없음</strong></td><td>가상자산 거래 탐지 전용 알고리즘</td></tr>
-<tr><td>채무자회생법 제564조 자동 매핑</td><td>7건 중 <strong class="check">없음</strong></td><td>법률-기술 융합의 유일한 사례</td></tr>
-<tr><td>소명서 자동 생성</td><td>7건 중 <strong class="check">없음</strong></td><td>법률 서비스 자동화</td></tr>
+<thead>
+<tr>
+<th>조사 항목</th>
+<th>건수</th>
+<th>조치 내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>런타임 버그</strong></td>
+<td>1건</td>
+<td>bank_app.py: <code>traceback</code> 미import → NameError 방지. <code>logger.exception()</code> 전환</td>
+</tr>
+<tr>
+<td><strong>보안 강화</strong></td>
+<td>2건</td>
+<td>app.py: SECRET_KEY 환경변수 설정, MAX_CONTENT_LENGTH 50MB 제한 (DoS 방어)</td>
+</tr>
+<tr>
+<td><strong>원자적 파일 쓰기 전면 적용</strong></td>
+<td>4곳</td>
+<td>cash_app.py 대체구분 저장 2곳, category_table_io.py pandas-None 경로 2곳 → <code>mkstemp</code> + <code>os.replace</code></td>
+</tr>
+<tr>
+<td><strong>Excel 쓰기 안전성</strong></td>
+<td>1건</td>
+<td>excel_io.py: <code>remove→write</code> 패턴 → <code>mkstemp</code> + <code>os.replace</code> 원자적 교체</td>
+</tr>
+<tr>
+<td><strong>print→logging 전환</strong></td>
+<td>24곳</td>
+<td>process_bank_data.py: <code>_safe_print</code> 래퍼 → <code>logger.error/warning/info</code> 내부 전환</td>
+</tr>
+<tr>
+<td><strong>R 공식 표기 통일</strong></td>
+<td>3곳</td>
+<td>HTML 템플릿 <code>aᵢ</code> → <code>avg_aᵢ</code> (코드 <code>_calculate_risk_report</code>와 일치)</td>
+</tr>
+<tr>
+<td><strong>데드코드 제거</strong></td>
+<td>2건</td>
+<td>risk_indicators.py 미사용 정규식, shared_app_utils.py 중복 import</td>
+</tr>
+<tr>
+<td><strong>특허 청구항 11개 구현 검증</strong></td>
+<td>11항 전부</td>
+<td>코드와 청구항 1:1 대조 완료. 모든 청구항 <strong>완전 구현</strong> 확인</td>
+</tr>
+</tbody>
 </table>
-
+<h3 id="32">3.2 시스템 아키텍처 성숙도</h3>
+<table>
+<thead>
+<tr>
+<th>구성 요소</th>
+<th>구현 상태</th>
+<th>기보 평가 의미</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>데이터 입력 계층(100)</td>
+<td>국민·신한·하나·전 카드사 파서 완비</td>
+<td>실 데이터 처리 가능</td>
+</tr>
+<tr>
+<td>3단계 분류 엔진(230)</td>
+<td>운영 중, 키워드 동적 관리 UI</td>
+<td>사용자 확장 가능</td>
+</tr>
+<tr>
+<td>위험도 산정 엔진(250)</td>
+<td>T·Θ·S 모두 구현·테스트 완료</td>
+<td>핵심 알고리즘 검증 완료</td>
+</tr>
+<tr>
+<td>소명서 생성 엔진(260)</td>
+<td>10종 템플릿 + 법조항 자동 매칭</td>
+<td>실무 즉시 적용 가능</td>
+</tr>
+<tr>
+<td>웹 인터페이스</td>
+<td>Flask 기반 22개 페이지</td>
+<td>SaaS 서비스 즉시 론칭 가능</td>
+</tr>
+<tr>
+<td>배포 인프라</td>
+<td>Docker + Railway 클라우드</td>
+<td>운영 환경 검증 완료</td>
+</tr>
+</tbody>
+</table>
+<h3 id="33-trl">3.3 TRL (기술준비수준) 평가</h3>
+<table>
+<thead>
+<tr>
+<th>TRL 단계</th>
+<th>내용</th>
+<th>MyRisk 충족</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TRL 1~3</td>
+<td>기초 연구 ~ 개념 검증</td>
+<td>✓ 완료</td>
+</tr>
+<tr>
+<td>TRL 4~5</td>
+<td>실험실 검증 ~ 기술 실증</td>
+<td>✓ 완료</td>
+</tr>
+<tr>
+<td>TRL 6</td>
+<td>파일럿 시스템</td>
+<td>✓ <strong>완료</strong> — 실 금융 데이터로 분석·보고서 생성</td>
+</tr>
+<tr>
+<td>TRL 7</td>
+<td>운용 환경 시연</td>
+<td>✓ <strong>완료</strong> — Railway 클라우드 배포, 웹 접근</td>
+</tr>
+<tr>
+<td>TRL 8</td>
+<td>시스템 완성</td>
+<td>△ 진행 중 — 다수 사용자 동시 접근 테스트 필요</td>
+</tr>
+<tr>
+<td>TRL 9</td>
+<td>상용화</td>
+<td>△ 진행 중 — 과금·회원 관리 추가 필요</td>
+</tr>
+</tbody>
+</table>
 <blockquote>
-<strong>결론</strong>: 상기 7개 핵심 기술 요소의 결합은 선행기술 7건 조사에서 어디에서도 개시되지 않았다. <strong>"채무자회생법 기반 + 정량적 위험도(R) + 다차원 보정(T·Θ·S) + 소명서 자동 생성"의 유기적 결합은 MyRisk가 유일</strong>하다. 이는 기보 기술평가에서 <strong>기술 독창성 최고 등급</strong>에 해당하는 논거이다.
+<p><strong>기보 평가 등급</strong>: TRL 7 수준. 초기 스타트업으로서 <strong>"기술 완성도가 높고 상용화 직전 단계"</strong>에 해당. 기보 기술평가에서 완성도 항목 상위 등급 논거.</p>
 </blockquote>
-
-<!-- =============== 제3장 =============== -->
-<h2 id="ch3">제3장 기술 완성도 및 상용화 수준</h2>
-
-<h3>3.1 코드 전수조사 결과 (4차 완료)</h3>
-
-<h4>1~3차 전수조사 (2026-03-15 완료)</h4>
+<hr />
+<h2 id="4">제4장 시장성 및 사업성</h2>
+<h3 id="41">4.1 대상 시장 규모</h3>
 <table>
-<tr><th>조사 항목</th><th>건수</th><th>조치 내용</th></tr>
-<tr><td>보안 취약점</td><td>3건</td><td>Path Traversal 방지, Zip Slip 방어, 원자적 파일 쓰기</td></tr>
-<tr><td>스레드 안전성</td><td>1건</td><td>category_table 캐시 threading.Lock 적용</td></tr>
-<tr><td>print()→logging 변환</td><td>79건</td><td>info/warning/error 단계별 로깅</td></tr>
-<tr><td>traceback→logging 변환</td><td>39건</td><td>exception() 구조화 로깅</td></tr>
-<tr><td>데드코드 제거</td><td>19건</td><td>미사용 함수·변수 삭제</td></tr>
-<tr><td>미사용 import 정리</td><td>11건</td><td>불필요 모듈 참조 제거</td></tr>
-<tr><td>중복 코드 통합</td><td>5패턴</td><td>_parse_amt, major_map 등 공통 유틸화</td></tr>
-<tr><td>Docker·배포 설정</td><td>3건</td><td>포트, CMD, 의존성 최적화</td></tr>
+<thead>
+<tr>
+<th>지표</th>
+<th>수치</th>
+<th>출처</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2025년 개인파산 신청 건수</td>
+<td>약 22만 건 (역대 최고)</td>
+<td>대법원 사법연감</td>
+</tr>
+<tr>
+<td>2025년 개인회생 신청 건수</td>
+<td>약 12만 건</td>
+<td>대법원 사법연감</td>
+</tr>
+<tr>
+<td>파산 1건당 법률비용 (변호사·법무사)</td>
+<td>100~300만 원</td>
+<td>시장 조사</td>
+</tr>
+<tr>
+<td><strong>연간 TAM</strong> (파산+회생)</td>
+<td><strong>3,400억 ~ 1조 원</strong></td>
+<td>34만 건 × 100~300만 원</td>
+</tr>
+<tr>
+<td>리걸테크 시장 CAGR</td>
+<td>23.4% (2023~2028)</td>
+<td>Grandview Research</td>
+</tr>
+<tr>
+<td>핀테크 시장 CAGR</td>
+<td>25.2% (2023~2028)</td>
+<td>MarketsandMarkets</td>
+</tr>
+</tbody>
 </table>
-
-<h4>4차 전수조사 (2026-03-18 완료) — 특허출원서 기반 정합성 검증</h4>
+<h3 id="42">4.2 수익 모델</h3>
 <table>
-<tr><th>조사 항목</th><th>건수</th><th>조치 내용</th></tr>
-<tr><td><strong>런타임 버그</strong></td><td>1건</td><td>bank_app.py: traceback 미import → NameError 방지. logger.exception() 전환</td></tr>
-<tr><td><strong>보안 강화</strong></td><td>2건</td><td>app.py: SECRET_KEY 환경변수 설정, MAX_CONTENT_LENGTH 50MB 제한 (DoS 방어)</td></tr>
-<tr><td><strong>원자적 파일 쓰기 전면 적용</strong></td><td>4곳</td><td>cash_app.py 대체구분 저장 2곳, category_table_io.py pandas-None 경로 2곳 → mkstemp + os.replace</td></tr>
-<tr><td><strong>Excel 쓰기 안전성</strong></td><td>1건</td><td>excel_io.py: remove→write 패턴 → mkstemp + os.replace 원자적 교체</td></tr>
-<tr><td><strong>print→logging 전환</strong></td><td>24곳</td><td>process_bank_data.py: _safe_print 래퍼 → logger.error/warning/info 내부 전환</td></tr>
-<tr><td><strong>R 공식 표기 통일</strong></td><td>3곳</td><td>HTML 템플릿 a<sub>i</sub> → avg_a<sub>i</sub> (코드 _calculate_risk_report와 일치)</td></tr>
-<tr><td><strong>데드코드 제거</strong></td><td>2건</td><td>risk_indicators.py 미사용 정규식, shared_app_utils.py 중복 import</td></tr>
-<tr><td><strong>특허 청구항 11개 구현 검증</strong></td><td>11항 전부</td><td>코드와 청구항 1:1 대조 완료. 모든 청구항 <strong>완전 구현</strong> 확인</td></tr>
+<thead>
+<tr>
+<th>모델</th>
+<th>대상</th>
+<th>과금 구조</th>
+<th>예상 매출</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>B2B SaaS</strong></td>
+<td>법무사·변호사 사무소</td>
+<td>월 구독 (건당 추가 과금)</td>
+<td>사무소당 월 10~30만 원</td>
+</tr>
+<tr>
+<td><strong>B2G</strong></td>
+<td>법원·파산관재인실</td>
+<td>기관 라이선스</td>
+<td>기관당 연 500~1,000만 원</td>
+</tr>
+<tr>
+<td><strong>B2C</strong></td>
+<td>채무자 직접 이용</td>
+<td>건당 이용료</td>
+<td>건당 3~10만 원</td>
+</tr>
+<tr>
+<td><strong>API 라이선스</strong></td>
+<td>법률 플랫폼 (로톡 등)</td>
+<td>API 호출 과금</td>
+<td>호출당 500~2,000원</td>
+</tr>
+</tbody>
 </table>
-
-<h3>3.2 시스템 아키텍처 성숙도</h3>
+<h3 id="43-moat">4.3 경쟁 우위 (해자, Moat)</h3>
 <table>
-<tr><th>구성 요소</th><th>구현 상태</th><th>기보 평가 의미</th></tr>
-<tr><td>데이터 입력 계층(100)</td><td>국민·신한·하나·전 카드사 파서 완비</td><td>실 데이터 처리 가능</td></tr>
-<tr><td>3단계 분류 엔진(230)</td><td>운영 중, 키워드 동적 관리 UI</td><td>사용자 확장 가능</td></tr>
-<tr><td>위험도 산정 엔진(250)</td><td>T·Θ·S 모두 구현·테스트 완료</td><td>핵심 알고리즘 검증 완료</td></tr>
-<tr><td>소명서 생성 엔진(260)</td><td>10종 템플릿 + 법조항 자동 매칭</td><td>실무 즉시 적용 가능</td></tr>
-<tr><td>웹 인터페이스</td><td>Flask 기반 22개 페이지</td><td>SaaS 서비스 즉시 론칭 가능</td></tr>
-<tr><td>배포 인프라</td><td>Docker + Railway 클라우드</td><td>운영 환경 검증 완료</td></tr>
+<thead>
+<tr>
+<th>경쟁 장벽</th>
+<th>설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>법률-기술 융합의 진입 장벽</strong></td>
+<td>채무자회생법 제564조를 알고리즘으로 구현하려면 법률 도메인 전문 지식 + 금융 데이터 처리 역량이 동시 필요. 법률 AI 기업(인텔리콘, 로앤컴퍼니 등)은 문서 분석에 집중, 금융 데이터 위험도 산정 미보유</td>
+</tr>
+<tr>
+<td><strong>특허에 의한 기술 독점</strong></td>
+<td>R 점수(T·Θ·S), Step-up Scoring, 5단계 캐스케이드 특허 등록 시 동일 방식 모방 차단</td>
+</tr>
+<tr>
+<td><strong>데이터 네트워크 효과</strong></td>
+<td>키워드 DB(카테고리 테이블)가 사용자 증가에 따라 풍부해지는 구조. 선점 기업의 분류 정확도가 후발에 비해 지속적으로 우위</td>
+</tr>
+</tbody>
 </table>
-
-<h3>3.3 TRL (기술준비수준) 평가</h3>
+<hr />
+<h2 id="5">제5장 지식재산권 현황 및 진보성</h2>
+<h3 id="51">5.1 특허 출원 현황</h3>
 <table>
-<tr><th>TRL 단계</th><th>내용</th><th>MyRisk</th></tr>
-<tr><td>TRL 1~3</td><td>기초 연구 ~ 개념 검증</td><td class="check">✓ 완료</td></tr>
-<tr><td>TRL 4~5</td><td>실험실 검증 ~ 기술 실증</td><td class="check">✓ 완료</td></tr>
-<tr><td>TRL 6</td><td>파일럿 시스템</td><td class="check">✓ 완료 — 실 금융 데이터로 분석·보고서 생성</td></tr>
-<tr><td>TRL 7</td><td>운용 환경 시연</td><td class="check">✓ 완료 — Railway 클라우드 배포</td></tr>
-<tr><td>TRL 8</td><td>시스템 완성</td><td class="warn">△ 진행 중 — 다수 사용자 동시 접근 테스트</td></tr>
-<tr><td>TRL 9</td><td>상용화</td><td class="warn">△ 진행 중 — 과금·회원 관리 추가</td></tr>
+<thead>
+<tr>
+<th>항목</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>발명 명칭</td>
+<td>인공지능 기반의 금융거래 위험도 분석 및 법적 소명 자료 자동 생성 시스템 및 방법</td>
+</tr>
+<tr>
+<td>청구항 수</td>
+<td><strong>11개</strong> (독립 2 + 종속 9)</td>
+</tr>
+<tr>
+<td>독립항 1</td>
+<td>방법 발명: 전처리→3단계 분류→통합→Step-up→R 점수→소명서</td>
+</tr>
+<tr>
+<td>독립항 11</td>
+<td>시스템 발명: 전처리부+분류 엔진부+통합부+위험도 산정부+소명서 생성부</td>
+</tr>
+<tr>
+<td>IPC 분류</td>
+<td>G06Q 50/18 (법률), G06Q 40/02 (금융)</td>
+</tr>
+</tbody>
 </table>
-
+<h3 id="52-7">5.2 선행기술 7건 대비 진보성</h3>
+<table>
+<thead>
+<tr>
+<th>선행기술</th>
+<th>등록번호</th>
+<th>핵심 한계</th>
+<th>MyRisk 차별</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AI 법률문서 분석</td>
+<td>KR102289935B1</td>
+<td>법률 문서 텍스트만 분석, 금융 데이터 없음</td>
+<td>금융 거래 데이터 직접 분석+위험도 산정</td>
+</tr>
+<tr>
+<td>법률문서 자동작성</td>
+<td>KR102022412B1</td>
+<td>Q&amp;A 기반 양식 작성, 분석 없음 (만료)</td>
+<td>데이터 기반 자동 분석+소명서 생성</td>
+</tr>
+<tr>
+<td>스크래핑 회계처리</td>
+<td>KR102824993B1</td>
+<td>회계 분개 목적, 법적 위험도 없음</td>
+<td>법적 위험도 1~10호+R 점수</td>
+</tr>
+<tr>
+<td>푸시메시지 가계부</td>
+<td>KR101580947B1</td>
+<td>소비 관리 목적, 법적 소명 없음</td>
+<td>채무자회생법 매핑+소명서 자동 생성</td>
+</tr>
+<tr>
+<td><strong>AI 재무관리</strong></td>
+<td><strong>KR102486186B1</strong></td>
+<td>ARIMA/LSTM <strong>미래 예측</strong>, R 수식 없음</td>
+<td>T 계수(과거 <strong>진단</strong>), R 공식(법률-수학 융합)</td>
+</tr>
+<tr>
+<td><strong>ML 자동분개</strong></td>
+<td><strong>KR101914620B1</strong></td>
+<td>신뢰도 임계치(분류 확실성), 법적 위험도 없음</td>
+<td>Θ 계수(금액·건수 <strong>복합 위험도 보정</strong>)</td>
+</tr>
+<tr>
+<td><strong>계정과목 분류</strong></td>
+<td><strong>KR101892671B1</strong></td>
+<td>1:1 정적 매칭, 주계정과목등록부</td>
+<td>5단계 <strong>동적</strong> 캐스케이드, 3단계 계층 분류</td>
+</tr>
+</tbody>
+</table>
 <blockquote>
-<strong>기보 평가 등급</strong>: TRL 7 수준. 초기 스타트업으로서 <strong>"기술 완성도가 높고 상용화 직전 단계"</strong>에 해당. 기보 기술평가에서 완성도 항목 상위 등급 논거.
+<p><strong>진보성 결론</strong>: 개별 기술(분류, 시계열, 임계값)은 각각 선행기술이 존재하나, <strong>채무자회생법 기반 10단계 위험도 + 3차원 보정(T·Θ·S) + 소명서 자동 생성</strong>의 결합은 7건 어디에서도 개시되지 않았다. 이는 <strong>비자명성(Non-obviousness)</strong>을 충분히 입증한다.</p>
 </blockquote>
-
-<!-- =============== 제4장 =============== -->
-<h2 id="ch4">제4장 시장성 및 사업성</h2>
-
-<h3>4.1 대상 시장 규모</h3>
-<table>
-<tr><th>지표</th><th>수치</th><th>출처</th></tr>
-<tr><td>2025년 개인파산 신청 건수</td><td>약 22만 건 (역대 최고)</td><td>대법원 사법연감</td></tr>
-<tr><td>2025년 개인회생 신청 건수</td><td>약 12만 건</td><td>대법원 사법연감</td></tr>
-<tr><td>파산 1건당 법률비용</td><td>100~300만 원</td><td>시장 조사</td></tr>
-<tr><td><strong>연간 TAM</strong> (파산+회생)</td><td><strong>3,400억 ~ 1조 원</strong></td><td>34만 건 × 100~300만 원</td></tr>
-<tr><td>리걸테크 시장 CAGR</td><td>23.4% (2023~2028)</td><td>Grandview Research</td></tr>
-<tr><td>핀테크 시장 CAGR</td><td>25.2% (2023~2028)</td><td>MarketsandMarkets</td></tr>
-</table>
-
-<h3>4.2 수익 모델</h3>
-<table>
-<tr><th>모델</th><th>대상</th><th>과금 구조</th><th>예상 매출</th></tr>
-<tr><td><strong>B2B SaaS</strong></td><td>법무사·변호사 사무소</td><td>월 구독 (건당 추가 과금)</td><td>사무소당 월 10~30만 원</td></tr>
-<tr><td><strong>B2G</strong></td><td>법원·파산관재인실</td><td>기관 라이선스</td><td>기관당 연 500~1,000만 원</td></tr>
-<tr><td><strong>B2C</strong></td><td>채무자 직접 이용</td><td>건당 이용료</td><td>건당 3~10만 원</td></tr>
-<tr><td><strong>API 라이선스</strong></td><td>법률 플랫폼 (로톡 등)</td><td>API 호출 과금</td><td>호출당 500~2,000원</td></tr>
-</table>
-
-<h3>4.3 경쟁 우위 (해자, Moat)</h3>
-<table>
-<tr><th>경쟁 장벽</th><th>설명</th></tr>
-<tr><td><strong>법률-기술 융합 진입 장벽</strong></td><td>채무자회생법 + 금융 데이터 처리 역량 동시 필요. 기존 법률 AI 기업은 문서 분석에 집중</td></tr>
-<tr><td><strong>특허에 의한 기술 독점</strong></td><td>R 점수(T·Θ·S), Step-up Scoring, 5단계 캐스케이드 특허 등록 시 모방 차단</td></tr>
-<tr><td><strong>데이터 네트워크 효과</strong></td><td>키워드 DB가 사용자 증가에 따라 풍부해지는 구조. 선점 기업 우위</td></tr>
-</table>
-
-<!-- =============== 제5장 =============== -->
-<h2 id="ch5">제5장 지식재산권 현황 및 진보성</h2>
-
-<h3>5.1 특허 출원 현황</h3>
-<table class="meta-table">
-<tr><td>발명 명칭</td><td>인공지능 기반의 금융거래 위험도 분석 및 법적 소명 자료 자동 생성 시스템 및 방법</td></tr>
-<tr><td>청구항 수</td><td><strong>11개</strong> (독립 2 + 종속 9)</td></tr>
-<tr><td>독립항 1</td><td>방법 발명: 전처리→3단계 분류→통합→Step-up→R 점수→소명서</td></tr>
-<tr><td>독립항 11</td><td>시스템 발명: 전처리부+분류 엔진부+통합부+위험도 산정부+소명서 생성부</td></tr>
-<tr><td>IPC 분류</td><td>G06Q 50/18 (법률), G06Q 40/02 (금융)</td></tr>
-</table>
-
-<h3>5.2 선행기술 7건 대비 진보성</h3>
-<table>
-<tr><th>선행기술</th><th>등록번호</th><th>핵심 한계</th><th>MyRisk 차별</th></tr>
-<tr><td>AI 법률문서 분석</td><td>KR102289935B1</td><td>법률 문서 텍스트만, 금융 데이터 없음</td><td>금융 거래 데이터 직접 분석+위험도 산정</td></tr>
-<tr><td>법률문서 자동작성</td><td>KR102022412B1</td><td>Q&A 양식 작성, 분석 없음 (만료)</td><td>데이터 기반 자동 분석+소명서</td></tr>
-<tr><td>스크래핑 회계처리</td><td>KR102824993B1</td><td>회계 분개 목적, 법적 위험도 없음</td><td>법적 위험도 1~10호+R 점수</td></tr>
-<tr><td>푸시메시지 가계부</td><td>KR101580947B1</td><td>소비 관리 목적</td><td>채무자회생법 매핑+소명서</td></tr>
-<tr><td><strong>AI 재무관리</strong></td><td><strong>KR102486186B1</strong></td><td>ARIMA/LSTM <strong>미래 예측</strong></td><td>T 계수(과거 <strong>진단</strong>), R 공식</td></tr>
-<tr><td><strong>ML 자동분개</strong></td><td><strong>KR101914620B1</strong></td><td>신뢰도 임계치(분류 확실성)</td><td>Θ 계수(위험도 <strong>크기 보정</strong>)</td></tr>
-<tr><td><strong>계정과목 분류</strong></td><td><strong>KR101892671B1</strong></td><td>1:1 정적 매칭</td><td>5단계 <strong>동적</strong> 캐스케이드</td></tr>
-</table>
-
+<hr />
+<h2 id="6-esg">제6장 사회적 가치 — ESG 및 포용금융 관점</h2>
+<h3 id="61">6.1 채무자의 사법 방어권 보장</h3>
 <blockquote>
-<strong>진보성 결론</strong>: 개별 기술은 각각 선행기술이 존재하나, <strong>채무자회생법 기반 10단계 위험도 + 3차원 보정(T·Θ·S) + 소명서 자동 생성</strong>의 결합은 7건 어디에서도 개시되지 않았다. <strong>비자명성(Non-obviousness) 충분히 입증</strong>.
+<p><strong>"법률 지식이 부족한 채무자의 방어권 보장"</strong> — 이 목적은 ESG 경영의 <strong>사회(Social)</strong> 차원과 <strong>포용금융(Inclusive Finance)</strong> 관점에서 기보 평가 시 정성적 가점을 받을 수 있는 핵심 요소이다.</p>
 </blockquote>
-
-<!-- =============== 제6장 =============== -->
-<h2 id="ch6">제6장 사회적 가치 — ESG 및 포용금융 관점</h2>
-
-<h3>6.1 채무자의 사법 방어권 보장</h3>
-
-<div class="highlight">
-<strong>"법률 지식이 부족한 채무자의 방어권 보장"</strong> — 이 목적은 ESG 경영의 <strong>사회(Social)</strong> 차원과 <strong>포용금융(Inclusive Finance)</strong> 관점에서 기보 평가 시 정성적 가점을 받을 수 있는 핵심 요소이다.
+<h4 id="_5">현실 문제 인식</h4>
+<table>
+<thead>
+<tr>
+<th>문제</th>
+<th>현실</th>
+<th>MyRisk 해결</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>법률 접근성 격차</strong></td>
+<td>변호사 없이 파산 신청하는 비율 약 40%. 소명서를 직접 작성해야 하나 법률 용어를 모름</td>
+<td>R 점수로 위험 거래를 자동 식별하고, 법적 소명 전략 템플릿+법조항 참조를 자동 매칭하여 소명서 초안 생성</td>
+</tr>
+<tr>
+<td><strong>비용 부담</strong></td>
+<td>변호사 비용 100~300만 원. 파산 신청자 대부분 경제적 곤궁 상태</td>
+<td>자동화로 비용 절감. B2C 모델 시 건당 3~10만 원</td>
+</tr>
+<tr>
+<td><strong>소명 기한 초과</strong></td>
+<td>소명서 작성에 수주~수개월 소요. 기한 경과 시 불이익</td>
+<td>자동 생성으로 시간 단축 (수시간 이내)</td>
+</tr>
+<tr>
+<td><strong>정보 비대칭</strong></td>
+<td>관재인은 전문가, 채무자는 비전문가. 방어권 실질적 보장 미흡</td>
+<td>채무자에게 법적 근거와 소명 전략을 자동 제공하여 정보 격차 해소</td>
+</tr>
+</tbody>
+</table>
+<h4 id="esg">ESG 프레임워크 매핑</h4>
+<table>
+<thead>
+<tr>
+<th>ESG 차원</th>
+<th>MyRisk 기여</th>
+<th>기보 평가 가점 논거</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>E (환경)</strong></td>
+<td>종이 서류 디지털화, 대면 상담 감소 → 탄소 절감</td>
+<td>간접 기여</td>
+</tr>
+<tr>
+<td><strong>S (사회)</strong></td>
+<td>① 채무자 방어권 보장, ② 법률 접근성 향상, ③ 사법 비용 절감, ④ 채무 불이행자 사회 복귀 촉진</td>
+<td><strong>핵심 가점 요소</strong></td>
+</tr>
+<tr>
+<td><strong>G (지배구조)</strong></td>
+<td>객관적·정량적 위험도 산출로 파산관재인 판단의 투명성·일관성 제고</td>
+<td>공정 심사 기여</td>
+</tr>
+</tbody>
+</table>
+<h3 id="62-inclusive-finance">6.2 포용금융(Inclusive Finance) 관점</h3>
+<table>
+<thead>
+<tr>
+<th>포용금융 원칙</th>
+<th>MyRisk 구현</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>금융 소외계층 지원</strong></td>
+<td>경제적 곤궁으로 법률 서비스를 받지 못하는 채무자에게 자동화된 법적 소명 도구 제공</td>
+</tr>
+<tr>
+<td><strong>정보 접근성</strong></td>
+<td>복잡한 채무자회생법 조항을 자동 매핑하여 비전문가도 이해 가능한 형태로 제공</td>
+</tr>
+<tr>
+<td><strong>공정한 심사</strong></td>
+<td>R 점수의 객관적·정량적 산출로 주관적 판단을 최소화, 채무자 간 공정성 확보</td>
+</tr>
+<tr>
+<td><strong>사회적 회복</strong></td>
+<td>적절한 소명으로 면책 결정을 받은 채무자의 경제적 재기 → 사회적 비용 절감</td>
+</tr>
+</tbody>
+</table>
+<h3 id="63">6.3 정책 정합성</h3>
+<table>
+<thead>
+<tr>
+<th>정부 정책</th>
+<th>MyRisk 정합성</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>AI 국가전략 (2025~)</strong></td>
+<td>AI 기반 법률 서비스 자동화 → 정부 AI 활성화 정책 부합</td>
+</tr>
+<tr>
+<td><strong>리걸테크 육성 (법무부)</strong></td>
+<td>법률 서비스 디지털 전환 → 법무부 리걸테크 지원 사업 부합</td>
+</tr>
+<tr>
+<td><strong>금융 소비자 보호 강화 (금융위)</strong></td>
+<td>채무자 보호·방어권 강화 → 금융소비자보호법 정신 부합</td>
+</tr>
+<tr>
+<td><strong>ESG 경영 의무화 추세</strong></td>
+<td>사회적 가치 창출 → ESG 평가 정성 가점</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="7">제7장 기보 기술평가 대응 요약 및 권고</h2>
+<h3 id="71-tcb">7.1 TCB 등급 목표 및 전략</h3>
+<table>
+<thead>
+<tr>
+<th>평가 영역</th>
+<th>목표 등급</th>
+<th>핵심 논거</th>
+<th>제출 자료</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>기술성</strong></td>
+<td>A~AA</td>
+<td>R 공식(법률-수학 융합), T·Θ·S 3차원 보정, 5단계 캐스케이드</td>
+<td>특허출원서, 선행기술 조사 보고서</td>
+</tr>
+<tr>
+<td><strong>시장성</strong></td>
+<td>A</td>
+<td>개인파산 22만건, TAM 3,400억+, CAGR 23%</td>
+<td>시장 분석 자료</td>
+</tr>
+<tr>
+<td><strong>사업성</strong></td>
+<td>BBB~A</td>
+<td>B2B SaaS + B2G + B2C + API 4중 모델</td>
+<td>사업계획서</td>
+</tr>
+<tr>
+<td><strong>경영 능력</strong></td>
+<td>BBB</td>
+<td>특허 11건 청구항, 코드 4차 전수조사, TRL 7</td>
+<td>특허 출원 증빙</td>
+</tr>
+</tbody>
+</table>
+<h3 id="72">7.2 벤처인증 추진 로드맵</h3>
+<table>
+<thead>
+<tr>
+<th>단계</th>
+<th>시기</th>
+<th>과제</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1단계</strong></td>
+<td>2026년 Q2</td>
+<td>특허 출원 접수 + 우선심사 신청</td>
+</tr>
+<tr>
+<td><strong>2단계</strong></td>
+<td>2026년 Q3</td>
+<td>기보 기술평가 신청 (본 문서 기반)</td>
+</tr>
+<tr>
+<td><strong>3단계</strong></td>
+<td>2026년 Q3~Q4</td>
+<td>벤처기업 인증 (기술평가 벤처 유형)</td>
+</tr>
+<tr>
+<td><strong>4단계</strong></td>
+<td>2026년 Q4</td>
+<td>기보 기술보증 대출 신청</td>
+</tr>
+<tr>
+<td><strong>5단계</strong></td>
+<td>2027년 Q1</td>
+<td>B2B SaaS 베타 론칭 → 매출 발생</td>
+</tr>
+<tr>
+<td><strong>6단계</strong></td>
+<td>2027년 Q2</td>
+<td>정부 지원 사업 (AI 바우처, 리걸테크 과제) 신청</td>
+</tr>
+</tbody>
+</table>
+<h3 id="73-3">7.3 기보 평가관 대면 미팅 시 핵심 메시지 (3가지)</h3>
+<p><strong>메시지 1 — 기술 독보성 (자본 잠식 방어)</strong></p>
+<blockquote>
+<p>"MyRisk의 R 점수 공식은 단순한 통계가 아닙니다. 채무자회생법 제564조의 10개 면책불허가 사유를 5개 수학 변수로 모델링한, <strong>국내 유일의 법률-수학 융합 알고리즘</strong>입니다. 선행기술 7건을 조사한 결과, 이 결합은 어디에서도 발견되지 않았습니다."</p>
+</blockquote>
+<p><strong>메시지 2 — T 계수의 차별성</strong></p>
+<blockquote>
+<p>"선행기술(KR102486186B1)의 시계열 분석은 기업 자금 흐름의 <strong>미래를 예측</strong>하는 기술입니다. MyRisk의 T 계수는 파산 직전의 의심 거래 패턴을 <strong>과거에서 진단</strong>하는 기술입니다. 예측 vs 진단이라는 근본적 차이가 있으며, 이는 독자적 기술 창작물입니다."</p>
+</blockquote>
+<p><strong>메시지 3 — 사회적 가치</strong></p>
+<blockquote>
+<p>"법률 지식이 부족한 채무자의 방어권을 보장하는 것이 MyRisk의 목적입니다. 이는 ESG의 사회(S) 차원과 포용금융 관점에서, 경제적 곤궁 상태의 채무자에게 자동화된 법적 소명 도구를 제공하는 <strong>사회적 가치 창출 기술</strong>입니다. 연간 34만 건의 파산·회생 신청자가 잠재적 수혜자입니다."</p>
+</blockquote>
+<hr />
+<h2 id="a-r">부록 A. R 공식 구현 코드 참조</h2>
+<table>
+<thead>
+<tr>
+<th>함수</th>
+<th>파일</th>
+<th>기능</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>_calculate_risk_report()</code></td>
+<td>MyCash/cash_app.py</td>
+<td>R = w × log₁₀(1+f×avg_a) × T × Θ × S</td>
+</tr>
+<tr>
+<td><code>_compute_temporal_proximity()</code></td>
+<td>MyCash/cash_app.py</td>
+<td>T = 1 + α×C + β×P</td>
+</tr>
+<tr>
+<td><code>_compute_threshold_factor()</code></td>
+<td>MyCash/cash_app.py</td>
+<td>Θ = amount_factor × count_factor</td>
+</tr>
+<tr>
+<td><code>_compute_symmetry_factor()</code></td>
+<td>MyCash/cash_app.py</td>
+<td>S = 1 − (입금/출금)</td>
+</tr>
+<tr>
+<td><code>detect_vasp()</code></td>
+<td>MyCash/risk_indicators.py</td>
+<td>VASP 3단계 식별</td>
+</tr>
+<tr>
+<td><code>_best_match()</code></td>
+<td>MyBank/process_bank_data.py</td>
+<td>5단계 충돌 해결 캐스케이드</td>
+</tr>
+</tbody>
+</table>
+<h2 id="b">부록 B. 도면 부호 체계</h2>
+<table>
+<thead>
+<tr>
+<th>부호</th>
+<th>명칭</th>
+<th>기보 서류 참조</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>100</td>
+<td>데이터 입력 계층</td>
+<td>제1도</td>
+</tr>
+<tr>
+<td>200</td>
+<td>처리 엔진 계층</td>
+<td>제1도, 제2~6도</td>
+</tr>
+<tr>
+<td>210~260</td>
+<td>개별 엔진 (전처리~소명서)</td>
+<td>제2~6도</td>
+</tr>
+<tr>
+<td>300</td>
+<td>데이터 저장 계층</td>
+<td>제1도</td>
+</tr>
+<tr>
+<td>400</td>
+<td>출력 보고서 계층</td>
+<td>제1도, 제7도</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<blockquote>
+<p><strong>본 문서는 기보(KIBO) 기술평가 및 벤처인증 신청 시 기술 독창성·완성도·시장성·사회적 가치를 체계적으로 어필하기 위한 전략 문서입니다. 260318_p-14_s(특허출원서).pdf, 특허출원서(Opus의견)_v4.md, system_flow.md, 선행기술_청구항_조사.md, 코드 전수조사(4차) 결과를 종합하여 작성되었습니다.</strong></p>
+</blockquote>
+<div class="footer">
+주식회사 나눔과 어울림 ShareHarmony | MyRisk v200 | 2026-03-18
 </div>
-
-<table>
-<tr><th>문제</th><th>현실</th><th>MyRisk 해결</th></tr>
-<tr><td><strong>법률 접근성 격차</strong></td><td>변호사 없이 파산 신청하는 비율 약 40%</td><td>R 점수로 위험 거래 자동 식별 + 소명서 초안 자동 생성</td></tr>
-<tr><td><strong>비용 부담</strong></td><td>변호사 비용 100~300만 원</td><td>자동화로 비용 절감 (B2C 건당 3~10만 원)</td></tr>
-<tr><td><strong>소명 기한 초과</strong></td><td>소명서 작성에 수주~수개월</td><td>자동 생성으로 수시간 이내 완료</td></tr>
-<tr><td><strong>정보 비대칭</strong></td><td>관재인 전문가 vs 채무자 비전문가</td><td>법적 근거·소명 전략 자동 제공으로 정보 격차 해소</td></tr>
-</table>
-
-<h3>6.2 ESG 프레임워크 매핑</h3>
-<table>
-<tr><th>ESG 차원</th><th>MyRisk 기여</th><th>기보 평가 가점 논거</th></tr>
-<tr><td><strong>E (환경)</strong></td><td>종이 서류 디지털화, 대면 상담 감소 → 탄소 절감</td><td>간접 기여</td></tr>
-<tr><td><strong>S (사회)</strong></td><td>① 채무자 방어권 보장, ② 법률 접근성 향상, ③ 사법 비용 절감, ④ 사회 복귀 촉진</td><td><strong>핵심 가점 요소</strong></td></tr>
-<tr><td><strong>G (지배구조)</strong></td><td>객관적·정량적 위험도 산출로 판단 투명성·일관성 제고</td><td>공정 심사 기여</td></tr>
-</table>
-
-<h3>6.3 포용금융(Inclusive Finance) 관점</h3>
-<table>
-<tr><th>포용금융 원칙</th><th>MyRisk 구현</th></tr>
-<tr><td>금융 소외계층 지원</td><td>경제적 곤궁 채무자에게 자동화된 법적 소명 도구 제공</td></tr>
-<tr><td>정보 접근성</td><td>채무자회생법 조항을 자동 매핑, 비전문가 이해 가능 형태 제공</td></tr>
-<tr><td>공정한 심사</td><td>R 점수의 객관적·정량적 산출로 채무자 간 공정성 확보</td></tr>
-<tr><td>사회적 회복</td><td>적절한 소명 → 면책 결정 → 경제적 재기 → 사회적 비용 절감</td></tr>
-</table>
-
-<h3>6.4 정책 정합성</h3>
-<table>
-<tr><th>정부 정책</th><th>MyRisk 정합성</th></tr>
-<tr><td>AI 국가전략 (2025~)</td><td>AI 기반 법률 서비스 자동화 → 정부 AI 활성화 정책 부합</td></tr>
-<tr><td>리걸테크 육성 (법무부)</td><td>법률 서비스 디지털 전환 지원 사업 부합</td></tr>
-<tr><td>금융 소비자 보호 강화 (금융위)</td><td>채무자 보호·방어권 강화 → 금융소비자보호법 정신 부합</td></tr>
-<tr><td>ESG 경영 의무화 추세</td><td>사회적 가치 창출 → ESG 평가 정성 가점</td></tr>
-</table>
-
-<!-- =============== 제7장 =============== -->
-<h2 id="ch7">제7장 기보 기술평가 대응 요약 및 권고</h2>
-
-<h3>7.1 TCB 등급 목표 및 전략</h3>
-<table>
-<tr><th>평가 영역</th><th>목표 등급</th><th>핵심 논거</th><th>제출 자료</th></tr>
-<tr><td><strong>기술성</strong></td><td>A~AA</td><td>R 공식(법률-수학 융합), T·Θ·S 3차원 보정, 5단계 캐스케이드</td><td>특허출원서, 선행기술 조사 보고서</td></tr>
-<tr><td><strong>시장성</strong></td><td>A</td><td>개인파산 22만건, TAM 3,400억+, CAGR 23%</td><td>시장 분석 자료</td></tr>
-<tr><td><strong>사업성</strong></td><td>BBB~A</td><td>B2B SaaS + B2G + B2C + API 4중 모델</td><td>사업계획서</td></tr>
-<tr><td><strong>경영 능력</strong></td><td>BBB</td><td>특허 11건 청구항, 코드 4차 전수조사, TRL 7</td><td>특허 출원 증빙</td></tr>
-</table>
-
-<h3>7.2 벤처인증 추진 로드맵</h3>
-<table>
-<tr><th>단계</th><th>시기</th><th>과제</th></tr>
-<tr><td>1단계</td><td>2026년 Q2</td><td>특허 출원 접수 + 우선심사 신청</td></tr>
-<tr><td>2단계</td><td>2026년 Q3</td><td>기보 기술평가 신청 (본 문서 기반)</td></tr>
-<tr><td>3단계</td><td>2026년 Q3~Q4</td><td>벤처기업 인증 (기술평가 벤처 유형)</td></tr>
-<tr><td>4단계</td><td>2026년 Q4</td><td>기보 기술보증 대출 신청</td></tr>
-<tr><td>5단계</td><td>2027년 Q1</td><td>B2B SaaS 베타 론칭 → 매출 발생</td></tr>
-<tr><td>6단계</td><td>2027년 Q2</td><td>정부 지원 사업 (AI 바우처, 리걸테크 과제) 신청</td></tr>
-</table>
-
-<h3>7.3 기보 평가관 대면 미팅 시 핵심 메시지 (3가지)</h3>
-
-<div class="message-box">
-<div class="msg-title">메시지 1 — 기술 독보성 (자본 잠식 방어)</div>
-<div class="msg-body">"MyRisk의 R 점수 공식은 단순한 통계가 아닙니다. 채무자회생법 제564조의 10개 면책불허가 사유를 5개 수학 변수로 모델링한, <strong>국내 유일의 법률-수학 융합 알고리즘</strong>입니다. 선행기술 7건을 조사한 결과, 이 결합은 어디에서도 발견되지 않았습니다."</div>
-</div>
-
-<div class="message-box">
-<div class="msg-title">메시지 2 — T 계수의 차별성</div>
-<div class="msg-body">"선행기술(KR102486186B1)의 시계열 분석은 기업 자금 흐름의 <strong>미래를 예측</strong>하는 기술입니다. MyRisk의 T 계수는 파산 직전의 의심 거래 패턴을 <strong>과거에서 진단</strong>하는 기술입니다. 예측 vs 진단이라는 근본적 차이가 있으며, 이는 독자적 기술 창작물입니다."</div>
-</div>
-
-<div class="message-box">
-<div class="msg-title">메시지 3 — 사회적 가치</div>
-<div class="msg-body">"법률 지식이 부족한 채무자의 방어권을 보장하는 것이 MyRisk의 목적입니다. 이는 ESG의 사회(S) 차원과 포용금융 관점에서, 경제적 곤궁 상태의 채무자에게 자동화된 법적 소명 도구를 제공하는 <strong>사회적 가치 창출 기술</strong>입니다. 연간 34만 건의 파산·회생 신청자가 잠재적 수혜자입니다."</div>
-</div>
-
-<hr style="margin-top: 40px;">
-<p style="font-size: 9pt; color: #666; text-align: center; margin-top: 20px;">
-본 문서는 기보(KIBO) 기술평가 및 벤처인증 신청 시 기술 독창성·완성도·시장성·사회적 가치를 체계적으로 어필하기 위한 전략 문서입니다.<br>
-260318_p-14_s(특허출원서).pdf, md/특허출원서(Opus의견)_v4.md, md/system_flow.md, md/선행기술_청구항_조사.md, 코드 전수조사(4차) 결과를 종합하여 작성되었습니다.
-</p>
-
 </body>
 </html>
